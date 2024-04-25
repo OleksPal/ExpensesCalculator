@@ -1,3 +1,5 @@
+using ExpensesCalculator.Data;
+
 namespace ExpensesCalculator
 {
     public class Program
@@ -8,6 +10,8 @@ namespace ExpensesCalculator
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSqlite<ExpensesContext>("Data Source=Expenses.db");
 
             var app = builder.Build();
 
