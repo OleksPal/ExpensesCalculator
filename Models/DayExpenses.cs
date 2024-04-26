@@ -1,8 +1,7 @@
 ﻿namespace ExpensesCalculator.Models
 {
-    public class DayExpenses
+    public class DayExpenses : DbObject
     {
-        public int Id { get; set; }
         public List<Check> Checks { get; set; }
         public DateOnly Date { get; set; }
     }

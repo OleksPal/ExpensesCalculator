@@ -1,8 +1,7 @@
 ﻿namespace ExpensesCalculator.Models
 {
-    public class Check
+    public class Check : DbObject
     {
-        public int Id { get; set; }
         public List<Item> Items { get; set; }
         public int Sum { get; set; }
         public string Location { get; set; }
