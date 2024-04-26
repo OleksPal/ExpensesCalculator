@@ -30,6 +30,8 @@ namespace ExpensesCalculator
 
             app.UseAuthorization();
 
+            app.CreateDbIfNotExists();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
