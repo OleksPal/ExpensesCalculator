@@ -1,0 +1,144 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ExpensesCalculator.Data;
+using ExpensesCalculator.Models;
+
+namespace ExpensesCalculator.Controllers
+{
+    public class DayExpensesController : Controller
+    {
+        private readonly ExpensesContext _context;
+
+        public DayExpensesController(ExpensesContext context)
+        {
+            _context = context;
+        }
+
+        // GET: DayExpenses
+        public async Task<IActionResult> Index()
+        {
+            return View(await _context.Days.ToListAsync());
+        }
+
+        // GET: DayExpenses/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dayExpenses = await _context.Days
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (dayExpenses == null)
+            {
+                return NotFound();
+            }
+
+            return View(dayExpenses);
+        }
+
+        // GET: DayExpenses/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: DayExpenses/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Date,Id")] DayExpenses dayExpenses)
+        {
+            _context.Add(dayExpenses);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: DayExpenses/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dayExpenses = await _context.Days.FindAsync(id);
+            if (dayExpenses == null)
+            {
+                return NotFound();
+            }
+            return View(dayExpenses);
+        }
+
+        // POST: DayExpenses/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Date,Id")] DayExpenses dayExpenses)
+        {
+            if (id != dayExpenses.Id)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                _context.Update(dayExpenses);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DayExpensesExists(dayExpenses.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: DayExpenses/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dayExpenses = await _context.Days
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (dayExpenses == null)
+            {
+                return NotFound();
+            }
+
+            return View(dayExpenses);
+        }
+
+        // POST: DayExpenses/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var dayExpenses = await _context.Days.FindAsync(id);
+            if (dayExpenses != null)
+            {
+                _context.Days.Remove(dayExpenses);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool DayExpensesExists(int id)
+        {
+            return _context.Days.Any(e => e.Id == id);
+        }
+    }
+}
