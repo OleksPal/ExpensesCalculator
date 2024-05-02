@@ -5,22 +5,22 @@ using ExpensesCalculator.Models;
 
 namespace ExpensesCalculator.Controllers
 {
-    public class DayExpensesController : Controller
+    public class ChecksController : Controller
     {
         private readonly ExpensesContext _context;
 
-        public DayExpensesController(ExpensesContext context)
+        public ChecksController(ExpensesContext context)
         {
             _context = context;
         }
 
-        // GET: DayExpenses
+        // GET: Checks
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Days.ToListAsync());
+            return View(await _context.Checks.ToListAsync());
         }
 
-        // GET: DayExpenses/Details/5
+        // GET: Checks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -28,39 +28,39 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = await _context.Days
+            var check = await _context.Checks
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (dayExpenses == null)
+            if (check == null)
             {
                 return NotFound();
             }
 
-            return View(dayExpenses);
+            return View(check);
         }
 
-        // GET: DayExpenses/Create
+        // GET: Checks/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: DayExpenses/Create
+        // POST: Checks/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([Bind("Sum,Location,VerificationPath,Id")] Check check)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(dayExpenses);
+                _context.Add(check);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
+            return View(check);
         }
 
-        // GET: DayExpenses/Edit/5
+        // GET: Checks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -68,22 +68,22 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = await _context.Days.FindAsync(id);
-            if (dayExpenses == null)
+            var check = await _context.Checks.FindAsync(id);
+            if (check == null)
             {
                 return NotFound();
             }
-            return View(dayExpenses);
+            return View(check);
         }
 
-        // POST: DayExpenses/Edit/5
+        // POST: Checks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Edit(int id, [Bind("Sum,Location,VerificationPath,Id")] Check check)
         {
-            if (id != dayExpenses.Id)
+            if (id != check.Id)
             {
                 return NotFound();
             }
@@ -92,12 +92,12 @@ namespace ExpensesCalculator.Controllers
             {
                 try
                 {
-                    _context.Update(dayExpenses);
+                    _context.Update(check);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DayExpensesExists(dayExpenses.Id))
+                    if (!CheckExists(check.Id))
                     {
                         return NotFound();
                     }
@@ -108,10 +108,10 @@ namespace ExpensesCalculator.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
+            return View(check);
         }
 
-        // GET: DayExpenses/Delete/5
+        // GET: Checks/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -119,34 +119,34 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = await _context.Days
+            var check = await _context.Checks
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (dayExpenses == null)
+            if (check == null)
             {
                 return NotFound();
             }
 
-            return View(dayExpenses);
+            return View(check);
         }
 
-        // POST: DayExpenses/Delete/5
+        // POST: Checks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dayExpenses = await _context.Days.FindAsync(id);
-            if (dayExpenses != null)
+            var check = await _context.Checks.FindAsync(id);
+            if (check != null)
             {
-                _context.Days.Remove(dayExpenses);
+                _context.Checks.Remove(check);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DayExpensesExists(int id)
+        private bool CheckExists(int id)
         {
-            return _context.Days.Any(e => e.Id == id);
+            return _context.Checks.Any(e => e.Id == id);
         }
     }
 }
