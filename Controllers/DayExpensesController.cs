@@ -28,11 +28,23 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = await _context.Days
+            var day = await _context.Days.Include(d => d.Checks)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (dayExpenses == null)
+
+            if (day == null)
             {
                 return NotFound();
+            }
+
+            var dayExpenses = new DayExpensesViewModel();
+            dayExpenses.DayExpensesId = day.Id;
+            dayExpenses.Date = day.Date;
+            dayExpenses.Checks = day.Checks;
+
+            dayExpenses.Items = new List<Item>();
+            foreach (var check in _context.Checks.Where(c => c.Id == dayExpenses.DayExpensesId).Include(c => c.Items))
+            {
+                dayExpenses.Items.AddRange(check.Items);
             }
 
             return View(dayExpenses);

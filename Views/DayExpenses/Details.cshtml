@@ -1,4 +1,4 @@
-﻿@model ExpensesCalculator.Models.DayExpenses
+﻿@model ExpensesCalculator.Models.DayExpensesViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -17,8 +17,43 @@
             @Html.DisplayFor(model => model.Date)
         </dd>
     </dl>
+    @foreach (var check in Model.Checks) 
+    {
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => check.Location)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => check.Location)
+            </dd>
+        </dl>
+        @foreach (var item in check.Items)
+        {
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => item.Name)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => item.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => item.Description)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => item.Description)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => item.Price)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => item.Price)
+                </dd>            
+            </dl> 
+        }
+    }    
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.DayExpensesId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
