@@ -4,56 +4,53 @@
     ViewData["Title"] = "Details";
 }
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("button").click(function () {
+            $("#itemsList").toggle();
+        });
+    });
+</script>
+
 <h1>Details</h1>
 
 <div>
     <h4>DayExpenses</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-    </dl>
-    @foreach (var check in Model.Checks) 
-    {
-        <hr />
+
+    <div style="float:left;width:45%;">
         <dl class="row">
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => check.Location)
+                @Html.DisplayNameFor(model => model.Date)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => check.Location)
+                @Html.DisplayFor(model => model.Date)
             </dd>
         </dl>
-        @foreach (var item in check.Items)
+        @foreach (var check in Model.Checks)
         {
-            <dl class="row">
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => item.Name)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => item.Name)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => item.Description)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => item.Description)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => item.Price)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => item.Price)
-                </dd>            
-            </dl> 
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayFor(model => check.Location)
+            </dt>
+            <dd class="col-sm-10">
+                <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id">Edit</a>
+                <button>Show items</button>
+            </dd>
+        </dl>
         }
-    }    
+    </div>  
+    <div id = "itemsList" style="float:right;width:45%;display:none">
+        <ul>
+            @foreach (var item in Model.Checks[0].Items)
+            {
+                <li><a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">@item.Name @item.Description</a></li>
+            }
+        </ul>
+    </div> 
 </div>
-<div>
+<div style="clear:both;">
     <a asp-action="Edit" asp-route-id="@Model?.DayExpensesId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
