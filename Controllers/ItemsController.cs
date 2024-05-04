@@ -49,11 +49,20 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Price,Id")] Item item)
+        public async Task<IActionResult> Create([Bind("Name,Description,Price,Id")] Item item, int checkId = 1)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(item);
+                var check = await _context.Checks.Include(c => c.Items)
+                .FirstOrDefaultAsync(m => m.Id == checkId);
+
+                if (check == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Items.Add(item);
+                check.Items.Add(item);                
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

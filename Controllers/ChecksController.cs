@@ -20,24 +20,6 @@ namespace ExpensesCalculator.Controllers
             return View(await _context.Checks.ToListAsync());
         }
 
-        // GET: Checks/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var check = await _context.Checks
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (check == null)
-            {
-                return NotFound();
-            }
-
-            return View(check);
-        }
-
         // GET: Checks/Create
         public IActionResult Create()
         {
@@ -68,7 +50,8 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var check = await _context.Checks.FindAsync(id);
+            var check = await _context.Checks.Include(c => c.Items)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (check == null)
             {
                 return NotFound();

@@ -8,34 +8,40 @@
 
 <h4>Check</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Sum" class="control-label"></label>
-                <input asp-for="Sum" class="form-control" />
-                <span asp-validation-for="Sum" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" />
-                <span asp-validation-for="Location" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VerificationPath" class="control-label"></label>
-                <input asp-for="VerificationPath" class="form-control" />
-                <span asp-validation-for="VerificationPath" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div style="float:left;width:45%;">
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Location" class="control-label"></label>
+                    <input asp-for="Location" class="form-control" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="VerificationPath" class="control-label"></label>
+                    <input asp-for="VerificationPath" class="form-control" />
+                    <span asp-validation-for="VerificationPath" class="text-danger"></span>
+                </div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+<div id="itemsList" style="float:right;width:45%">
+    <ul>
+        @foreach (var item in Model.Items)
+        {
+            <li><a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">@item.Name @item.Description</a></li>
+        }
+    </ul>
+</div>
 
-<div>
+<div style="clear:both;">
+    <a asp-controller="Items" asp-action="Create" asp-route-checkid="@Model.Id">Add Item</a> |
     <a asp-action="Index">Back to List</a>
 </div>
 
