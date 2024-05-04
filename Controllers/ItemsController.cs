@@ -39,8 +39,10 @@ namespace ExpensesCalculator.Controllers
         }
 
         // GET: Items/Create
-        public IActionResult Create()
+        [HttpGet]
+        public IActionResult Create(int checkId)
         {
+            ViewData["CheckId"] = checkId;
             return View();
         }
 
@@ -49,7 +51,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Price,Id")] Item item, int checkId = 1)
+        public async Task<IActionResult> Create([Bind("Name,Description,Price,Id")] Item item, int checkId)
         {
             if (ModelState.IsValid)
             {

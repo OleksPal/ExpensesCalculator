@@ -21,8 +21,10 @@ namespace ExpensesCalculator.Controllers
         }
 
         // GET: Checks/Create
-        public IActionResult Create()
+        [HttpGet]
+        public IActionResult Create(int dayExpensesId)
         {
+            ViewData["DayExpensesId"] = dayExpensesId;
             return View();
         }
 
@@ -31,11 +33,20 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Sum,Location,VerificationPath,Id")] Check check)
+        public async Task<IActionResult> Create([Bind("Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
         {
-            if (ModelState.IsValid)
+            check.Items = new List<Item>();
+            ModelState.ClearValidationState(nameof(Check));
+            if (!TryValidateModel(nameof(Check)))
             {
-                _context.Add(check);
+                var dayExpenses = await _context.Days.Include(d => d.Checks)
+                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+
+                if (dayExpenses is null)
+                    return NotFound();
+
+                _context.Checks.Add(check);
+                dayExpenses.Checks.Add(check);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
