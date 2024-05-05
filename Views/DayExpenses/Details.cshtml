@@ -30,24 +30,19 @@
         </dl>
         @foreach (var check in Model.Checks)
         {
-        <dl class="row">
-            <dt class="col-sm-2">
-                @Html.DisplayFor(model => check.Location)
-            </dt>
-            <dd class="col-sm-10">
-                <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id">Edit</a>
-                <button>Show items</button>
-            </dd>
-        </dl>
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayFor(model => check.Location)
+                </dt>
+                <dd class="col-sm-10">
+                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id">Edit</a>
+                    <button id="@check.Id">Show items</button>
+                </dd>
+            </dl>
         }
     </div>  
     <div id = "itemsList" style="float:right;width:45%;display:none">
-        <ul>
-            @foreach (var item in Model.Checks[0].Items)
-            {
-                <li><a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">@item.Name @item.Description</a></li>
-            }
-        </ul>
+        @await Component.InvokeAsync("ItemsList", Model.Checks[1].Id)
     </div> 
 </div>
 <div style="clear:both;">

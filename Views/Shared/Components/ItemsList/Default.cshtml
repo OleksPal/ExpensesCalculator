@@ -1,0 +1,15 @@
+﻿@model ICollection<Item>
+
+@{
+    ViewData["Title"] = "Items List";
+}
+
+<h3>Items List</h3>
+<div>
+    <ul>
+        @foreach (var item in Model)
+        {
+        <li><a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">@item.Name @item.Description</a></li>
+        }
+    </ul>
+</div>
