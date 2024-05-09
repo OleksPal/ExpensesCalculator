@@ -1,16 +1,24 @@
-﻿@model ExpensesCalculator.Models.DayExpensesViewModel
+﻿@using Newtonsoft.Json
+@model ExpensesCalculator.Models.DayExpensesViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        $("button").click(function () {
-            $("#itemsList").toggle();
-        });
-    });
+    function myFunction(checkId) {
+        var list = @Html.Raw(JsonConvert.SerializeObject(@Model.Checks));
+
+        var ul = document.getElementById("itemsList");
+        ul.innerHTML = "";
+
+        for (let i = 0; i < list[checkId - 1].Items.length; i++) {
+
+            var li = document.createElement("li");
+            li.textContent = list[checkId - 1].Items[i].Name;
+            document.getElementById("itemsList").appendChild(li);
+        }      
+    }
 </script>
 
 <h1>Details</h1>
@@ -36,17 +44,18 @@
                 </dt>
                 <dd class="col-sm-10">
                     <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id">Edit</a>
-                    <button id="@check.Id">Show items</button>
+                    <button id="@check.Id" onclick="myFunction(this.id)">Show items</button>
                 </dd>
             </dl>
         }
-    </div>  
-    <div id = "itemsList" style="float:right;width:45%;display:none">
-        @await Component.InvokeAsync("ItemsList", Model.Checks[1].Id)
+        <div>
+            <a asp-controller="Checks" asp-action="Create" asp-route-dayexpensesid="@Model.DayExpensesId">Create check</a> |
+            <a asp-action="Edit" asp-route-id="@Model?.DayExpensesId">Edit</a> |
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </div>
+    <div style="float:right;width:45%;">
+        <ul id="itemsList"></ul>
     </div> 
 </div>
-<div style="clear:both;">
-    <a asp-controller="Checks" asp-action="Create" asp-route-dayexpensesid="@Model.DayExpensesId">Create check</a> |
-    <a asp-action="Edit" asp-route-id="@Model?.DayExpensesId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<div style="clear:both;"></div>

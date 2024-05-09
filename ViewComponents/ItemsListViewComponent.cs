@@ -21,7 +21,7 @@ namespace ExpensesCalculator.ViewComponents
 
             if (check is null)
             {
-                return (IViewComponentResult)Results.NoContent();
+                return View(new List<Item>());
             }
 
             return View(check.Items);
