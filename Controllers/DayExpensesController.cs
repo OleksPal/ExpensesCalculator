@@ -41,10 +41,12 @@ namespace ExpensesCalculator.Controllers
             dayExpenses.Date = day.Date;
             dayExpenses.Checks = day.Checks;
 
-            dayExpenses.Items = new List<Item>();
-            foreach (var check in _context.Checks.Where(c => c.Id == dayExpenses.DayExpensesId).Include(c => c.Items))
+            for (int i = 0; i < dayExpenses.Checks.Count; i++)
             {
-                dayExpenses.Items.AddRange(check.Items);
+                var check = await _context.Checks.Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
+                if (check is not null)
+                    dayExpenses.Checks[i] = check;
             }
 
             return View(dayExpenses);

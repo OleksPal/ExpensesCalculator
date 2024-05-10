@@ -7,15 +7,15 @@
 
 <script>
     function myFunction(checkId) {
+        checkId -= 1;
         var list = @Html.Raw(JsonConvert.SerializeObject(@Model.Checks));
 
         var ul = document.getElementById("itemsList");
         ul.innerHTML = "";
 
-        for (let i = 0; i < list[checkId - 1].Items.length; i++) {
-
+        for (let i = 0; i < list[checkId].Items.length; i++) {
             var li = document.createElement("li");
-            li.textContent = list[checkId - 1].Items[i].Name;
+            li.textContent = list[checkId].Items[i].Name;
             document.getElementById("itemsList").appendChild(li);
         }      
     }
