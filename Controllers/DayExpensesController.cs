@@ -65,7 +65,9 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Date,Id")] DayExpenses dayExpenses)
         {
-            if (ModelState.IsValid)
+            dayExpenses.Checks = new List<Check>();
+            ModelState.ClearValidationState(nameof(DayExpenses));
+            if (!TryValidateModel(nameof(DayExpenses)))
             {
                 _context.Add(dayExpenses);
                 await _context.SaveChangesAsync();

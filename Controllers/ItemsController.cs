@@ -56,15 +56,16 @@ namespace ExpensesCalculator.Controllers
             if (ModelState.IsValid)
             {
                 var check = await _context.Checks.Include(c => c.Items)
-                .FirstOrDefaultAsync(m => m.Id == checkId);
+                .FirstOrDefaultAsync(c => c.Id == checkId);
 
-                if (check == null)
+                if (check is null)
                 {
                     return NotFound();
                 }
 
                 _context.Items.Add(item);
-                check.Items.Add(item);                
+                check.Items.Add(item);
+                check.Sum += item.Price;
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -72,18 +73,20 @@ namespace ExpensesCalculator.Controllers
         }
 
         // GET: Items/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int checkId)
         {
-            if (id == null)
+            if (id is null)
             {
                 return NotFound();
             }
 
             var item = await _context.Items.FindAsync(id);
-            if (item == null)
+            if (item is null)
             {
                 return NotFound();
             }
+
+            ViewData["CheckId"] = checkId;
             return View(item);
         }
 
@@ -92,7 +95,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,Description,Price,Id")] Item item)
+        public async Task<IActionResult> Edit(int id, [Bind("Name,Description,Price,Id")] Item item, int checkId)
         {
             if (id != item.Id)
             {
@@ -103,7 +106,24 @@ namespace ExpensesCalculator.Controllers
             {
                 try
                 {
+                    var check = await _context.Checks
+                        .FirstOrDefaultAsync(m => m.Id == checkId);
+
+                    if (check is null)
+                    {
+                        return NotFound();
+                    }
+
+                    var oldItem = await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == item.Id);
+
+                    if (oldItem is null)
+                    {
+                        return NotFound();
+                    }
+
+                    check.Sum -= oldItem.Price;
                     _context.Update(item);
+                    check.Sum += item.Price;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -123,7 +143,7 @@ namespace ExpensesCalculator.Controllers
         }
 
         // GET: Items/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int checkId)
         {
             if (id == null)
             {
@@ -132,25 +152,36 @@ namespace ExpensesCalculator.Controllers
 
             var item = await _context.Items
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (item == null)
             {
                 return NotFound();
             }
 
+            ViewData["CheckId"] = checkId;
             return View(item);
         }
 
         // POST: Items/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int checkId)
         {
             var item = await _context.Items.FindAsync(id);
-            if (item != null)
+            if (item is not null)
             {
+                var check = await _context.Checks
+                .FirstOrDefaultAsync(c => c.Id == checkId);
+
+                if (check is null)
+                {
+                    return NotFound();
+                }
+
+                check.Sum -= item.Price;
                 _context.Items.Remove(item);
             }
-
+            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

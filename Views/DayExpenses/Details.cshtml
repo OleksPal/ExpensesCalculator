@@ -25,11 +25,11 @@
 
             var a = document.createElement("a");
             a.textContent = "Edit";
-            a.setAttribute('href', `${protocol}//${domain}:${port}/Items/Edit/${itemId}`);
+            a.setAttribute('href', `${protocol}//${domain}:${port}/Items/Edit/${itemId}?checkid=${checkId+1}`);
 
             var a2 = document.createElement("a");
             a2.textContent = "Delete";
-            a2.setAttribute('href', `${protocol}//${domain}:${port}/Items/Delete/${itemId}`);
+            a2.setAttribute('href', `${protocol}//${domain}:${port}/Items/Delete/${itemId}?checkid=${checkId+1}`);
 
             var li = document.createElement("li");
             li.textContent = list[checkId].Items[i].Name + " " + list[checkId].Items[i].Description + " ";            
@@ -66,6 +66,7 @@
             <dl class="row">
                 <dt class="col-sm-2">
                     @Html.DisplayFor(model => check.Location)
+                    @Html.DisplayFor(model => check.Sum)
                 </dt>
                 <dd class="col-sm-10">
                     <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id">Edit</a>
