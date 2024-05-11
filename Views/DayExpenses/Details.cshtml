@@ -7,7 +7,6 @@
 
 <script>
     function myFunction(checkId) {
-        checkId -= 1;
         var list = @Html.Raw(JsonConvert.SerializeObject(@Model.Checks));
 
         var ul = document.getElementById("itemsList");
@@ -25,11 +24,11 @@
 
             var a = document.createElement("a");
             a.textContent = "Edit";
-            a.setAttribute('href', `${protocol}//${domain}:${port}/Items/Edit/${itemId}?checkid=${checkId+1}`);
+            a.setAttribute('href', `${protocol}//${domain}:${port}/Items/Edit/${itemId}?checkid=${checkId}`);
 
             var a2 = document.createElement("a");
             a2.textContent = "Delete";
-            a2.setAttribute('href', `${protocol}//${domain}:${port}/Items/Delete/${itemId}?checkid=${checkId+1}`);
+            a2.setAttribute('href', `${protocol}//${domain}:${port}/Items/Delete/${itemId}?checkid=${checkId}`);
 
             var li = document.createElement("li");
             li.textContent = list[checkId].Items[i].Name + " " + list[checkId].Items[i].Description + " ";            
@@ -61,16 +60,16 @@
                 @Html.DisplayFor(model => model.Date)
             </dd>
         </dl>
-        @foreach (var check in Model.Checks)
+        @for (int i = 0; i < Model.Checks.Count; i++)
         {
             <dl class="row">
                 <dt class="col-sm-2">
-                    @Html.DisplayFor(model => check.Location)
-                    @Html.DisplayFor(model => check.Sum)
+                    @Html.DisplayFor(model => Model.Checks[i].Location)
+                    @Html.DisplayFor(model => Model.Checks[i].Sum)
                 </dt>
                 <dd class="col-sm-10">
-                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id">Edit</a>
-                    <button id="@check.Id" onclick="myFunction(this.id)">Show items</button>
+                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@Model.Checks[i].Id">Edit</a>
+                    <button onclick="myFunction(@i)">Show items</button>
                 </dd>
             </dl>
         }

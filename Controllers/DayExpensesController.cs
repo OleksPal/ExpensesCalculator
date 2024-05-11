@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
+using Newtonsoft.Json;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -47,6 +48,13 @@ namespace ExpensesCalculator.Controllers
                     .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
                 if (check is not null)
                     dayExpenses.Checks[i] = check;
+            }
+
+            var json = JsonConvert.SerializeObject(dayExpenses);
+            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "MyJSON2.json")))
+            {
+                outputFile.WriteLine(json);
             }
 
             return View(dayExpenses);
