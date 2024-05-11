@@ -12,6 +12,18 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+.link-button {
+    display: inline;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    background: transparent;
+    color: blue;
+    -webkit-appearance: none;
+}
+
 html {
   position: relative;
   min-height: 100%;

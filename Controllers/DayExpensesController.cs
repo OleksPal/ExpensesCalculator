@@ -50,13 +50,6 @@ namespace ExpensesCalculator.Controllers
                     dayExpenses.Checks[i] = check;
             }
 
-            var json = JsonConvert.SerializeObject(dayExpenses);
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "MyJSON2.json")))
-            {
-                outputFile.WriteLine(json);
-            }
-
             return View(dayExpenses);
         }
 

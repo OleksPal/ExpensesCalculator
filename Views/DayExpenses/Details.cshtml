@@ -51,35 +51,35 @@
     <h4>DayExpenses</h4>
     <hr />
 
-    <div style="float:left;width:45%;">
+    <div style="float:left;width:30%;">
         <dl class="row">
-            <dt class="col-sm-2">
+            <dt class="col-sm">
                 @Html.DisplayNameFor(model => model.Date)
             </dt>
-            <dd class="col-sm-10">
+            <dd class="col-sm">
                 @Html.DisplayFor(model => model.Date)
             </dd>
         </dl>
         @for (int i = 0; i < Model.Checks.Count; i++)
         {
             <dl class="row">
-                <dt class="col-sm-2">
-                    @Html.DisplayFor(model => Model.Checks[i].Location)
-                    @Html.DisplayFor(model => Model.Checks[i].Sum)
+                <dt class="col-sm">
+                    <label style="font-weight:bold">Location: @Model.Checks[i].Location</label><br />
+                    <label style="font-weight:bold">Sum: @Model.Checks[i].Sum</label>
                 </dt>
-                <dd class="col-sm-10">
-                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@Model.Checks[i].Id">Edit</a>
-                    <button onclick="myFunction(@i)">Show items</button>
+                <dd class="col-sm">
+                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@Model.Checks[i].Id">Edit</a> |
+                    <a class="link-button" role="button" onclick="myFunction(@i)">Show items</a>
                 </dd>
             </dl>
         }
         <div>
             <a asp-controller="Checks" asp-action="Create" asp-route-dayexpensesid="@Model.DayExpensesId">Create check</a> |
-            <a asp-action="Edit" asp-route-id="@Model?.DayExpensesId">Edit</a> |
             <a asp-action="Index">Back to List</a>
         </div>
     </div>
-    <div style="float:right;width:45%;">
+    <div style="float:right;width:40%;">
+        <label style="font-weight:bold">List of items</label>
         <ul id="itemsList"></ul>
     </div> 
 </div>
