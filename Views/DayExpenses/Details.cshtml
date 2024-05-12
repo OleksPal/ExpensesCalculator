@@ -6,8 +6,9 @@
 }
 
 <script>
-    function myFunction(checkId) {
+    function createItemsList(checkId) {
         var list = @Html.Raw(JsonConvert.SerializeObject(@Model.Checks));
+        var itemsList = list.filter(l => l.Id == checkId)[0].Items;
 
         var ul = document.getElementById("itemsList");
         ul.innerHTML = "";
@@ -19,26 +20,27 @@
         domain = url_object.hostname;
         port = url_object.port;
 
-        for (let i = 0; i < list[checkId].Items.length; i++) {
-            var itemId = list[checkId].Items[i].Id;
+        for (let i = 0; i < itemsList.length; i++) {
+            var itemId = itemsList[i].Id;
 
-            var a = document.createElement("a");
-            a.textContent = "Edit";
-            a.setAttribute('href', `${protocol}//${domain}:${port}/Items/Edit/${itemId}?checkid=${checkId}`);
+            var editItemLink = document.createElement("a");
+            editItemLink.textContent = "Edit";
+            editItemLink.setAttribute('href', `${protocol}//${domain}:${port}/Items/Edit/${itemId}?checkid=${checkId}`);
 
-            var a2 = document.createElement("a");
-            a2.textContent = "Delete";
-            a2.setAttribute('href', `${protocol}//${domain}:${port}/Items/Delete/${itemId}?checkid=${checkId}`);
+            var deleteItemLink = document.createElement("a");
+            deleteItemLink.textContent = "Delete";
+            deleteItemLink.setAttribute('href', `${protocol}//${domain}:${port}/Items/Delete/${itemId}?checkid=${checkId}`);
 
             var li = document.createElement("li");
-            li.textContent = list[checkId].Items[i].Name + " " + list[checkId].Items[i].Description + " ";            
-            
+            li.textContent = itemsList[i].Name + " " + itemsList[i].Description + " " 
+                + itemsList[i].Price + "₴ ";
+
             var label = document.createElement("label");
             label.textContent = "\xa0|\xa0";
 
-            li.appendChild(a);
+            li.appendChild(editItemLink);
             li.appendChild(label);
-            li.appendChild(a2);
+            li.appendChild(deleteItemLink);
 
             document.getElementById("itemsList").appendChild(li);
         }      
@@ -65,11 +67,12 @@
             <dl class="row">
                 <dt class="col-sm">
                     <label style="font-weight:bold">Location: @Model.Checks[i].Location</label><br />
-                    <label style="font-weight:bold">Sum: @Model.Checks[i].Sum</label>
+                    <label style="font-weight:bold">Sum: @Model.Checks[i].Sum₴</label>
                 </dt>
                 <dd class="col-sm">
+                    <a asp-controller="Items" asp-action="Create" asp-route-checkid="@Model.Checks[i].Id">Create item</a> |
                     <a asp-controller="Checks" asp-action="Edit" asp-route-id="@Model.Checks[i].Id">Edit</a> |
-                    <a class="link-button" role="button" onclick="myFunction(@i)">Show items</a>
+                    <a class="link-button" role="button" onclick="createItemsList(@Model.Checks[i].Id)">Show items</a>
                 </dd>
             </dl>
         }
