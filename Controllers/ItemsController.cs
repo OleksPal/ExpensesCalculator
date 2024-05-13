@@ -12,36 +12,15 @@ namespace ExpensesCalculator.Controllers
         public ItemsController(ExpensesContext context)
         {
             _context = context;
-        }
-
-        // GET: Items
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Items.ToListAsync());
-        }
-
-        // GET: Items/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var item = await _context.Items
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return View(item);
-        }
+        }   
 
         // GET: Items/Create
         [HttpGet]
         public IActionResult Create(int checkId)
         {
+            if (Request.Headers.ContainsKey("Referer"))
+                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
+            
             ViewData["CheckId"] = checkId;
             return View();
         }
@@ -67,7 +46,8 @@ namespace ExpensesCalculator.Controllers
                 check.Items.Add(item);
                 check.Sum += item.Price;
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
             return View(item);
         }
@@ -85,6 +65,9 @@ namespace ExpensesCalculator.Controllers
             {
                 return NotFound();
             }
+
+            if (Request.Headers.ContainsKey("Referer"))
+                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
 
             ViewData["CheckId"] = checkId;
             return View(item);
@@ -137,7 +120,7 @@ namespace ExpensesCalculator.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
             return View(item);
         }
@@ -157,6 +140,9 @@ namespace ExpensesCalculator.Controllers
             {
                 return NotFound();
             }
+
+            if (Request.Headers.ContainsKey("Referer"))
+                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
 
             ViewData["CheckId"] = checkId;
             return View(item);
@@ -183,7 +169,7 @@ namespace ExpensesCalculator.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), nameof(DayExpenses));
         }
 
         private bool ItemExists(int id)

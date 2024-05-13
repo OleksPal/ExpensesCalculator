@@ -71,8 +71,9 @@
                 </dt>
                 <dd class="col-sm">
                     <a asp-controller="Items" asp-action="Create" asp-route-checkid="@Model.Checks[i].Id">Create item</a> |
+                    <a class="link-button" role="button" onclick="createItemsList(@Model.Checks[i].Id)">Show items</a> |
                     <a asp-controller="Checks" asp-action="Edit" asp-route-id="@Model.Checks[i].Id">Edit</a> |
-                    <a class="link-button" role="button" onclick="createItemsList(@Model.Checks[i].Id)">Show items</a>
+                    <a asp-controller="Checks" asp-action="Delete" asp-route-id="@Model.Checks[i].Id">Delete</a>
                 </dd>
             </dl>
         }

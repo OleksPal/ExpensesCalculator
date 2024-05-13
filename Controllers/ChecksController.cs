@@ -14,16 +14,13 @@ namespace ExpensesCalculator.Controllers
             _context = context;
         }
 
-        // GET: Checks
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Checks.ToListAsync());
-        }
-
         // GET: Checks/Create
         [HttpGet]
         public IActionResult Create(int dayExpensesId)
         {
+            if (Request.Headers.ContainsKey("Referer"))
+                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
+
             ViewData["DayExpensesId"] = dayExpensesId;
             return View();
         }
@@ -48,7 +45,7 @@ namespace ExpensesCalculator.Controllers
                 _context.Checks.Add(check);
                 dayExpenses.Checks.Add(check);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
             return View(check);
         }
@@ -67,6 +64,10 @@ namespace ExpensesCalculator.Controllers
             {
                 return NotFound();
             }
+
+            if (Request.Headers.ContainsKey("Referer"))
+                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
+
             return View(check);
         }
 
@@ -113,7 +114,7 @@ namespace ExpensesCalculator.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
             return View(check);
         }
@@ -132,6 +133,9 @@ namespace ExpensesCalculator.Controllers
             {
                 return NotFound();
             }
+
+            if (Request.Headers.ContainsKey("Referer"))
+                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
 
             return View(check);
         }
@@ -155,7 +159,7 @@ namespace ExpensesCalculator.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), nameof(DayExpenses));
         }
 
         private bool CheckExists(int id)

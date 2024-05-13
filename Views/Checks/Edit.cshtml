@@ -42,6 +42,6 @@
 
 <div style="clear:both;">
     <a asp-controller="Items" asp-action="Create" asp-route-checkid="@Model.Id">Add Item</a> |
-    <a asp-action="Index">Back to List</a>
+    <a href="@ViewData["PreviousUrl"]">Back</a>
 </div>
 
