@@ -99,13 +99,15 @@ namespace ExpensesCalculator.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Date,Id")] DayExpenses dayExpenses)
-        {
+        {            
             if (id != dayExpenses.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            dayExpenses.Checks = new List<Check>();
+            ModelState.ClearValidationState(nameof(DayExpenses));
+            if (!TryValidateModel(nameof(DayExpenses)))
             {
                 try
                 {
@@ -151,9 +153,20 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dayExpenses = await _context.Days.FindAsync(id);
+            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
+
             if (dayExpenses != null)
             {
+                foreach(var check in dayExpenses.Checks)
+                {
+                    var checkToDelete = await _context.Checks.Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.Id == check.Id);
+
+                    if(checkToDelete is not null)
+                        _context.Items.RemoveRange(checkToDelete.Items);
+
+                    _context.Checks.Remove(check);
+                }
                 _context.Days.Remove(dayExpenses);
             }
 

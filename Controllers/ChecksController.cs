@@ -82,7 +82,20 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (check.Items is null) 
+            {
+                var oldCheck = await _context.Checks.Include(c => c.Items).AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (oldCheck is null)
+                    return NotFound();
+
+                check.Items = oldCheck.Items;
+                check.Sum = oldCheck.Sum;
+            }
+
+            ModelState.ClearValidationState(nameof(Check));
+            if (!TryValidateModel(nameof(Check)))
             {
                 try
                 {
@@ -128,7 +141,14 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var check = await _context.Checks.FindAsync(id);
+            var check = await _context.Checks.Include(c => c.Items).AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (check is null)
+                return NoContent();
+
+            _context.Items.RemoveRange(check.Items);
+
             if (check != null)
             {
                 _context.Checks.Remove(check);
