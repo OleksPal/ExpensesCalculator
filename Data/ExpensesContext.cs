@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ExpensesCalculator.Models;
 
 namespace ExpensesCalculator.Data
 {
-    public class ExpensesContext : DbContext
+    public class ExpensesContext : IdentityDbContext
     {
         public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options) { }
 

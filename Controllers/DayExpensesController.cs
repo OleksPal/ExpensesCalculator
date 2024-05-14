@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ExpensesCalculator.Controllers
 {
+    [Authorize]
     public class DayExpensesController : Controller
     {
         private readonly ExpensesContext _context;

@@ -1,4 +1,6 @@
 using ExpensesCalculator.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace ExpensesCalculator
 {
@@ -11,7 +13,10 @@ namespace ExpensesCalculator
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddSqlite<ExpensesContext>("Data Source=Expenses.db");
+            builder.Services.AddDbContext<ExpensesContext>(options =>
+            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ExpensesContext>();
 
             var app = builder.Build();
 
@@ -31,6 +36,8 @@ namespace ExpensesCalculator
             app.UseAuthorization();
 
             app.CreateDbIfNotExists();
+
+            app.MapRazorPages();
 
             app.MapControllerRoute(
                 name: "default",
