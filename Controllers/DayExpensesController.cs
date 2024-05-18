@@ -4,6 +4,7 @@ using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -52,6 +53,8 @@ namespace ExpensesCalculator.Controllers
                     dayExpenses.Checks[i] = check;
             }
 
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+
             return View(dayExpenses);
         }
 
@@ -66,8 +69,11 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([Bind("Participants,Date,Id")] DayExpenses dayExpenses)
         {
+            string rareNameList = dayExpenses.Participants[0];
+            dayExpenses.Participants = (List<string>)GetParticipantListFromString(rareNameList);
+
             dayExpenses.Checks = new List<Check>();
             ModelState.ClearValidationState(nameof(DayExpenses));
             if (!TryValidateModel(nameof(DayExpenses)))
@@ -88,10 +94,14 @@ namespace ExpensesCalculator.Controllers
             }
 
             var dayExpenses = await _context.Days.FindAsync(id);
+
             if (dayExpenses == null)
             {
                 return NotFound();
             }
+
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(dayExpenses.Participants);
+
             return View(dayExpenses);
         }
 
@@ -100,12 +110,15 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Edit(int id, [Bind("Participants,Date,Id")] DayExpenses dayExpenses)
         {            
             if (id != dayExpenses.Id)
             {
                 return NotFound();
             }
+
+            string rareNameList = dayExpenses.Participants[0];
+            dayExpenses.Participants = (List<string>)GetParticipantListFromString(rareNameList);
 
             dayExpenses.Checks = new List<Check>();
             ModelState.ClearValidationState(nameof(DayExpenses));
@@ -147,6 +160,8 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(dayExpenses.Participants);
+
             return View(dayExpenses);
         }
 
@@ -179,6 +194,34 @@ namespace ExpensesCalculator.Controllers
         private bool DayExpensesExists(int id)
         {
             return _context.Days.Any(e => e.Id == id);
+        }
+
+        private string GetFormatParticipantsNames(List<string> participants)
+        {
+            string formatList = String.Empty;
+            for (int i = 0; i < participants.Count; i++)
+            {
+                if (participants[i] is not null)
+                {
+                    formatList += participants[i];
+                    if (i != participants.Count - 1)
+                        formatList += ", ";
+                }
+            }
+            return formatList;
+        }
+
+        private IEnumerable<string> GetParticipantListFromString(string rareText)
+        {
+            Regex spacesAfterComma = new Regex(@",\s+"),
+                bigSpaces = new Regex(@"\s+");
+            rareText = bigSpaces.Replace(rareText, " ");
+            rareText = spacesAfterComma.Replace(rareText, ",");
+
+            List<string> participantList = rareText.Split(',').ToList();
+            participantList = participantList.Select(p => p != null ? p.Trim() : null).ToList();
+
+            return participantList;
         }
     }
 }

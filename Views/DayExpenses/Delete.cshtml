@@ -18,6 +18,14 @@
             @Html.DisplayFor(model => model.Date)
         </dd>
     </dl>
+    <dl>
+        <dt class="col-sm">
+            Participant Names
+        </dt>
+        <dd class="col-sm">
+            @ViewBag.FormatParticipantNames
+        </dd>
+    </dl>
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
