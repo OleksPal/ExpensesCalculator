@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -16,10 +17,21 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Checks/Create
         [HttpGet]
-        public IActionResult Create(int dayExpensesId)
+        public async Task<IActionResult> Create(int dayExpensesId)
         {
             if (Request.Headers.ContainsKey("Referer"))
                 ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
+
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
+            {
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach(var participant in dayExpenses.Participants)
+                {
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
+                }
+                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
+            }                
 
             ViewData["DayExpensesId"] = dayExpensesId;
             return View();
@@ -30,7 +42,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
+        public async Task<IActionResult> Create([Bind("Payer,Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
         {
             check.Items = new List<Item>();
             ModelState.ClearValidationState(nameof(Check));
@@ -51,7 +63,7 @@ namespace ExpensesCalculator.Controllers
         }
 
         // GET: Checks/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int dayExpensesId)
         {
             if (id == null)
             {
@@ -65,6 +77,17 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
+            {
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
+                {
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
+                }
+                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
+            }
+
             if (Request.Headers.ContainsKey("Referer"))
                 ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
 
@@ -76,7 +99,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Sum,Location,VerificationPath,Id")] Check check)
+        public async Task<IActionResult> Edit(int id, [Bind("Payer,Sum,Location,VerificationPath,Id")] Check check)
         {
             if (id != check.Id)
             {
