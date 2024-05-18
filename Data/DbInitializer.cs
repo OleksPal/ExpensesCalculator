@@ -9,9 +9,9 @@ namespace ExpensesCalculator.Data
             if (context.Days.Any() && context.Checks.Any() && context.Items.Any())
                 return;
 
-            var cognac = new Item { Name = "Erisioni", Description = "0,5L", Price = 172.7 };
-            var check = new Check { Items = [cognac], Location = "ATB", Sum = 172.7 };
-            var dayExpenses = new DayExpenses { Checks = [check], Date = new DateOnly(2024, 1, 1) };
+            var cognac = new Item { Name = "Erisioni", Description = "0,5L", Price = 172.7, Users = ["P"] };
+            var check = new Check { Items = [cognac], Location = "ATB", Sum = 172.7, Payer = "I" };
+            var dayExpenses = new DayExpenses { Checks = [check], Date = new DateOnly(2024, 1, 1), Participants = ["I"] };
 
             context.Items.Add(cognac);
             context.Checks.Add(check);

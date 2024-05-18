@@ -6,5 +6,6 @@
         public double Sum { get; set; }
         public string Location { get; set; }
         public string? VerificationPath { get; set; }
+        public string Payer { get; set; }
     }
 }
