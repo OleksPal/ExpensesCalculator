@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -16,11 +17,22 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Items/Create
         [HttpGet]
-        public IActionResult Create(int checkId)
+        public async Task<IActionResult> Create(int checkId, int dayExpensesId)
         {
             if (Request.Headers.ContainsKey("Referer"))
                 ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
-            
+
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
+            {
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
+                {
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                }
+                ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
+            }
+
             ViewData["CheckId"] = checkId;
             return View();
         }
@@ -30,7 +42,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Price,Id")] Item item, int checkId)
+        public async Task<IActionResult> Create([Bind("Users,Name,Description,Price,Id")] Item item, int checkId)
         {
             if (ModelState.IsValid)
             {
@@ -53,7 +65,7 @@ namespace ExpensesCalculator.Controllers
         }
 
         // GET: Items/Edit/5
-        public async Task<IActionResult> Edit(int? id, int checkId)
+        public async Task<IActionResult> Edit(int? id, int checkId, int dayExpensesId)
         {
             if (id is null)
             {
@@ -69,6 +81,17 @@ namespace ExpensesCalculator.Controllers
             if (Request.Headers.ContainsKey("Referer"))
                 ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
 
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
+            {
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
+                {
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                }
+                ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
+            }
+
             ViewData["CheckId"] = checkId;
             return View(item);
         }
@@ -78,7 +101,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,Description,Price,Id")] Item item, int checkId)
+        public async Task<IActionResult> Edit(int id, [Bind("Users,Name,Description,Price,Id")] Item item, int checkId)
         {
             if (id != item.Id)
             {
@@ -145,6 +168,8 @@ namespace ExpensesCalculator.Controllers
                 ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
 
             ViewData["CheckId"] = checkId;
+            ViewBag.FormatParticipantNames = GetFormatUserNames(item.Users);
+
             return View(item);
         }
 
@@ -175,6 +200,21 @@ namespace ExpensesCalculator.Controllers
         private bool ItemExists(int id)
         {
             return _context.Items.Any(e => e.Id == id);
+        }
+
+        private string GetFormatUserNames(List<string> participants)
+        {
+            string formatList = String.Empty;
+            for (int i = 0; i < participants.Count; i++)
+            {
+                if (participants[i] is not null)
+                {
+                    formatList += participants[i];
+                    if (i != participants.Count - 1)
+                        formatList += ", ";
+                }
+            }
+            return formatList;
         }
     }
 }
