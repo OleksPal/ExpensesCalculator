@@ -91,6 +91,7 @@
         }
         <div>
             <a asp-controller="Checks" asp-action="Create" asp-route-dayexpensesid="@Model.DayExpensesId">Create check</a> |
+            <a asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.DayExpensesId">Calculate expenses</a> |
             <a asp-action="Index">Back to List</a>
         </div>
     </div>

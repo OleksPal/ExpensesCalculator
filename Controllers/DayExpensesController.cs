@@ -191,6 +191,33 @@ namespace ExpensesCalculator.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: DayExpenses/CalculateExpenses/5
+        public async Task<IActionResult> CalculateExpenses(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dayExpenses == null)
+            {
+                return NotFound();
+            }
+
+            for(int i = 0; i < dayExpenses.Checks.Count; i++)
+            {
+                var checkWithItems = await _context.Checks.Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
+
+                if(checkWithItems is not null)
+                    dayExpenses.Checks[i] = checkWithItems;
+            }
+
+            return View(dayExpenses);
+        }
+
         private bool DayExpensesExists(int id)
         {
             return _context.Days.Any(e => e.Id == id);

@@ -1,0 +1,56 @@
+﻿@model ExpensesCalculator.Models.DayExpenses
+
+@{
+    ViewData["Title"] = "Expenses calculation";
+}
+
+<h1>Expenses calculation</h1>
+
+<div>
+    <hr />
+
+    <div>
+        @foreach (var participant in Model.Participants)
+        {
+            <label>@participant:</label><br />
+            @foreach (var check in Model.Checks)
+            {
+                double sum = 0;
+                <label>@check.Location: </label>
+                @foreach (var item in check.Items)
+                {  
+                    @if (item.Users.Contains(participant))
+                    {
+                        <label>
+                            @{
+                                var itemParams = new Dictionary<string, string> 
+                                {
+                                    { "id", item.Id.ToString() },
+                                    { "checkid", check.Id.ToString() },
+                                    { "dayexpensesid", Model.Id.ToString() }
+                                };
+
+                                double priceForUser = Math.Round((item.Price / item.Users.Count), 2);
+                                sum += priceForUser;
+                            }
+                            <a asp-controller="Items" asp-action="Edit"
+                            asp-all-route-data="itemParams">@item.Name</a> (@item.Price) / @item.Users.Count =
+                            @priceForUser
+                        </label><br />
+                    }                    
+                }
+                <label>Sum: @sum</label>
+                <label>Check sum: @check.Sum</label>
+
+                <br />
+            }
+            <br />
+
+            <br />
+        }
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+<div style="clear:both;"></div>
