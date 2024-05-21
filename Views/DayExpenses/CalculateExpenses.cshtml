@@ -1,4 +1,4 @@
-﻿@model ExpensesCalculator.Models.DayExpenses
+﻿@model ExpensesCalculator.Models.DayExpensesCalculationViewModel
 
 @{
     ViewData["Title"] = "Expenses calculation";
@@ -27,7 +27,7 @@
                                 {
                                     { "id", item.Id.ToString() },
                                     { "checkid", check.Id.ToString() },
-                                    { "dayexpensesid", Model.Id.ToString() }
+                                    { "dayexpensesid", Model.DayExpensesId.ToString() }
                                 };
 
                                 double priceForUser = Math.Round((item.Price / item.Users.Count), 2);
@@ -47,6 +47,13 @@
             <br />
 
             <br />
+        }
+    </div>
+    <div>
+        <label>Transaction list:</label><br />
+        @foreach(var transaction in Model.UserTransactions)
+        {
+            <label>@transaction.Key[0] (@transaction.Value₴) -> @transaction.Key[1]</label><br />
         }
     </div>
     <div>
