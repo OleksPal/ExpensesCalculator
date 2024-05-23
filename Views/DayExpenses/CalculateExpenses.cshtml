@@ -5,66 +5,68 @@
 }
 
 <h1>Expenses calculation</h1>
+<hr />
 
-<div>
-    <hr />
-
-    <div class="tab">
-        @foreach (var participant in Model.Participants)
-        {
-            <button class="tablinks" onclick="openParticipant(event, @participant)">@participant</button>
-        }
-    </div>
-
-    @foreach (var participant in Model.Participants)
+<div class="tab">
+    @foreach(var participant in Model.Participants)
     {
-        <div id="@participant" class="tabcontent">
-            @foreach (var check in Model.Checks)
+        <button class="tablinks" onclick="openParticipantTab(event, '@participant')">@participant</button>
+    }
+    <button class="tablinks" onclick="openParticipantTab(event, 'transactionList')">Transaction List</button>
+</div>
+
+@foreach(var participant in Model.Participants)
+{
+    <div id="@participant" class="tabcontent">
+        @foreach (var check in Model.Checks)
+        {
+            if(check.Items.Count != 0)
             {
                 double sum = 0;
-                <label>@check.Location: </label>
-                @foreach (var item in check.Items)
-                {
-                    @if (item.Users.Contains(participant))
+                <label>@check.Location:</label>
+                <ul>
+                    @foreach (var item in check.Items)
                     {
-                        <label>
-                            @{
-                                var itemParams = new Dictionary<string, string>
-                                {
-                                { "id", item.Id.ToString() },
-                                { "checkid", check.Id.ToString() },
-                                { "dayexpensesid", Model.DayExpensesId.ToString() }
-                                };
+                        @if (item.Users.Contains(participant))
+                        {
+                            <li>
+                                @{
+                                    var itemParams = new Dictionary<string, string>
+            {
+            { "id", item.Id.ToString() },
+            { "checkid", check.Id.ToString() },
+            { "dayexpensesid", Model.DayExpensesId.ToString() }
+            };
 
-                                double priceForUser = Math.Round((item.Price / item.Users.Count), 2);
-                                sum += priceForUser;
-                            }
-                            <a asp-controller="Items" asp-action="Edit"
-                               asp-all-route-data="itemParams">@item.Name</a> (@item.Price) / @item.Users.Count =
-                            @priceForUser
-                        </label>
-
-                        <br />
+                                    double priceForUser = Math.Round((item.Price / item.Users.Count), 2);
+                                    sum += priceForUser;
+                                }
+                                <a asp-controller="Items" asp-action="Edit"
+                                   asp-all-route-data="itemParams">@item.Name</a> (@item.Price₴) / @item.Users.Count =
+                                @priceForUser₴
+                            </li>
+                        }
                     }
-                }
-                <label>Sum: @sum</label>
-                <label>Check sum: @check.Sum</label>
-            }
-        </div>
-    }
-
-    <div>
-        <label>Transaction list:</label><br />
-        @foreach(var transaction in Model.UserTransactions)
-        {
-            <label>@transaction.Key[0] (@transaction.Value₴) -> @transaction.Key[1]</label><br />
+                </ul>
+                <label>Sum per participant: @sum₴</label><br />
+                <label>Check amount: @check.Sum₴</label><br /><hr />
+            }            
         }
     </div>
-    <div>
-        <a asp-action="Index">Back to List</a>
-    </div>
+}
+
+<div id="transactionList" class="tabcontent">
+    <label>Transaction list:</label><br />
+    @foreach (var transaction in Model.UserTransactions)
+    {
+        <label>@transaction.Key[0] (@transaction.Value₴) → @transaction.Key[1]</label>
+        <br />
+    }
 </div>
-<div style="clear:both;"></div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
 <style>
     /* Style the tab */
@@ -74,26 +76,26 @@
         background-color: #f1f1f1;
     }
 
-    /* Style the buttons that are used to open the tab content */
-    .tab button {
-        background-color: inherit;
-        float: left;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        padding: 14px 16px;
-        transition: 0.3s;
-    }
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
 
-    /* Change background color of buttons on hover */
-    .tab button:hover {
-        background-color: #ddd;
-    }
-    
-    /* Create an active/current tablink class */
-    .tab button.active {
-        background-color: #ccc;
-    }
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
 
     /* Style the tab content */
     .tabcontent {
@@ -105,7 +107,7 @@
 </style>
 
 <script>
-    function openParticipant(evt, cityName) {
+    function openParticipantTab(evt, participantName) {
         // Declare all variables
         var i, tabcontent, tablinks;
 
@@ -122,7 +124,7 @@
         }
 
         // Show the current tab, and add an "active" class to the button that opened the tab
-        document.getElementById(cityName).style.display = "block";
+        document.getElementById(participantName).style.display = "block";
         evt.currentTarget.className += " active";
     }
 </script>
