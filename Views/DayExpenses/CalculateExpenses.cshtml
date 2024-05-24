@@ -23,7 +23,18 @@
             if(check.Items.Count != 0)
             {
                 double sum = 0;
-                <label>@check.Location:</label>
+
+                <div class="mytooltip">
+                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id"
+                       asp-route-dayexpensesid="@Model.DayExpensesId">@check.Location</a>:                  
+                    <span class="tooltiptext">
+                        Location: @check.Location<br />
+                        Sum: @check.Sum₴<br />
+                        Payer: @check.Payer<br /><br />
+                        Click the button to edit
+                    </span>
+                </div>
+
                 <ul>
                     @foreach (var item in check.Items)
                     {
@@ -41,34 +52,90 @@
                                     double priceForUser = Math.Round((item.Price / item.Users.Count), 2);
                                     sum += priceForUser;
                                 }
-                                <a asp-controller="Items" asp-action="Edit"
-                                   asp-all-route-data="itemParams">@item.Name</a> (@item.Price₴) / @item.Users.Count =
-                                @priceForUser₴
+                                <div class="mytooltip">
+                                    <a asp-controller="Items" asp-action="Edit"
+                                       asp-all-route-data="itemParams">@item.Name</a>
+                                    <span class="tooltiptext">
+                                        Name: @item.Name<br />
+                                        Description: @item.Description<br />
+                                        Price: @item.Price₴<br /><br />
+                                        Click the button to edit
+                                    </span>
+                                </div>
+                                (@item.Price₴) /
+                                <div class="mytooltip">
+                                    @item.Users.Count
+                                    <span class="tooltiptext">
+                                        Users:
+                                        <ul>                                            
+                                        @foreach(var user in item.Users)
+                                        {
+                                            <li>@user</li>
+                                        }
+                                        </ul>
+                                    </span>
+                                </div>
+                                = @priceForUser₴
                             </li>
                         }
                     }
                 </ul>
-                <label>Sum per participant: @sum₴</label><br />
-                <label>Check amount: @check.Sum₴</label><br /><hr />
+                <label>Sum per participant: @sum₴</label><br /><hr />
             }            
         }
     </div>
 }
 
 <div id="transactionList" class="tabcontent">
-    <label>Transaction list:</label><br />
+    <label>Transaction list:</label>
+    <ul>
     @foreach (var transaction in Model.UserTransactions)
     {
-        <label>@transaction.Key[0] (@transaction.Value₴) → @transaction.Key[1]</label>
-        <br />
+        <li>@transaction.Key[0] (@transaction.Value₴) → @transaction.Key[1]</li>
     }
+    </ul>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <br />
+    <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
 </div>
 
 <style>
+    .mytooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+        .mytooltip .tooltiptext {
+            font-size: 14px;
+            visibility: hidden;
+            width: 155px;
+            background-color: black;
+            color: #fff;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            top: -5px;
+            left: 110%;
+        }
+
+            .mytooltip .tooltiptext::after {
+                content: "";
+                position: absolute;
+                top: 16.5%;
+                right: 100%;
+                margin-top: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: transparent black transparent transparent;
+            }
+
+        .mytooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+
     /* Style the tab */
     .tab {
         overflow: hidden;
