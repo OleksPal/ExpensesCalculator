@@ -6,7 +6,9 @@
 
 <link rel="stylesheet" href="/css/mytooltip.css">
 <link rel="stylesheet" href="/css/tab.css">
+<link rel="stylesheet" href="/css/center-div.css">
 <script src="/js/open-tab.js"></script>
+<script src="/js/change-tooltip-visibility.js"></script>
 
 <div class="cn">
     <div class="form-check form-switch inner">
@@ -54,11 +56,11 @@
                             <li>
                                 @{
                                     var itemParams = new Dictionary<string, string>
-            {
-            { "id", item.Id.ToString() },
-            { "checkid", check.Id.ToString() },
-            { "dayexpensesid", Model.DayExpensesId.ToString() }
-            };
+                                        {
+                                        { "id", item.Id.ToString() },
+                                        { "checkid", check.Id.ToString() },
+                                        { "dayexpensesid", Model.DayExpensesId.ToString() }
+                                        };
 
                                     double priceForUser = Math.Round((item.Price / item.Users.Count), 2);
                                     sum += priceForUser;
@@ -111,31 +113,3 @@
     <br />
     <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
 </div>
-
-<script>
-    function changeTooltipVisibility() {
-        var leftTooltipstextElems = document.querySelectorAll('.left-tooltiptext');
-        var topTooltipstextElems = document.querySelectorAll('.top-tooltiptext');
-
-        if (document.getElementById('tooltipSwitcher').checked) {
-            document.getElementById('tooltipSwitcherText').innerHTML = 'Disable tooltips';
-            leftTooltipstextElems.forEach(function (el) {
-                el.style.display = "block";
-            });
-
-            topTooltipstextElems.forEach(function (el) {
-                el.style.display = "block";
-            });
-        }
-        else {
-            document.getElementById('tooltipSwitcherText').innerHTML = 'Enable tooltips';
-            leftTooltipstextElems.forEach(function (el) {
-                el.style.display = "none";
-            });
-
-            topTooltipstextElems.forEach(function (el) {
-                el.style.display = "none";
-            });
-        }
-    }
-</script>

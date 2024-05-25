@@ -61,15 +61,3 @@
     .mytooltip:hover .top-tooltiptext {
         visibility: visible;
     }
-
-div.cn {
-    position: relative;
-}
-
-div.inner {
-    font-size: 18px;
-    position: absolute;
-    top: 50%;
-    right: 0px;
-    transform: translate(-50%,-50%);
-}
