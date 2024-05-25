@@ -3,10 +3,10 @@
     display: inline-block;
 }
 
-    .mytooltip .tooltiptext {
+    .mytooltip .left-tooltiptext {
         font-size: 14px;
         visibility: hidden;
-        width: 155px;
+        width: 120px;
         background-color: black;
         color: #fff;
         border-radius: 6px;
@@ -14,20 +14,62 @@
         position: absolute;
         z-index: 1;
         top: -5px;
-        left: 110%;
+        right: 110%;
     }
 
-        .mytooltip .tooltiptext::after {
-            content: "";
+        .mytooltip .left-tooltiptext::after {
+            content: " ";
             position: absolute;
-            top: 16.5%;
-            right: 100%;
+            top: 12%;
+            left: 100%; /* To the right of the tooltip */
             margin-top: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent black transparent transparent;
+            border-color: transparent transparent transparent black;
         }
 
-    .mytooltip:hover .tooltiptext {
+    .mytooltip .top-tooltiptext {
+        font-size: 14px;
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 100%;
+        left: 50%;
+        margin-left: -70px;
+    }
+
+        .mytooltip .top-tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: black transparent transparent transparent;
+        }
+
+    .mytooltip:hover .left-tooltiptext {
         visibility: visible;
     }
+
+    .mytooltip:hover .top-tooltiptext {
+        visibility: visible;
+    }
+
+div.cn {
+    position: relative;
+}
+
+div.inner {
+    font-size: 18px;
+    position: absolute;
+    top: 50%;
+    right: 0px;
+    transform: translate(-50%,-50%);
+}

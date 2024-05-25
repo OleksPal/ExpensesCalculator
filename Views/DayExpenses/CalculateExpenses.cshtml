@@ -8,7 +8,14 @@
 <link rel="stylesheet" href="/css/tab.css">
 <script src="/js/open-tab.js"></script>
 
-<h1>Expenses calculation</h1>
+<div class="cn">
+    <div class="form-check form-switch inner">
+        <input class="form-check-input" type="checkbox" role="switch" onchange="changeTooltipVisibility()" id="tooltipSwitcher" checked>
+        <label class="form-check-label"  id="tooltipSwitcherText">Disable tooltips</label>
+    </div>
+    <h1>Expenses calculation</h1>
+</div>
+
 <hr />
 
 <div class="tab">
@@ -31,7 +38,7 @@
                 <div class="mytooltip">
                     <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id"
                        asp-route-dayexpensesid="@Model.DayExpensesId">@check.Location</a>:                  
-                    <span class="tooltiptext">
+                    <span class="left-tooltiptext">
                         Location: @check.Location<br />
                         Sum: @check.Sum₴<br />
                         Payer: @check.Payer<br /><br />
@@ -59,7 +66,7 @@
                                 <div class="mytooltip">
                                     <a asp-controller="Items" asp-action="Edit"
                                        asp-all-route-data="itemParams">@item.Name</a>
-                                    <span class="tooltiptext">
+                                    <span class="left-tooltiptext">
                                         Name: @item.Name<br />
                                         Description: @item.Description<br />
                                         Price: @item.Price₴<br /><br />
@@ -69,7 +76,7 @@
                                 (@item.Price₴) /
                                 <div class="mytooltip">
                                     @item.Users.Count
-                                    <span class="tooltiptext">
+                                    <span class="top-tooltiptext">
                                         Users:
                                         <ul>                                            
                                         @foreach(var user in item.Users)
@@ -104,3 +111,31 @@
     <br />
     <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
 </div>
+
+<script>
+    function changeTooltipVisibility() {
+        var leftTooltipstextElems = document.querySelectorAll('.left-tooltiptext');
+        var topTooltipstextElems = document.querySelectorAll('.top-tooltiptext');
+
+        if (document.getElementById('tooltipSwitcher').checked) {
+            document.getElementById('tooltipSwitcherText').innerHTML = 'Disable tooltips';
+            leftTooltipstextElems.forEach(function (el) {
+                el.style.display = "block";
+            });
+
+            topTooltipstextElems.forEach(function (el) {
+                el.style.display = "block";
+            });
+        }
+        else {
+            document.getElementById('tooltipSwitcherText').innerHTML = 'Enable tooltips';
+            leftTooltipstextElems.forEach(function (el) {
+                el.style.display = "none";
+            });
+
+            topTooltipstextElems.forEach(function (el) {
+                el.style.display = "none";
+            });
+        }
+    }
+</script>
