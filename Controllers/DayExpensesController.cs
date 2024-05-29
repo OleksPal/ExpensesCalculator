@@ -23,7 +23,19 @@ namespace ExpensesCalculator.Controllers
         // GET: DayExpenses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Days.ToListAsync());
+            var days = await _context.Days.Include(d => d.Checks).ToListAsync();
+
+            foreach (var day in days)
+            {
+                for (int i = 0; i < day.Checks.Count; i++) 
+                {
+                    var check = await _context.Checks.Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
+                    if (check is not null)
+                        day.Checks[i] = check;
+                }
+            }
+            return View(await _context.Days.Include(d=>d.Checks).ToListAsync());
         }
 
         // GET: DayExpenses/Details/5
