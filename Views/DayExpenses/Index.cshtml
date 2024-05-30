@@ -4,18 +4,23 @@
     ViewData["Title"] = "Expenses List";
 }
 
+<link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+
 <h1>Expenses List</h1>
 
 <table class="table table-striped" id="daysTable">
     <thead>
         <tr>
-            <th style="width:36.5px;"></th>
+            <th style="width:36px;"></th>
             <th>
                 @Html.DisplayNameFor(model => model.Date)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Participants)
             </th>
+            <th style="width:36px;"></th>
+            <th style="width:36px;"></th>
         </tr>
     </thead>
     <tbody>
@@ -36,23 +41,31 @@
                         <label>@participant; </label>
                     }
                 </td>
+                <td>
+                    <i class="bi bi-pencil-square" role="button"></i>
+                </td>
+                <td>
+                    <i class="bi bi-trash" role="button"></i>
+                </td>
             </tr>
             <tr>
-                <td colspan="3">
+                <td colspan="6">
                     <div class="collapse" id="day-@day.Id">
                         <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <td></td>
-                                    <td>
+                                    <th></th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Checks[0].Location)
-                                    </td>
-                                    <td>
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Checks[0].Sum)
-                                    </td>
-                                    <td>
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Checks[0].Payer)
-                                    </td>
+                                    </th>
+                                    <th style="width:36px;"></th>
+                                    <th style="width:36px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -73,25 +86,33 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => check.Payer)
                                         </td>
+                                        <td>
+                                            <i class="bi bi-pencil-square" role="button"></i>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-trash" role="button"></i>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="4">
+                                        <td colspan="6">
                                             <div class="collapse" id="check-@check.Id">
                                                 <table class="table table-striped table-hover">
                                                     <thead>
                                                         <tr>
-                                                            <td>
+                                                            <th>
                                                                 @Html.DisplayNameFor(model => model.Checks[0].Items[0].Name)
-                                                            </td>
-                                                            <td>
+                                                            </th>
+                                                            <th>
                                                                 @Html.DisplayNameFor(model => model.Checks[0].Items[0].Description)
-                                                            </td>
-                                                            <td>
+                                                            </th>
+                                                            <th>
                                                                 @Html.DisplayNameFor(model => model.Checks[0].Items[0].Price)
-                                                            </td>
-                                                            <td>
+                                                            </th>
+                                                            <th>
                                                                 @Html.DisplayNameFor(model => model.Checks[0].Items[0].Users)
-                                                            </td>
+                                                            </th>
+                                                            <th style="width:36px;"></th>
+                                                            <th style="width:36px;"></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -112,6 +133,12 @@
                                                                     {
                                                                         <label>@user; </label>
                                                                     }                                                                    
+                                                                </td>
+                                                                <td>
+                                                                    <i class="bi bi-pencil-square" role="button"></i>
+                                                                </td>
+                                                                <td>
+                                                                    <i class="bi bi-trash" role="button"></i>
                                                                 </td>
                                                             </tr>
                                                         }
