@@ -1,5 +1,5 @@
 ﻿@using Newtonsoft.Json
-@model ExpensesCalculator.Models.DayExpensesViewModel
+@model ExpensesCalculator.Models.DayExpenses
 
 @{
     ViewData["Title"] = "Details";
@@ -26,7 +26,7 @@
             var editItemLink = document.createElement("a");
             editItemLink.textContent = "Edit";
             editItemLink.setAttribute('href', `${protocol}//${domain}:${port}/Items/Edit/${itemId}?checkid=${checkId}&` +
-                `dayExpensesId=@Model.DayExpensesId`);
+                `dayExpensesId=@Model.Id`);
 
             var deleteItemLink = document.createElement("a");
             deleteItemLink.textContent = "Delete";
@@ -81,17 +81,17 @@
                 </dt>
                 <dd class="col-sm">
                     <a asp-controller="Items" asp-action="Create" asp-route-checkid="@Model.Checks[i].Id"
-                       asp-route-dayexpensesid="@Model.DayExpensesId">Create item</a> |
+                       asp-route-dayexpensesid="@Model.Id">Create item</a> |
                     <a class="link-button" role="button" onclick="createItemsList(@Model.Checks[i].Id)">Show items</a> |
                     <a asp-controller="Checks" asp-action="Edit" asp-route-id="@Model.Checks[i].Id"
-                       asp-route-dayexpensesid="@Model.DayExpensesId">Edit</a> |
+                       asp-route-dayexpensesid="@Model.Id">Edit</a> |
                     <a asp-controller="Checks" asp-action="Delete" asp-route-id="@Model.Checks[i].Id">Delete</a>
                 </dd>
             </dl>
         }
         <div>
-            <a asp-controller="Checks" asp-action="Create" asp-route-dayexpensesid="@Model.DayExpensesId">Create check</a> |
-            <a asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.DayExpensesId">Calculate expenses</a> |
+            <a asp-controller="Checks" asp-action="Create" asp-route-dayexpensesid="@Model.Id">Create check</a> |
+            <a asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">Calculate expenses</a> |
             <a asp-action="Index">Back to List</a>
         </div>
     </div>

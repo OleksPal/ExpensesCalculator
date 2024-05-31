@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ExpensesCalculator.Models.DayExpenses>
+﻿@model ExpensesCalculator.Models.DayExpensesViewModel
 
 @{
     ViewData["Title"] = "Expenses List";
@@ -14,17 +14,17 @@
         <tr>
             <th style="width:36px;"></th>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                @Html.DisplayNameFor(model => model.Day.Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Participants)
+                @Html.DisplayNameFor(model => model.Day.Participants)
             </th>
             <th style="width:36px;"></th>
             <th style="width:36px;"></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var day in Model)
+        @foreach (var day in Model.Days)
         {
             <tr>
                 <td>
@@ -33,7 +33,7 @@
                           aria-expanded="false" aria-controls="day-@day.Id">&#9655;</span>
                 </td>
                 <td>
-                    @Html.DisplayNameFor(model => model.Date)
+                    @Html.DisplayFor(model => day.Date)
                 </td>
                 <td>
                     @foreach (var participant in day.Participants)
@@ -42,7 +42,7 @@
                     }
                 </td>
                 <td>
-                    <i class="bi bi-pencil-square" role="button"></i>
+                    <i class="bi bi-pencil-square" role="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></i>
                 </td>
                 <td>
                     <i class="bi bi-trash" role="button"></i>
@@ -56,13 +56,13 @@
                                 <tr>
                                     <th></th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Checks[0].Location)
+                                        @Html.DisplayNameFor(model => model.Check.Location)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Checks[0].Sum)
+                                        @Html.DisplayNameFor(model => model.Check.Sum)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Checks[0].Payer)
+                                        @Html.DisplayNameFor(model => model.Check.Payer)
                                     </th>
                                     <th style="width:36px;"></th>
                                     <th style="width:36px;"></th>
@@ -100,16 +100,16 @@
                                                     <thead>
                                                         <tr>
                                                             <th>
-                                                                @Html.DisplayNameFor(model => model.Checks[0].Items[0].Name)
+                                                                @Html.DisplayNameFor(model => model.Item.Name)
                                                             </th>
                                                             <th>
-                                                                @Html.DisplayNameFor(model => model.Checks[0].Items[0].Description)
+                                                                @Html.DisplayNameFor(model => model.Item.Description)
                                                             </th>
                                                             <th>
-                                                                @Html.DisplayNameFor(model => model.Checks[0].Items[0].Price)
+                                                                @Html.DisplayNameFor(model => model.Item.Price)
                                                             </th>
                                                             <th>
-                                                                @Html.DisplayNameFor(model => model.Checks[0].Items[0].Users)
+                                                                @Html.DisplayNameFor(model => model.Item.Users)
                                                             </th>
                                                             <th style="width:36px;"></th>
                                                             <th style="width:36px;"></th>
@@ -157,6 +157,23 @@
     </tbody>
 </table>
 
+<!-- Edit Modal -->
+<div class="modal fade"    
+id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @await Html.PartialAsync("_EditDayExpenses", Model.Days.ToList()[0])
+            </div>
+        </div>
+    </div>
+</div>
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -164,13 +181,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+                @Html.DisplayNameFor(model => model.Day.Date)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Days) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)

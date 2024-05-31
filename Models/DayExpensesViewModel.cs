@@ -2,8 +2,9 @@
 {
     public class DayExpensesViewModel
     {
-        public int DayExpensesId { get; set; }
-        public DateOnly Date { get; set; }
-        public List<Check>? Checks { get; set; }
+        public IEnumerable<DayExpenses> Days { get; set; }
+        public DayExpenses Day { get; }
+        public Check Check { get; }
+        public Item Item { get; }
     }
 }

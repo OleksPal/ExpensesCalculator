@@ -24,6 +24,8 @@ namespace ExpensesCalculator.Controllers
         public async Task<IActionResult> Index()
         {
             var days = await _context.Days.Include(d => d.Checks).ToListAsync();
+            ViewData["FormattedDayParticipants"] = new List<string>();
+            List<string> formattedDayParticipants = new List<string>();
 
             foreach (var day in days)
             {
@@ -34,8 +36,10 @@ namespace ExpensesCalculator.Controllers
                     if (check is not null)
                         day.Checks[i] = check;
                 }
-            }
-            return View(await _context.Days.Include(d=>d.Checks).ToListAsync());
+                (ViewData["FormattedDayParticipants"] as List<string>).Add(GetFormatParticipantsNames(day.Participants));
+            }           
+
+            return View(new DayExpensesViewModel { Days = days });
         }
 
         // GET: DayExpenses/Details/5
@@ -54,22 +58,17 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = new DayExpensesViewModel();
-            dayExpenses.DayExpensesId = day.Id;
-            dayExpenses.Date = day.Date;
-            dayExpenses.Checks = day.Checks;
-
-            for (int i = 0; i < dayExpenses.Checks.Count; i++)
+            for (int i = 0; i < day.Checks.Count; i++)
             {
                 var check = await _context.Checks.Include(c => c.Items)
-                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
+                    .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
                 if (check is not null)
-                    dayExpenses.Checks[i] = check;
+                    day.Checks[i] = check;
             }
 
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
-            return View(dayExpenses);
+            return View(day);
         }
 
         // GET: DayExpenses/Create
@@ -96,26 +95,6 @@ namespace ExpensesCalculator.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
-        }
-
-        // GET: DayExpenses/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var dayExpenses = await _context.Days.FindAsync(id);
-
-            if (dayExpenses == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(dayExpenses.Participants);
-
             return View(dayExpenses);
         }
 
