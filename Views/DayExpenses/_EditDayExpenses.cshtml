@@ -11,7 +11,7 @@
             </div><br />
             <div class="form-group">
                 <label asp-for="Participants" class="control-label"></label>
-                <input asp-for="Participants" value="@((ViewData["FormattedDayParticipants"] as List<string>)[0])" class="form-control" />
+                <input asp-for="Participants" value="@ViewBag.FormatParticipantNames" class="form-control" />
                 <span asp-validation-for="Participants" class="text-danger"></span>
             </div><br />
             <input type="hidden" asp-for="Id" />

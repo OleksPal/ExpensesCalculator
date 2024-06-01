@@ -42,6 +42,34 @@ namespace ExpensesCalculator.Controllers
             return View(new DayExpensesViewModel { Days = days });
         }
 
+        public async Task<IActionResult> EditDayExpenses(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var day = await _context.Days.Include(d => d.Checks)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (day == null)
+            {
+                return NotFound();
+            }
+
+            for (int i = 0; i < day.Checks.Count; i++)
+            {
+                var check = await _context.Checks.Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
+                if (check is not null)
+                    day.Checks[i] = check;
+            }
+
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+
+            return PartialView("_EditDayExpenses", day);
+        }
+
         // GET: DayExpenses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
