@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ExpensesCalculator.Controllers
 {
+    [Authorize]
     public class ChecksController : Controller
     {
         private readonly ExpensesContext _context;
@@ -13,6 +15,59 @@ namespace ExpensesCalculator.Controllers
         public ChecksController(ExpensesContext context)
         {
             _context = context;
+        }
+
+        public async Task<IActionResult> CreateCheck(int dayExpensesId)
+        {
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
+            {
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
+                {
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
+                }
+                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
+            }
+
+            ViewData["DayExpensesId"] = dayExpensesId;
+
+            return PartialView("_CreateCheck");
+        }
+
+        public async Task<IActionResult> ChangeCheck(int? id, int dayExpensesId, string act)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            var check = await _context.Checks.Include(c => c.Items)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (check is null)
+            {
+                return NotFound();
+            }
+
+            if (act == "Edit")
+            {
+                var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+                if (dayExpenses is not null)
+                {
+                    List<SelectListItem> optionList = new List<SelectListItem>();
+                    foreach (var participant in dayExpenses.Participants)
+                    {
+                        optionList.Add(new SelectListItem { Text = participant, Value = participant });
+                    }
+                    ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
+                }
+                return PartialView("_EditCheck", check);
+            }
+            
+            if (act == "Delete")
+                return PartialView("_DeleteCheck", check);
+            else
+                return NotFound();
         }
 
         // GET: Checks/Create

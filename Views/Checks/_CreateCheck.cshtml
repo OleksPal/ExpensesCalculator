@@ -1,13 +1,5 @@
 ﻿@model ExpensesCalculator.Models.Check
 
-@{
-    ViewData["Title"] = "Create";
-}
-
-<h1>Create</h1>
-
-<h4>Check</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" asp-route-dayexpensesid="@ViewData["DayExpensesId"]">
@@ -25,7 +17,7 @@
             <div class="form-group">
                 <label asp-for="Payer" class="control-label"></label><br />
                 @Html.DropDownListFor(m => m.Payer, ViewData["Participants"] as SelectList,
-                    "Choose payer", new { @class = "form-control" })
+                         "Choose payer", new { @class = "form-control" })
                 <span asp-validation-for="Payer" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -34,8 +26,3 @@
         </form>
     </div>
 </div>
-
-<div>
-    <a href="@ViewData["PreviousUrl"]">Back</a>
-</div>
-

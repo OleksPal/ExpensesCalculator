@@ -11,7 +11,7 @@
 <h1>Expenses List</h1><br />
 
 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick="showModal('Create', 0)">
+        onclick="showModalForDayExpenses('Create', 0)">
     <i class="bi bi-plus-circle"></i> Add expenses
 </button>
 
@@ -52,13 +52,13 @@
                 </td>
                 <td>
                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                            onclick="showModal('Edit', @day.Id)">
+                            onclick="showModalForDayExpenses('Edit', @day.Id)">
                         <i class="bi bi-pencil"></i> Edit
                     </button>                    
                 </td>
                 <td>
                     <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop" onclick="showModal('Delete', @day.Id)">
+                            data-bs-target="#staticBackdrop" onclick="showModalForDayExpenses('Delete', @day.Id)">
                         <i class="bi bi-trash"></i> Delete
                     </button>                    
                 </td>
@@ -67,7 +67,7 @@
                 <td colspan="6">
                     <div class="collapse" id="day-@day.Id">
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                onclick="showModal('Create', 0)">
+                                onclick="showModalForCheck('Create', 0, @day.Id)">
                             <i class="bi bi-plus-circle"></i> Add check
                         </button>
                         <hr />
@@ -108,13 +108,13 @@
                                         </td>
                                         <td>
                                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                    onclick="showModal('Edit', @day.Id)">
+                                                    onclick="showModalForCheck('Edit', @check.Id, @day.Id)">
                                                 <i class="bi bi-pencil"></i> Edit
                                             </button>
                                         </td>
                                         <td>
                                             <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                                    data-bs-target="#staticBackdrop" onclick="showModal('Delete', @day.Id)">
+                                                    data-bs-target="#staticBackdrop" onclick="showModalForCheck('Delete', @check.Id, @day.Id)">
                                                 <i class="bi bi-trash"></i> Delete
                                             </button>
                                         </td>
@@ -201,7 +201,7 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="idc">
@@ -212,7 +212,7 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 </div>
 
 <script>
-    function showModal(act, dayId) {
+    function showModalForDayExpenses(act, dayId) {
         $(document).ready(function () {
             if (act == 'Create') {
                 $.get(`/DayExpenses/CreateDayExpenses/`, function (data) {
@@ -227,5 +227,22 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 });
             }            
         });        
+    }
+
+    function showModalForCheck(act, checkId, dayId) {
+        $(document).ready(function () {
+            if (act == 'Create') {
+                $.get(`/Checks/CreateCheck/?dayExpensesId=${dayId}`, function (data) {
+                    $('#idc').html(data);
+                    $('#staticBackdropLabel').html(act);
+                });
+            }
+            else {
+                $.get(`/Checks/ChangeCheck/${checkId}?dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
+                    $('#idc').html(data);
+                    $('#staticBackdropLabel').html(act);
+                });
+            }
+        });
     }
 </script>
