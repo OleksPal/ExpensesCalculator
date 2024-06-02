@@ -44,10 +44,11 @@
                 </td>
                 <td>
                     <i class="bi bi-pencil-square" role="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                    onclick="showModal(@day.Id)"></i>
+                       onclick="showModal('Edit', @day.Id)"></i>
                 </td>
                 <td>
-                    <i class="bi bi-trash" role="button"></i>
+                    <i class="bi bi-trash" role="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                       onclick="showModal('Delete', @day.Id)"></i>
                 </td>
             </tr>
             <tr>
@@ -177,10 +178,11 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 </div>
 
 <script>
-    function showModal(dayId) {
+    function showModal(act, dayId) {
         $(document).ready(function () {
-            $.get(`/DayExpenses/EditDayExpenses/${dayId}`, function (data) {
+            $.get(`/DayExpenses/EditDayExpenses/${dayId}?act=${act.toString()}`, function (data) {
                 $('#idc').html(data);
+                $('#staticBackdropLabel').html(act);
             });
         });        
     }

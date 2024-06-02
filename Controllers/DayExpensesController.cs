@@ -42,7 +42,7 @@ namespace ExpensesCalculator.Controllers
             return View(new DayExpensesViewModel { Days = days });
         }
 
-        public async Task<IActionResult> EditDayExpenses(int id)
+        public async Task<IActionResult> EditDayExpenses(int id, string act)
         {
             if (id == null)
             {
@@ -67,7 +67,14 @@ namespace ExpensesCalculator.Controllers
 
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
-            return PartialView("_EditDayExpenses", day);
+            if(act == "Edit")
+            {
+
+                return PartialView("_EditDayExpenses", day);
+            }
+                
+            else
+                return PartialView("_DeleteDayExpenses", day);
         }
 
         // GET: DayExpenses/Details/5
