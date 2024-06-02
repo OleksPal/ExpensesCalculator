@@ -8,7 +8,15 @@
 <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
 
-<h1>Expenses List</h1>
+<h1>Expenses List</h1><br />
+
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+        onclick="showModal('Create', 0)">
+    <i class="bi bi-plus-circle"></i> Add expenses
+</button>
+
+
+<hr />
 
 <table class="table table-striped" id="daysTable">
     <thead>
@@ -180,10 +188,18 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 <script>
     function showModal(act, dayId) {
         $(document).ready(function () {
-            $.get(`/DayExpenses/EditDayExpenses/${dayId}?act=${act.toString()}`, function (data) {
-                $('#idc').html(data);
-                $('#staticBackdropLabel').html(act);
-            });
+            if (act == 'Create') {
+                $.get(`/DayExpenses/CreateDayExpenses/`, function (data) {
+                    $('#idc').html(data);
+                    $('#staticBackdropLabel').html(act);
+                });
+            }
+            else{
+                $.get(`/DayExpenses/ChangeDayExpenses/${dayId}?act=${act.toString()}`, function (data) {
+                    $('#idc').html(data);
+                    $('#staticBackdropLabel').html(act);
+                });
+            }            
         });        
     }
 </script>
