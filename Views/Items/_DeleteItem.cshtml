@@ -1,33 +1,34 @@
 ﻿@model ExpensesCalculator.Models.Item
 
-<dl class="row">
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.Name)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Name)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.Description)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Description)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.Price)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Price)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.Users)
-    </dt>
-    <dd class="col-sm-10">
-        @ViewData["FormatParticipantNames"]
-    </dd>
-</dl>
-
-<form asp-action="Delete" asp-route-checkid="@ViewData["CheckId"]">
-    <input type="hidden" asp-for="Id" />
-    <input type="submit" value="Delete" class="btn btn-danger" />
-</form>
+<div class="modal-header">
+    <h5 class="modal-title">Delete expenses</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-action="Delete" asp-route-checkid="@ViewData["CheckId"]">
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" disabled readonly />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="control-label"></label>
+            <input asp-for="Description" class="form-control" disabled readonly />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Price" class="control-label"></label>
+            <input asp-for="Price" class="form-control" disabled readonly />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Users" class="control-label"></label>
+            <input asp-for="Users" value="@ViewData["FormatParticipantNames"]" class="form-control" disabled readonly />
+            <span asp-validation-for="Users" class="text-danger"></span>
+        </div>
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" value="Delete" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Delete
+        </button>
+    </form>
+</div>
