@@ -13,7 +13,62 @@ namespace ExpensesCalculator.Controllers
         public ItemsController(ExpensesContext context)
         {
             _context = context;
-        }   
+        }
+
+        public async Task<IActionResult> CreateItem(int checkId, int dayExpensesId)
+        {
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
+            {
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
+                {
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                }
+                ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
+            }
+
+            ViewData["CheckId"] = checkId;
+
+            return PartialView("_CreateItem");
+        }
+
+        public async Task<IActionResult> ChangeItem(int? id, int checkId, int dayExpensesId, string act)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            if (item is null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CheckId"] = checkId;
+            if (act == "Edit")
+            {
+                var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+                if (dayExpenses is not null)
+                {
+                    List<SelectListItem> optionList = new List<SelectListItem>();
+                    foreach (var participant in dayExpenses.Participants)
+                    {
+                        optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                    }
+                    ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
+                }
+                return PartialView("_EditItem", item);
+            }
+            else if (act == "Delete")
+            {
+                ViewData["FormatParticipantNames"] = GetFormatUserNames(item.Users);
+                return PartialView("_DeleteItem", item);
+            }         
+            else
+                return NotFound();
+        }
 
         // GET: Items/Create
         [HttpGet]

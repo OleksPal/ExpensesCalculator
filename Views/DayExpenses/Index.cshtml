@@ -123,7 +123,7 @@
                                         <td colspan="6">
                                             <div class="collapse" id="check-@check.Id">
                                                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                        onclick="showModal('Create', 0)">
+                                                        onclick="showModalForItem('Create', 0, @check.Id, @day.Id)">
                                                     <i class="bi bi-plus-circle"></i> Add item
                                                 </button>
                                                 <hr />
@@ -167,13 +167,13 @@
                                                                 </td>
                                                                 <td>
                                                                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                                            onclick="showModal('Edit', @day.Id)">
+                                                                            onclick="showModalForItem('Edit', @item.Id, @check.Id, @day.Id)">
                                                                         <i class="bi bi-pencil"></i> Edit
                                                                     </button>
                                                                 </td>
                                                                 <td>
                                                                     <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                                                            data-bs-target="#staticBackdrop" onclick="showModal('Delete', @day.Id)">
+                                                                            data-bs-target="#staticBackdrop" onclick="showModalForItem('Delete', @item.Id, @check.Id, @day.Id)">
                                                                         <i class="bi bi-trash"></i> Delete
                                                                     </button>
                                                                 </td>
@@ -239,6 +239,23 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             }
             else {
                 $.get(`/Checks/ChangeCheck/${checkId}?dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
+                    $('#idc').html(data);
+                    $('#staticBackdropLabel').html(act);
+                });
+            }
+        });
+    }
+
+    function showModalForItem(act, itemId, checkId, dayId) {
+        $(document).ready(function () {
+            if (act == 'Create') {
+                $.get(`/Items/CreateItem/?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
+                    $('#idc').html(data);
+                    $('#staticBackdropLabel').html(act);
+                });
+            }
+            else {
+                $.get(`/Items/ChangeItem/${itemId}?checkId=${checkId}&dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
                     $('#idc').html(data);
                     $('#staticBackdropLabel').html(act);
                 });

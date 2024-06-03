@@ -1,13 +1,5 @@
 ﻿@model ExpensesCalculator.Models.Item
 
-@{
-    ViewData["Title"] = "Edit";
-}
-
-<h1>Edit</h1>
-
-<h4>Item</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit" asp-route-checkid="@ViewData["CheckId"]">
@@ -44,8 +36,3 @@
         </form>
     </div>
 </div>
-
-<div>
-    <a href="@ViewData["PreviousUrl"]">Back</a>
-</div>
-
