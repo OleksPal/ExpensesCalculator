@@ -28,6 +28,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Day.Participants)
             </th>
+            <th style="width:110px;"></th>
             <th style="width:80px;"></th>
             <th style="width:100px;"></th>
         </tr>
@@ -49,6 +50,11 @@
                     {
                         <label>@participant; </label>
                     }
+                </td>
+                <td>
+                    <a role="button" class="btn btn-sm btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@day.Id">
+                        <i class="bi bi-calculator"></i> Calculate
+                    </a>
                 </td>
                 <td>
                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
@@ -194,18 +200,22 @@
     </tbody>
 </table>
 
-<!-- Edit Modal -->
+<!-- Modal -->
 <div class="modal fade"
      id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content" id="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="idc">
 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
@@ -216,13 +226,13 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         $(document).ready(function () {
             if (act == 'Create') {
                 $.get(`/DayExpenses/CreateDayExpenses/`, function (data) {
-                    $('#idc').html(data);
+                    $('#modal-content').html(data);
                     $('#staticBackdropLabel').html(act);
                 });
             }
             else{
                 $.get(`/DayExpenses/ChangeDayExpenses/${dayId}?act=${act.toString()}`, function (data) {
-                    $('#idc').html(data);
+                    $('#modal-content').html(data);
                     $('#staticBackdropLabel').html(act);
                 });
             }            
@@ -233,13 +243,13 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         $(document).ready(function () {
             if (act == 'Create') {
                 $.get(`/Checks/CreateCheck/?dayExpensesId=${dayId}`, function (data) {
-                    $('#idc').html(data);
+                    $('#modal-content').html(data);
                     $('#staticBackdropLabel').html(act);
                 });
             }
             else {
                 $.get(`/Checks/ChangeCheck/${checkId}?dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
-                    $('#idc').html(data);
+                    $('#modal-content').html(data);
                     $('#staticBackdropLabel').html(act);
                 });
             }
@@ -250,13 +260,13 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         $(document).ready(function () {
             if (act == 'Create') {
                 $.get(`/Items/CreateItem/?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
-                    $('#idc').html(data);
+                    $('#modal-content').html(data);
                     $('#staticBackdropLabel').html(act);
                 });
             }
             else {
                 $.get(`/Items/ChangeItem/${itemId}?checkId=${checkId}&dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
-                    $('#idc').html(data);
+                    $('#modal-content').html(data);
                     $('#staticBackdropLabel').html(act);
                 });
             }
