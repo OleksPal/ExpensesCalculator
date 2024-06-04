@@ -70,6 +70,20 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
         }
 
+        public async Task<IActionResult> GetCheckItemsManager(int id, int dayExpensesId)
+        {
+            var check = await _context.Checks.Include(c => c.Items)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (check is null)
+            {
+                return NotFound();
+            }
+
+            var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return PartialView("_ManageCheckItems", manager);
+        }
+
         // GET: Checks/Create
         [HttpGet]
         public async Task<IActionResult> Create(int dayExpensesId)
