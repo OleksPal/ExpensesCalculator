@@ -7,7 +7,6 @@
 
 <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
-<script src="~/js/check-items-manager.js"></script>
 
 <h1>Expenses List</h1><br />
 
@@ -40,6 +39,7 @@
             <tr>
                 <td>
                     <span role="button" style="user-select: none;"
+                          onclick="getDayExpensesChecksManager(@day.Id)"
                           data-bs-toggle="collapse" data-bs-target="#day-@day.Id"
                           aria-expanded="false" aria-controls="day-@day.Id">&#9655;</span>
                 </td>
@@ -70,70 +70,7 @@
                     </button>                    
                 </td>
             </tr>
-            <tr>
-                <td colspan="6">
-                    <div class="collapse" id="day-@day.Id">
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                onclick="showModalForCheck('Create', 0, @day.Id)">
-                            <i class="bi bi-plus-circle"></i> Add check
-                        </button>
-                        <hr />
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Check.Location)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Check.Sum)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Check.Payer)
-                                    </th>
-                                    <th style="width:80px;"></th>
-                                    <th style="width:100px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach(var check in day.Checks)
-                                {
-                                    <tr>
-                                        <td>
-                                            <span role="button" style="user-select: none;"
-                                                  onclick="getCheckItemsManager(@check.Id, @day.Id)"
-                                                  data-bs-toggle="collapse" data-bs-target="#check-@check.Id"
-                                                  aria-expanded="false" aria-controls="check-@check.Id">&#9655;</span>
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => check.Location)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => check.Sum)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => check.Payer)
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                    onclick="showModalForCheck('Edit', @check.Id, @day.Id)">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                                    data-bs-target="#staticBackdrop" onclick="showModalForCheck('Delete', @check.Id, @day.Id)">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr id="check-@check.Id-Items"></tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </td>                
-            </tr>
+            <tr id ="day-@day.Id-Checks"></tr>
         }
     </tbody>
 </table>
@@ -204,10 +141,35 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             if ($(`#check-${checkId}-Items`).is(':empty')) {
                 $.get(`/Checks/GetCheckItemsManager/${checkId}?dayExpensesId=${dayId}`, function (data) {
                     $(`#check-${checkId}-Items`).html(data);
+                    $(`#check-${checkId}`).collapse('show');
                 });
             }
             else {
-                $(`#check-${checkId}-Items`).empty();
+                var collapsedRow = document.getElementById(`check-${checkId}`);
+                $(`check-${checkId}`).collapse('hide');
+
+                collapsedRow.addEventListener('hidden.bs.collapse', () => {
+                    $(`#check-${checkId}-Items`).empty();
+                });
+            }
+        });
+    }
+
+    function getDayExpensesChecksManager(dayId) {
+        $(document).ready(function () {
+            if ($(`#day-${dayId}-Checks`).is(':empty')) {
+                $.get(`/DayExpenses/GetDayExpensesChecksManager/${dayId}`, function (data) {
+                    $(`#day-${dayId}-Checks`).html(data);
+                    $(`#day-${dayId}`).collapse('show');
+                });               
+            }
+            else {
+                var collapsedRow = document.getElementById(`day-${dayId}`);
+                $(`#day-${dayId}`).collapse('hide');
+
+                collapsedRow.addEventListener('hidden.bs.collapse', () => {
+                    $(`#day-${dayId}-Checks`).empty();
+                });
             }
         });
     }

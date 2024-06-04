@@ -80,6 +80,20 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
         }
 
+        public async Task<IActionResult> GetDayExpensesChecksManager(int id)
+        {
+            var dayExpenses = await _context.Days.Include(d => d.Checks)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (dayExpenses is null)
+            {
+                return NotFound();
+            }
+
+            var manager = new ManageDayExpensesChecksViewModel { DayExpensesId = id, Checks = dayExpenses.Checks };
+            return PartialView("_ManageDayExpensesChecks", manager);
+        }
+
         // GET: DayExpenses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
