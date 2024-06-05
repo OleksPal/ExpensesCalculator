@@ -44,7 +44,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateDayExpenses");
         }
 
-        public async Task<IActionResult> ChangeDayExpenses(int id, string act)
+        public async Task<IActionResult> EditDayExpenses(int? id)
         {
             if (id == null)
             {
@@ -59,22 +59,28 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            for (int i = 0; i < day.Checks.Count; i++)
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+
+            return PartialView("_EditDayExpenses", day);
+        }
+
+        public async Task<IActionResult> DeleteDayExpenses(int? id)
+        {
+            if (id == null)
             {
-                var check = await _context.Checks.Include(c => c.Items)
-                    .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
-                if (check is not null)
-                    day.Checks[i] = check;
+                return NotFound();
+            }
+
+            var day = await _context.Days.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (day == null)
+            {
+                return NotFound();
             }
 
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
-            if (act == "Edit")
-                return PartialView("_EditDayExpenses", day);
-            else if (act == "Delete")
-                return PartialView("_DeleteDayExpenses", day);
-            else
-                return NotFound();
+            return PartialView("_DeleteDayExpenses", day);
         }
 
         public async Task<IActionResult> GetDayExpensesChecksManager(int id)

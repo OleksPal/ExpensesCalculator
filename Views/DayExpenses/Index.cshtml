@@ -15,7 +15,7 @@
 <h1>Expenses List</h1><br />
 
 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick="showModalForDayExpenses('Create', 0)">
+        onclick="showModalForDayExpensesCreate()">
     <i class="bi bi-plus-circle"></i> Add expenses
 </button>
 
@@ -63,13 +63,13 @@
                 </td>
                 <td>
                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                            onclick="showModalForDayExpenses('Edit', @day.Id)">
+                            onclick="showModalForDayExpensesEdit(@day.Id)">
                         <i class="bi bi-pencil"></i> Edit
                     </button>                    
                 </td>
                 <td>
                     <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop" onclick="showModalForDayExpenses('Delete', @day.Id)">
+                            data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@day.Id)">
                         <i class="bi bi-trash"></i> Delete
                     </button>                    
                 </td>

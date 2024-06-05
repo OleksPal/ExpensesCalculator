@@ -1,16 +1,23 @@
-function showModalForDayExpenses(act, dayId) {
+function showModalForDayExpensesCreate() {
     $(document).ready(function () {
-        if (act == 'Create') {
-            $.get(`/DayExpenses/CreateDayExpenses/`, function (data) {
-                $('#modal-content').html(data);
-                $('#staticBackdropLabel').html(act);
-            });
-        }
-        else {
-            $.get(`/DayExpenses/ChangeDayExpenses/${dayId}?act=${act.toString()}`, function (data) {
-                $('#modal-content').html(data);
-                $('#staticBackdropLabel').html(act);
-            });
-        }
+        $.get(`/DayExpenses/CreateDayExpenses/`, function (data) {
+            $('#modal-content').html(data);
+        });
+    });
+}
+
+function showModalForDayExpensesEdit(dayId) {
+    $(document).ready(function () {
+        $.get(`/DayExpenses/EditDayExpenses/${dayId}`, function (data) {
+            $('#modal-content').html(data);
+        });
+    });
+}
+
+function showModalForDayExpensesDelete(dayId) {
+    $(document).ready(function () {
+        $.get(`/DayExpenses/DeleteDayExpenses/${dayId}`, function (data) {
+            $('#modal-content').html(data);
+        });
     });
 }
