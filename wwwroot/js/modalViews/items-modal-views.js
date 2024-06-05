@@ -1,16 +1,23 @@
-﻿function showModalForItem(act, itemId, checkId, dayId) {
+﻿function showModalForItemCreate(checkId, dayId) {
     $(document).ready(function () {
-        if (act == 'Create') {
-            $.get(`/Items/CreateItem/?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
-                $('#modal-content').html(data);
-                $('#staticBackdropLabel').html(act);
-            });
-        }
-        else {
-            $.get(`/Items/ChangeItem/${itemId}?checkId=${checkId}&dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
-                $('#modal-content').html(data);
-                $('#staticBackdropLabel').html(act);
-            });
-        }
+        $.get(`/Items/CreateItem/?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
+            $('#modal-content').html(data);
+        });
+    });
+}
+
+function showModalForItemEdit(itemId, checkId, dayId) {
+    $(document).ready(function () {
+        $.get(`/Items/EditItem/${itemId}?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
+            $('#modal-content').html(data);
+        });
+    });
+}
+
+function showModalForItemDelete(itemId, checkId, dayId) {
+    $(document).ready(function () {
+        $.get(`/Items/DeleteItem/${itemId}?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
+            $('#modal-content').html(data);
+        });
     });
 }

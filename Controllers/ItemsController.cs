@@ -33,7 +33,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateItem");
         }
 
-        public async Task<IActionResult> ChangeItem(int? id, int checkId, int dayExpensesId, string act)
+        public async Task<IActionResult> EditItem(int? id, int checkId, int dayExpensesId)
         {
             if (id is null)
             {
@@ -47,27 +47,36 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CheckId"] = checkId;
-            if (act == "Edit")
+
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
             {
-                var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-                if (dayExpenses is not null)
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
                 {
-                    List<SelectListItem> optionList = new List<SelectListItem>();
-                    foreach (var participant in dayExpenses.Participants)
-                    {
-                        optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
-                    }
-                    ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
                 }
-                return PartialView("_EditItem", item);
+                ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
             }
-            else if (act == "Delete")
+            return PartialView("_EditItem", item);
+        }
+
+        public async Task<IActionResult> DeleteItem(int? id, int checkId, int dayExpensesId)
+        {
+            if (id is null)
             {
-                ViewData["FormatParticipantNames"] = GetFormatUserNames(item.Users);
-                return PartialView("_DeleteItem", item);
-            }         
-            else
                 return NotFound();
+            }
+
+            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            if (item is null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CheckId"] = checkId;
+            ViewData["FormatParticipantNames"] = GetFormatUserNames(item.Users);
+            return PartialView("_DeleteItem", item);
         }
 
         // POST: Items/Create
