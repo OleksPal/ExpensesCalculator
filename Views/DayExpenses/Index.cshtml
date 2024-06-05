@@ -1,5 +1,4 @@
-﻿@using Newtonsoft.Json
-@model ExpensesCalculator.Models.DayExpensesViewModel
+﻿@model ExpensesCalculator.Models.DayExpensesViewModel
 
 @{
     ViewData["Title"] = "Expenses List";
@@ -7,6 +6,11 @@
 
 <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+<script src="~/js/managers/check-items-manager.js"></script>
+<script src="~/js/managers/day-expenses-checks-manager.js"></script>
+<script src="~/js/modalviews/checks-modal-views.js"></script>
+<script src="~/js/modalviews/day-expenses-modal-views.js"></script>
+<script src="~/js/modalviews/items-modal-views.js"></script>
 
 <h1>Expenses List</h1><br />
 
@@ -80,101 +84,10 @@
      id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content" id="modal-content"></div>
+        <div class="modal-content" id="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        </div>
     </div>
 </div>
-
-<script>
-    function showModalForDayExpenses(act, dayId) {
-        $(document).ready(function () {
-            if (act == 'Create') {
-                $.get(`/DayExpenses/CreateDayExpenses/`, function (data) {
-                    $('#modal-content').html(data);
-                    $('#staticBackdropLabel').html(act);
-                });
-            }
-            else{
-                $.get(`/DayExpenses/ChangeDayExpenses/${dayId}?act=${act.toString()}`, function (data) {
-                    $('#modal-content').html(data);
-                    $('#staticBackdropLabel').html(act);
-                });
-            }            
-        });        
-    }
-
-    function showModalForCheck(act, checkId, dayId) {
-        $(document).ready(function () {
-            if (act == 'Create') {
-                $.get(`/Checks/CreateCheck/?dayExpensesId=${dayId}`, function (data) {
-                    $('#modal-content').html(data);
-                    $('#staticBackdropLabel').html(act);
-                });
-            }
-            else {
-                $.get(`/Checks/ChangeCheck/${checkId}?dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
-                    $('#modal-content').html(data);
-                    $('#staticBackdropLabel').html(act);
-                });
-            }
-        });
-    }
-
-    function showModalForItem(act, itemId, checkId, dayId) {
-        $(document).ready(function () {
-            if (act == 'Create') {
-                $.get(`/Items/CreateItem/?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
-                    $('#modal-content').html(data);
-                    $('#staticBackdropLabel').html(act);
-                });
-            }
-            else {
-                $.get(`/Items/ChangeItem/${itemId}?checkId=${checkId}&dayExpensesId=${dayId}&act=${act.toString()}`, function (data) {
-                    $('#modal-content').html(data);
-                    $('#staticBackdropLabel').html(act);
-                });
-            }
-        });
-    }
-
-    function getCheckItemsManager(checkId, dayId) {
-        $(document).ready(function () {
-            if ($(`#check-${checkId}-Items`).is(':empty')) {
-                $.get(`/Checks/GetCheckItemsManager/${checkId}?dayExpensesId=${dayId}`, function (data) {
-                    $(`#checkDropper-${checkId}`).html('&#9698;');
-                    $(`#check-${checkId}-Items`).html(data);
-                    $(`#check-${checkId}`).collapse('show');
-                });
-            }
-            else {
-                var collapsedRow = document.getElementById(`check-${checkId}`);
-                $(`check-${checkId}`).collapse('hide');
-                $(`#checkDropper-${checkId}`).html('&#9655;');
-
-                collapsedRow.addEventListener('hidden.bs.collapse', () => {
-                    $(`#check-${checkId}-Items`).empty();
-                });
-            }
-        });
-    }
-
-    function getDayExpensesChecksManager(dayId) {
-        $(document).ready(function () {
-            if ($(`#day-${dayId}-Checks`).is(':empty')) {
-                $.get(`/DayExpenses/GetDayExpensesChecksManager/${dayId}`, function (data) {
-                    $(`#dayDropper-${dayId}`).html('&#9698;');
-                    $(`#day-${dayId}-Checks`).html(data);
-                    $(`#day-${dayId}`).collapse('show');
-                });               
-            }
-            else {
-                var collapsedRow = document.getElementById(`day-${dayId}`);
-                $(`#day-${dayId}`).collapse('hide');
-                $(`#dayDropper-${dayId}`).html('&#9655;');
-
-                collapsedRow.addEventListener('hidden.bs.collapse', () => {
-                    $(`#day-${dayId}-Checks`).empty();
-                });
-            }
-        });
-    }
-</script>
