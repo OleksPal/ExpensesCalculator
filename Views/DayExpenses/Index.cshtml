@@ -38,7 +38,7 @@
         {
             <tr>
                 <td>
-                    <span role="button" style="user-select: none;"
+                    <span role="button" style="user-select: none;" id="dayDropper-@day.Id"
                           onclick="getDayExpensesChecksManager(@day.Id)"
                           data-bs-toggle="collapse" data-bs-target="#day-@day.Id"
                           aria-expanded="false" aria-controls="day-@day.Id">&#9655;</span>
@@ -140,6 +140,7 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         $(document).ready(function () {
             if ($(`#check-${checkId}-Items`).is(':empty')) {
                 $.get(`/Checks/GetCheckItemsManager/${checkId}?dayExpensesId=${dayId}`, function (data) {
+                    $(`#checkDropper-${checkId}`).html('&#9698;');
                     $(`#check-${checkId}-Items`).html(data);
                     $(`#check-${checkId}`).collapse('show');
                 });
@@ -147,6 +148,7 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             else {
                 var collapsedRow = document.getElementById(`check-${checkId}`);
                 $(`check-${checkId}`).collapse('hide');
+                $(`#checkDropper-${checkId}`).html('&#9655;');
 
                 collapsedRow.addEventListener('hidden.bs.collapse', () => {
                     $(`#check-${checkId}-Items`).empty();
@@ -159,6 +161,7 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         $(document).ready(function () {
             if ($(`#day-${dayId}-Checks`).is(':empty')) {
                 $.get(`/DayExpenses/GetDayExpensesChecksManager/${dayId}`, function (data) {
+                    $(`#dayDropper-${dayId}`).html('&#9698;');
                     $(`#day-${dayId}-Checks`).html(data);
                     $(`#day-${dayId}`).collapse('show');
                 });               
@@ -166,6 +169,7 @@ tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             else {
                 var collapsedRow = document.getElementById(`day-${dayId}`);
                 $(`#day-${dayId}`).collapse('hide');
+                $(`#dayDropper-${dayId}`).html('&#9655;');
 
                 collapsedRow.addEventListener('hidden.bs.collapse', () => {
                     $(`#day-${dayId}-Checks`).empty();
