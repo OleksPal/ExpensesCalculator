@@ -2,11 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
-using NuGet.Protocol;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -94,41 +91,6 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_ManageDayExpensesChecks", manager);
         }
 
-        // GET: DayExpenses/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var day = await _context.Days.Include(d => d.Checks)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (day == null)
-            {
-                return NotFound();
-            }
-
-            for (int i = 0; i < day.Checks.Count; i++)
-            {
-                var check = await _context.Checks.Include(c => c.Items)
-                    .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
-                if (check is not null)
-                    day.Checks[i] = check;
-            }
-
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
-
-            return View(day);
-        }
-
-        // GET: DayExpenses/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // POST: DayExpenses/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -187,26 +149,6 @@ namespace ExpensesCalculator.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
-        }
-
-        // GET: DayExpenses/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var dayExpenses = await _context.Days
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dayExpenses == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(dayExpenses.Participants);
-
             return View(dayExpenses);
         }
 

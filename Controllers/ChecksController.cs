@@ -84,28 +84,6 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_ManageCheckItems", manager);
         }
 
-        // GET: Checks/Create
-        [HttpGet]
-        public async Task<IActionResult> Create(int dayExpensesId)
-        {
-            if (Request.Headers.ContainsKey("Referer"))
-                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
-
-            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-            if (dayExpenses is not null)
-            {
-                List<SelectListItem> optionList = new List<SelectListItem>();
-                foreach(var participant in dayExpenses.Participants)
-                {
-                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
-                }
-                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
-            }                
-
-            ViewData["DayExpensesId"] = dayExpensesId;
-            return View();
-        }
-
         // POST: Checks/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -128,38 +106,6 @@ namespace ExpensesCalculator.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
-            return View(check);
-        }
-
-        // GET: Checks/Edit/5
-        public async Task<IActionResult> Edit(int? id, int dayExpensesId)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var check = await _context.Checks.Include(c => c.Items)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (check == null)
-            {
-                return NotFound();
-            }
-
-            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-            if (dayExpenses is not null)
-            {
-                List<SelectListItem> optionList = new List<SelectListItem>();
-                foreach (var participant in dayExpenses.Participants)
-                {
-                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
-                }
-                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
-            }
-
-            if (Request.Headers.ContainsKey("Referer"))
-                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
-
             return View(check);
         }
 
@@ -208,27 +154,6 @@ namespace ExpensesCalculator.Controllers
                 }
                 return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
-            return View(check);
-        }
-
-        // GET: Checks/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var check = await _context.Checks
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (check == null)
-            {
-                return NotFound();
-            }
-
-            if (Request.Headers.ContainsKey("Referer"))
-                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
-
             return View(check);
         }
 
