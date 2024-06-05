@@ -35,39 +35,46 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateCheck");
         }
 
-        public async Task<IActionResult> ChangeCheck(int? id, int dayExpensesId, string act)
+        public async Task<IActionResult> EditCheck(int? id, int dayExpensesId)
         {
             if (id is null)
             {
                 return NotFound();
             }
 
-            var check = await _context.Checks.Include(c => c.Items)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == id);
             if (check is null)
             {
                 return NotFound();
             }
 
-            if (act == "Edit")
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
             {
-                var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-                if (dayExpenses is not null)
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
                 {
-                    List<SelectListItem> optionList = new List<SelectListItem>();
-                    foreach (var participant in dayExpenses.Participants)
-                    {
-                        optionList.Add(new SelectListItem { Text = participant, Value = participant });
-                    }
-                    ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
                 }
-                return PartialView("_EditCheck", check);
+                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
             }
-            
-            if (act == "Delete")
-                return PartialView("_DeleteCheck", check);
-            else
+            return PartialView("_EditCheck", check);
+        }
+
+        public async Task<IActionResult> DeleteCheck(int? id, int dayExpensesId)
+        {
+            if (id is null)
+            {
                 return NotFound();
+            }
+
+            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == id);
+            if (check is null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_DeleteCheck", check);
         }
 
         public async Task<IActionResult> GetCheckItemsManager(int id, int dayExpensesId)

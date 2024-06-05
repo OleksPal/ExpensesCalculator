@@ -3,7 +3,7 @@
 <td colspan="6">
     <div class="collapse" id="day-@Model.DayExpensesId">
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                onclick="showModalForCheck('Create', 0, @Model.DayExpensesId)">
+                onclick="showModalForCheckCreate(@Model.DayExpensesId)">
             <i class="bi bi-plus-circle"></i> Add check
         </button>
         <hr />
@@ -45,13 +45,13 @@
                         </td>
                         <td>
                             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                    onclick="showModalForCheck('Edit', @check.Id, @Model.DayExpensesId)">
+                                    onclick="showModalForCheckEdit(@check.Id, @Model.DayExpensesId)">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
                         </td>
                         <td>
                             <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop" onclick="showModalForCheck('Delete', @check.Id, @Model.DayExpensesId)">
+                                    data-bs-target="#staticBackdrop" onclick="showModalForCheckDelete(@check.Id, @Model.DayExpensesId)">
                                 <i class="bi bi-trash"></i> Delete
                             </button>
                         </td>
