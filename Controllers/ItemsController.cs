@@ -29,6 +29,7 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CheckId"] = checkId;
+            ViewData["DayExpensesId"] = dayExpensesId;
 
             return PartialView("_CreateItem");
         }
@@ -61,7 +62,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_EditItem", item);
         }
 
-        public async Task<IActionResult> DeleteItem(int? id, int checkId, int dayExpensesId)
+        public async Task<IActionResult> DeleteItem(int? id, int checkId)
         {
             if (id is null)
             {
@@ -84,7 +85,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Users,Name,Description,Price,Id")] Item item, int checkId)
+        public async Task<IActionResult> Create([Bind("Users,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
         {
             if (ModelState.IsValid)
             {
@@ -101,9 +102,10 @@ namespace ExpensesCalculator.Controllers
                 check.Sum += item.Price;
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index), nameof(DayExpenses));
+                var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
             }
-            return View(item);
+            return PartialView("_CreateItem");
         }
 
         // POST: Items/Edit/5

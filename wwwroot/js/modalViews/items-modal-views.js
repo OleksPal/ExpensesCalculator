@@ -14,9 +14,9 @@ function showModalForItemEdit(itemId, checkId, dayId) {
     });
 }
 
-function showModalForItemDelete(itemId, checkId, dayId) {
+function showModalForItemDelete(itemId, checkId) {
     $(document).ready(function () {
-        $.get(`/Items/DeleteItem/${itemId}?checkId=${checkId}&dayExpensesId=${dayId}`, function (data) {
+        $.get(`/Items/DeleteItem/${itemId}?checkId=${checkId}`, function (data) {
             $('#modal-content').html(data);
         });
     });
