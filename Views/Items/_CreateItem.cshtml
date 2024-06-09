@@ -26,7 +26,7 @@
         </div>
         <div class="form-group mb-3">
             <label asp-for="Users" class="control-label"></label>
-            <div class="form-group row">
+            <div class="form-group mb-3">
                 @Html.ListBoxFor(model => model.Users, ViewData["Participants"] as MultiSelectList,
                          new { @class = "form-control", multiple = "multiple", id = "Subjects_dropdown" })
             </div>
@@ -38,29 +38,42 @@
     </form>
 </div>
 
-@section Scripts {
-    <script>
-        $(function () {            
-            $("#createButton").click(function () {
-                
-                var newItem = {};
-                newItem.Name = $("#name").val();
-                newItem.Descriptsion = $("#description").val();
-                newItem.Price = $("#price").val();
+<script>
+    $(function () {
+        $("#createButton").on("click", function () {
+            $("#staticBackdrop").modal("hide"); 
 
-                $.ajax({
-                    url: "@Url.Action("Create", "Item")",
-                    data: { item: newItem, checkId=@ViewData["CheckId"], dayExpenesId=@ViewData["DayExpensesId"] }, 
-                    //the name ("model") should be the same with the parameter's name in the controller.
-                    type: "Post", 
-                    success: function (result) {
-                        $(`#check-${@ViewData["CheckId"]}-Items`).html(result);
-                    },
-                    error: function (result) {
-                        
-                    }
-                });
+            var newItem = {};
+            newItem.Name = $("#name").val();
+            newItem.Description = $("#description").val();
+            newItem.Price = $("#price").val();
+
+            var users = [];
+            users.push("PO");
+            newItem.Users = users;
+
+
+            $.ajax({
+                url: `https://localhost:7272/Items/Create?checkid=${@ViewData["CheckId"]}&dayexpensesid=${@ViewData["DayExpensesId"]}`,
+                data: {
+                    Name: $("#name").val(), Description: $("#description").val(), Price: $("#price").val(), Users: users,
+                    __RequestVerificationToken: get_token(),
+                },
+                type: "Post",
+                success: function (result) {
+                    $(`#check-${@ViewData["CheckId"]}-Items`).html(result);
+                    $(`#check-${@ViewData["CheckId"]}`).collapse('show');
+                },
+                error: function (result) {
+                    alert(result.responseText);                    
+                }
             });
         });
-    </script>
-}
+    });
+
+    function get_token() {
+        var token = '@Html.AntiForgeryToken()';
+        token = $(token).val();
+        return token;
+    }
+</script>
