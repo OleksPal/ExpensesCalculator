@@ -39,6 +39,8 @@
 </div>
 
 <script>
+    var token = '@Html.AntiForgeryToken()';
+
     $(function () {
         $("#createButton").on("click", function () {
             $("#staticBackdrop").modal("hide"); 
@@ -48,16 +50,18 @@
             newItem.Description = $("#description").val();
             newItem.Price = $("#price").val();
 
+            var userSelect = document.getElementById("Subjects_dropdown");
             var users = [];
-            users.push("PO");
-            newItem.Users = users;
-
+            for (var i = 0; i < userSelect.length; i++) {
+                if (userSelect.options[i].selected)
+                    users.push(userSelect.options[i].value);
+            }
 
             $.ajax({
                 url: `https://localhost:7272/Items/Create?checkid=${@ViewData["CheckId"]}&dayexpensesid=${@ViewData["DayExpensesId"]}`,
                 data: {
                     Name: $("#name").val(), Description: $("#description").val(), Price: $("#price").val(), Users: users,
-                    __RequestVerificationToken: get_token(),
+                    __RequestVerificationToken: $(token).val()
                 },
                 type: "Post",
                 success: function (result) {
@@ -70,10 +74,4 @@
             });
         });
     });
-
-    function get_token() {
-        var token = '@Html.AntiForgeryToken()';
-        token = $(token).val();
-        return token;
-    }
 </script>
