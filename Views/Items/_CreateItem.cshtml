@@ -1,6 +1,7 @@
 ﻿@model ExpensesCalculator.Models.Item
 
 <script src="~/js/multiselect-dropdown.js"></script>
+<script src="~/js/ajax/items/add-item.js"></script>
 
 <div class="modal-header">
     <h5 class="modal-title">Add item</h5>
@@ -40,38 +41,6 @@
 
 <script>
     var token = '@Html.AntiForgeryToken()';
-
-    $(function () {
-        $("#createButton").on("click", function () {
-            $("#staticBackdrop").modal("hide"); 
-
-            var newItem = {};
-            newItem.Name = $("#name").val();
-            newItem.Description = $("#description").val();
-            newItem.Price = $("#price").val();
-
-            var userSelect = document.getElementById("Subjects_dropdown");
-            var users = [];
-            for (var i = 0; i < userSelect.length; i++) {
-                if (userSelect.options[i].selected)
-                    users.push(userSelect.options[i].value);
-            }
-
-            $.ajax({
-                url: `https://localhost:7272/Items/Create?checkid=${@ViewData["CheckId"]}&dayexpensesid=${@ViewData["DayExpensesId"]}`,
-                data: {
-                    Name: $("#name").val(), Description: $("#description").val(), Price: $("#price").val(), Users: users,
-                    __RequestVerificationToken: $(token).val()
-                },
-                type: "Post",
-                success: function (result) {
-                    $(`#check-${@ViewData["CheckId"]}-Items`).html(result);
-                    $(`#check-${@ViewData["CheckId"]}`).collapse('show');
-                },
-                error: function (result) {
-                    alert(result.responseText);                    
-                }
-            });
-        });
-    });
+    var checkId = @ViewData["CheckId"];
+    var dayExpensesId = @ViewData["DayExpensesId"];    
 </script>
