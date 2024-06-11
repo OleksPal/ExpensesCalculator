@@ -63,7 +63,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_EditItem", item);
         }
 
-        public async Task<IActionResult> DeleteItem(int? id, int checkId)
+        public async Task<IActionResult> DeleteItem(int? id, int checkId, int dayExpensesId)
         {
             if (id is null)
             {
@@ -77,6 +77,8 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CheckId"] = checkId;
+            ViewData["DayExpensesId"] = dayExpensesId;
+
             ViewData["FormatParticipantNames"] = GetFormatUserNames(item.Users);
             return PartialView("_DeleteItem", item);
         }
@@ -173,12 +175,12 @@ namespace ExpensesCalculator.Controllers
         // POST: Items/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, int checkId)
+        public async Task<IActionResult> DeleteConfirmed(int id, int checkId, int dayExpensesId)
         {
             var item = await _context.Items.FindAsync(id);
             if (item is not null)
             {
-                var check = await _context.Checks
+                var check = await _context.Checks.Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.Id == checkId);
 
                 if (check is null)
@@ -188,10 +190,13 @@ namespace ExpensesCalculator.Controllers
 
                 check.Sum -= item.Price;
                 _context.Items.Remove(item);
+
+                await _context.SaveChangesAsync();
+
+                var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), nameof(DayExpenses));
+            return PartialView("_DeleteItem");
         }
 
         private bool ItemExists(int id)

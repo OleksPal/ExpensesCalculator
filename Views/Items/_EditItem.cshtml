@@ -26,15 +26,13 @@
         </div>
         <div class="form-group mb-3">
             <label asp-for="Users" class="control-label"></label>
-            <div class="form-group row">
-                <div class="col-sm-6">
-                    @Html.ListBoxFor(model => model.Users, ViewData["Participants"] as MultiSelectList,
-                             new { @class = "form-control", multiple = "multiple", id = "Subjects_dropdown" })
-                </div>
+            <div class="form-group mb-3">
+                @Html.ListBoxFor(model => model.Users, ViewData["Participants"] as MultiSelectList,
+                         new { @class = "form-control", multiple = "multiple", id = "Subjects_dropdown" })
             </div>
             <span asp-validation-for="Users" class="text-danger"></span>
         </div>
-        <input type="hidden" asp-for="Id" id="id"/>
+        <input type="hidden" asp-for="Id"/>
         <div class="form-group">
             <button type="button" value="Save" class="btn btn-warning" id="editButton">
                 <i class="bi bi-pencil"></i> Save
@@ -45,7 +43,7 @@
 
 <script>
     var token = '@Html.AntiForgeryToken()';
-    var itemId = $("#id").val();
+    var itemId = $("#Id").val();
     var checkId = @ViewData["CheckId"];
     var dayExpensesId = @ViewData["DayExpensesId"];
 </script>

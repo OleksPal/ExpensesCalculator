@@ -1,11 +1,13 @@
 ﻿@model ExpensesCalculator.Models.Item
 
+<script src="~/js/ajax/items/delete-item.js"></script>
+
 <div class="modal-header">
     <h5 class="modal-title">Delete expenses</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form asp-action="Delete" asp-route-checkid="@ViewData["CheckId"]">
+    <form asp-action="Delete" asp-route-checkid="@ViewData["CheckId"]" asp-route-dayexpensesid="@ViewData["DayExpensesId"]">
         <div class="form-group mb-3">
             <label asp-for="Name" class="control-label"></label>
             <input asp-for="Name" class="form-control" disabled readonly />
@@ -26,9 +28,16 @@
             <input asp-for="Users" value="@ViewData["FormatParticipantNames"]" class="form-control" disabled readonly />
             <span asp-validation-for="Users" class="text-danger"></span>
         </div>
-        <input type="hidden" asp-for="Id" />
-        <button type="submit" value="Delete" class="btn btn-danger">
+        <input type="hidden" asp-for="Id"/>
+        <button type="button" value="Delete" class="btn btn-danger" id="deleteButton">
             <i class="bi bi-trash"></i> Delete
         </button>
     </form>
 </div>
+
+<script>
+    var token = '@Html.AntiForgeryToken()';
+    var itemId = $("#Id").val();
+    var checkId = @ViewData["CheckId"];
+    var dayExpensesId = @ViewData["DayExpensesId"];
+</script>
