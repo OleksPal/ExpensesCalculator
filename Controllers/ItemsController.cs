@@ -48,6 +48,7 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CheckId"] = checkId;
+            ViewData["DayExpensesId"] = dayExpensesId;
 
             var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
             if (dayExpenses is not null)
@@ -113,7 +114,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Users,Name,Description,Price,Id")] Item item, int checkId)
+        public async Task<IActionResult> Edit(int id, [Bind("Users,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
         {
             if (id != item.Id)
             {
@@ -124,7 +125,7 @@ namespace ExpensesCalculator.Controllers
             {
                 try
                 {
-                    var check = await _context.Checks
+                    var check = await _context.Checks.Include(c => c.Items).AsNoTracking()                    
                         .FirstOrDefaultAsync(m => m.Id == checkId);
 
                     if (check is null)
@@ -139,10 +140,20 @@ namespace ExpensesCalculator.Controllers
                         return NotFound();
                     }
 
-                    check.Sum -= oldItem.Price;
-                    _context.Update(item);
-                    check.Sum += item.Price;
+                    var itemToReplace = check.Items.Find(i => i.Id == oldItem.Id);
+                    if(itemToReplace is not null)
+                    {
+                        check.Items.Remove(itemToReplace);
+                        check.Items.Add(item);
+                    }
+
+                    _context.Items.Update(item);
+                    await ChangeCheckSum(checkId, item.Price - oldItem.Price);
+
                     await _context.SaveChangesAsync();
+
+                    var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+                    return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -155,9 +166,8 @@ namespace ExpensesCalculator.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
-            return View(item);
+            return PartialView("_EditItem");
         }
 
         // POST: Items/Delete/5
@@ -202,6 +212,17 @@ namespace ExpensesCalculator.Controllers
                 }
             }
             return formatList;
+        }
+
+        private async Task ChangeCheckSum(int checkId, double sum)
+        {
+            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == checkId);
+
+            if(check is not null)
+            {
+                check.Sum += sum;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

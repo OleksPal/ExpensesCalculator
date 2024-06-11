@@ -1,25 +1,27 @@
 ﻿@model ExpensesCalculator.Models.Item
 
+<script src="~/js/ajax/items/edit-item.js"></script>
+
 <div class="modal-header">
     <h5 class="modal-title">Edit item</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form asp-action="Edit" asp-route-checkid="@ViewData["CheckId"]">
+    <form asp-action="Edit" asp-route-checkid="@ViewData["CheckId"]" asp-route-dayexpenesesid="@ViewData["DayExpensesId"]">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group mb-3">
             <label asp-for="Name" class="control-label"></label>
-            <input asp-for="Name" class="form-control" />
+            <input asp-for="Name" class="form-control" id="name"/>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <label asp-for="Description" class="control-label"></label>
-            <input asp-for="Description" class="form-control" />
+            <input asp-for="Description" class="form-control" id="description"/>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <label asp-for="Price" class="control-label"></label>
-            <input asp-for="Price" class="form-control" />
+            <input asp-for="Price" class="form-control" id="price"/>
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
@@ -32,11 +34,18 @@
             </div>
             <span asp-validation-for="Users" class="text-danger"></span>
         </div>
-        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Id" id="id"/>
         <div class="form-group">
-            <button type="submit" value="Save" class="btn btn-warning">
+            <button type="button" value="Save" class="btn btn-warning" id="editButton">
                 <i class="bi bi-pencil"></i> Save
             </button>
         </div>
     </form>
 </div>
+
+<script>
+    var token = '@Html.AntiForgeryToken()';
+    var itemId = $("#id").val();
+    var checkId = @ViewData["CheckId"];
+    var dayExpensesId = @ViewData["DayExpensesId"];
+</script>
