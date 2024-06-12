@@ -221,6 +221,35 @@ namespace ExpensesCalculator.Controllers
             return View(dayExpensesCalculation);
         }
 
+        // GET: DayExpenses/ShowChecks/5
+        public async Task<IActionResult> ShowChecks(int? id)
+        {
+            if (id is null) 
+            {
+                return NotFound();
+            }
+
+            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dayExpenses is null) 
+            {
+                return NotFound();
+            }
+
+            var checks = new List<Check>();
+            for (int i = 0; i < dayExpenses.Checks.Count; i++)
+            {
+                var checkWithItems = await _context.Checks.Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
+
+                if (checkWithItems is not null)
+                    checks.Add(checkWithItems);
+            }
+
+            var manager = new ManageDayExpensesChecksViewModel { DayExpensesId = (int)id, Checks = checks };
+            return View("ShowChecks", manager);
+        }
+
         private bool DayExpensesExists(int id)
         {
             return _context.Days.Any(e => e.Id == id);
