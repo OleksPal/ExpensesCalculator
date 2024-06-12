@@ -25,7 +25,6 @@
 <table class="table table-striped table-hover" id="daysTable">
     <thead>
         <tr>
-            <th style="width:36px;"></th>
             <th>
                 @Html.DisplayNameFor(model => model.Day.Date)
             </th>
@@ -42,12 +41,6 @@
         @foreach (var day in Model.Days)
         {
             <tr>
-                <td>
-                    <span role="button" style="user-select: none;" id="dayDropper-@day.Id"
-                          onclick="getDayExpensesChecksManager(@day.Id)"
-                          data-bs-toggle="collapse" data-bs-target="#day-@day.Id"
-                          aria-expanded="false" aria-controls="day-@day.Id">&#9655;</span>
-                </td>
                 <td>
                     @Html.DisplayFor(model => day.Date)
                 </td>
@@ -80,7 +73,6 @@
                     </button>                    
                 </td>
             </tr>
-            <tr id ="day-@day.Id-Checks"></tr>
         }
     </tbody>
 </table>
