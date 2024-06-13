@@ -150,7 +150,7 @@ namespace ExpensesCalculator.Controllers
                     }
 
                     _context.Items.Update(item);
-                    await ChangeCheckSum(checkId, item.Price - oldItem.Price);
+                    check.Sum = await ChangeCheckSum(checkId, item.Price - oldItem.Price);
 
                     await _context.SaveChangesAsync();
 
@@ -219,7 +219,7 @@ namespace ExpensesCalculator.Controllers
             return formatList;
         }
 
-        private async Task ChangeCheckSum(int checkId, double sum)
+        private async Task<double> ChangeCheckSum(int checkId, double sum)
         {
             var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == checkId);
 
@@ -227,7 +227,11 @@ namespace ExpensesCalculator.Controllers
             {
                 check.Sum += sum;
                 await _context.SaveChangesAsync();
+
+                return check.Sum;
             }
+
+            return 0;
         }
     }
 }

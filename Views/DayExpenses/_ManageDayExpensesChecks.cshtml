@@ -13,7 +13,9 @@
             @Html.DisplayFor(modelItem => check.Location)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => check.Sum)
+            <div id="check-@check.Id-Sum">
+                @Html.DisplayFor(modelItem => check.Sum)
+            </div>            
         </td>
         <td>
             @Html.DisplayFor(modelItem => check.Payer)

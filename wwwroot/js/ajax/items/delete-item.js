@@ -10,6 +10,7 @@ $(function () {
             type: "Post",
             success: function (result) {
                 $(`#check-${checkId}-Items`).html(result);
+                $(`#check-${checkId}-Sum`).text($(`#check-${checkId}-NewSum`).val());
                 $(`#check-${checkId}`).collapse('show');
             },
             error: function (result) {
