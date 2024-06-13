@@ -111,9 +111,11 @@ namespace ExpensesCalculator.Controllers
                 _context.Checks.Add(check);
                 dayExpenses.Checks.Add(check);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index), nameof(DayExpenses));
+
+                var manager = new ManageDayExpensesChecksViewModel { Checks = dayExpenses.Checks, DayExpensesId = dayExpensesId };
+                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", manager);
             }
-            return View(check);
+            return PartialView("_CreateCheck");
         }
 
         // POST: Checks/Edit/5

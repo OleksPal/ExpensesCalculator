@@ -14,7 +14,7 @@
 <br />
 
 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick="showModalForCheckCreate(@Model.DayExpensesId)">
+        onclick="showModalForCheckCreate(@Model.DayExpensesId)" > 
     <i class="bi bi-plus-circle"></i> Add check
 </button>
 
@@ -39,7 +39,7 @@
                 <th style="width:100px;"></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="checkList">
             @await Html.PartialAsync("_ManageDayExpensesChecks", Model)
         </tbody>
     </table>

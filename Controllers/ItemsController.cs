@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ExpensesCalculator.Controllers
 {
+    [Authorize]
     public class ItemsController : Controller
     {
         private readonly ExpensesContext _context;
