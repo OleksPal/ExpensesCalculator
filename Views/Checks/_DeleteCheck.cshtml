@@ -1,5 +1,7 @@
 ﻿@model ExpensesCalculator.Models.Check
 
+<script src="~/js/ajax/checks/delete-check.js"></script>
+
 <div class="modal-header">
     <h5 class="modal-title">Delete check</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -22,8 +24,14 @@
             <span asp-validation-for="Payer" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id" />
-        <button type="submit" value="Delete" class="btn btn-danger">
+        <button type="button" value="Delete" class="btn btn-danger" id="deleteCheckButton">
             <i class="bi bi-trash"></i> Delete
         </button>
     </form>
 </div>
+
+<script>
+    var token = '@Html.AntiForgeryToken()';
+    var checkId = $("#Id").val();
+    var dayExpensesId = @ViewData["DayExpensesId"];
+</script>

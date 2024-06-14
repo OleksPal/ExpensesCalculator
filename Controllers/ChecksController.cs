@@ -76,6 +76,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            ViewData["DayExpensesId"] = dayExpensesId;
             return PartialView("_DeleteCheck", check);
         }
 
@@ -180,7 +181,7 @@ namespace ExpensesCalculator.Controllers
         // POST: Checks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int dayExpensesId)
         {
             var check = await _context.Checks.Include(c => c.Items).AsNoTracking()
                     .FirstOrDefaultAsync(c => c.Id == id);
@@ -196,7 +197,15 @@ namespace ExpensesCalculator.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), nameof(DayExpenses));
+
+            var dayExpenses = await _context.Days.Include(d => d.Checks)
+                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+
+            if (dayExpenses is null)
+                return NotFound();
+
+            var manager = new ManageDayExpensesChecksViewModel { Checks = dayExpenses.Checks, DayExpensesId = dayExpensesId };
+            return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", manager);
         }
 
         private bool CheckExists(int id)
