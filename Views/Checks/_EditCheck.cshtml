@@ -1,5 +1,7 @@
 ﻿@model ExpensesCalculator.Models.Check
 
+<script src="~/js/ajax/checks/edit-check.js"></script>
+
 <div class="modal-header">
     <h5 class="modal-title">Edit check</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -9,20 +11,26 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group mb-3">
             <label asp-for="Location" class="control-label"></label>
-            <input asp-for="Location" class="form-control" />
+            <input asp-for="Location" class="form-control" id="checkLocation" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <label asp-for="Payer" class="control-label"></label><br />
             @Html.DropDownListFor(m => m.Payer, ViewData["Participants"] as SelectList,
-                     "Choose payer", new { @class = "form-control" })
+                     "Choose payer", new { @class = "form-control", id = "payerDropdown" })
             <span asp-validation-for="Payer" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id" />
         <div class="form-group">
-            <button type="submit" value="Save" class="btn btn-warning">
+            <button type="button" value="Save" class="btn btn-warning" id="editCheckButton">
                 <i class="bi bi-pencil"></i> Save
             </button>
         </div>
     </form>
 </div>
+
+<script>
+    var token = '@Html.AntiForgeryToken()';
+    var checkId = $("#Id").val();
+    var dayExpensesId = @ViewData["DayExpensesId"];
+</script>

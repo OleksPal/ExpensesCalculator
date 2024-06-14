@@ -48,6 +48,8 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            ViewData["DayExpensesId"] = dayExpensesId;
+
             var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
             if (dayExpenses is not null)
             {
@@ -123,7 +125,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Payer,Sum,Location,VerificationPath,Id")] Check check)
+        public async Task<IActionResult> Edit(int id, [Bind("Payer,Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
         {
             if (id != check.Id)
             {
@@ -149,6 +151,16 @@ namespace ExpensesCalculator.Controllers
                 {
                     _context.Update(check);
                     await _context.SaveChangesAsync();
+
+                    var dayExpenses = await _context.Days.Include(d => d.Checks)
+                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+
+                    if (dayExpenses is null)
+                        return NotFound();
+
+                    dayExpenses.Checks.Add(check);
+                    var manager = new ManageDayExpensesChecksViewModel { Checks = dayExpenses.Checks, DayExpensesId = dayExpensesId };
+                    return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", manager);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -161,9 +173,8 @@ namespace ExpensesCalculator.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
-            return View(check);
+            return PartialView("_EditCheck");
         }
 
         // POST: Checks/Delete/5
