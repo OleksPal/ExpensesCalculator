@@ -17,6 +17,8 @@ namespace ExpensesCalculator.Controllers
             _context = context;
         }
 
+        // GET: Items/CreateItem?checkId=1&dayExpensesId=2
+        [HttpGet]
         public async Task<IActionResult> CreateItem(int checkId, int dayExpensesId)
         {
             var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
@@ -36,6 +38,8 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateItem");
         }
 
+        // GET: Items/EditItem/5?checkId=1&dayExpensesId=2
+        [HttpGet]
         public async Task<IActionResult> EditItem(int? id, int checkId, int dayExpensesId)
         {
             if (id is null)
@@ -65,6 +69,8 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_EditItem", item);
         }
 
+        // GET: Items/DeleteItem/5?checkId=1&dayExpensesId=2
+        [HttpGet]
         public async Task<IActionResult> DeleteItem(int? id, int checkId, int dayExpensesId)
         {
             if (id is null)
@@ -85,7 +91,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_DeleteItem", item);
         }
 
-        // POST: Items/Create
+        // POST: Items/Create?checkId=1&dayExpensesId=2
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -113,7 +119,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateItem");
         }
 
-        // POST: Items/Edit/5
+        // POST: Items/Edit/5?checkId=1&dayExpensesId=2
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -174,7 +180,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_EditItem");
         }
 
-        // POST: Items/Delete/5
+        // POST: Items/Delete/5?checkId=1&dayExpensesId=2
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int checkId, int dayExpensesId)

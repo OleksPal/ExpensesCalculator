@@ -17,6 +17,8 @@ namespace ExpensesCalculator.Controllers
             _context = context;
         }
 
+        // GET: Checks/CreateCheck?dayExpensesId=1
+        [HttpGet]
         public async Task<IActionResult> CreateCheck(int dayExpensesId)
         {
             var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
@@ -35,6 +37,8 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateCheck");
         }
 
+        // GET: Checks/EditCheck/5?dayExpensesId=1
+        [HttpGet]
         public async Task<IActionResult> EditCheck(int? id, int dayExpensesId)
         {
             if (id is null)
@@ -63,6 +67,8 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_EditCheck", check);
         }
 
+        // GET: Checks/DeleteCheck/5?dayExpensesId=1
+        [HttpGet]
         public async Task<IActionResult> DeleteCheck(int? id, int dayExpensesId)
         {
             if (id is null)
@@ -80,6 +86,8 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_DeleteCheck", check);
         }
 
+        // GET: Checks/GetCheckItemsManager/5?dayExpensesId=1
+        [HttpGet]
         public async Task<IActionResult> GetCheckItemsManager(int id, int dayExpensesId)
         {
             var check = await _context.Checks.Include(c => c.Items)
@@ -94,7 +102,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_ManageCheckItems", manager);
         }
 
-        // POST: Checks/Create
+        // POST: Checks/Create?dayExpensesId=1
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -120,7 +128,7 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateCheck");
         }
 
-        // POST: Checks/Edit/5
+        // POST: Checks/Edit/5?dayExpensesId=1
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -176,7 +184,9 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_EditCheck");
         }
 
-        // POST: Checks/Delete/5
+        // POST: Checks/Delete/5?dayExpensesId=1
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int dayExpensesId)
