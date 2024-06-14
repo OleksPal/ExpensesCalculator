@@ -1,11 +1,11 @@
-﻿@model ExpensesCalculator.Models.ManageDayExpensesChecksViewModel
+﻿@model DayExpenses
 
 @foreach (var check in @Model.Checks)
 {
     <tr>
         <td>
             <span role="button" style="user-select: none;" id="checkDropper-@check.Id"
-                  onclick="getCheckItemsManager(@check.Id, @Model.DayExpensesId)"
+                  onclick="getCheckItemsManager(@check.Id, @Model.Id)"
                   data-bs-toggle="collapse" data-bs-target="#check-@check.Id"
                   aria-expanded="false" aria-controls="check-@check.Id">&#9655;</span>
         </td>
@@ -22,13 +22,13 @@
         </td>
         <td>
             <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                    onclick="showModalForCheckEdit(@check.Id, @Model.DayExpensesId)">
+                    onclick="showModalForCheckEdit(@check.Id, @Model.Id)">
                 <i class="bi bi-pencil"></i> Edit
             </button>
         </td>
         <td>
             <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                    data-bs-target="#staticBackdrop" onclick="showModalForCheckDelete(@check.Id, @Model.DayExpensesId)">
+                    data-bs-target="#staticBackdrop" onclick="showModalForCheckDelete(@check.Id, @Model.Id)">
                 <i class="bi bi-trash"></i> Delete
             </button>
         </td>

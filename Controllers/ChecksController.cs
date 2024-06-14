@@ -115,8 +115,7 @@ namespace ExpensesCalculator.Controllers
                 dayExpenses.Checks.Add(check);
                 await _context.SaveChangesAsync();
 
-                var manager = new ManageDayExpensesChecksViewModel { Checks = dayExpenses.Checks, DayExpensesId = dayExpensesId };
-                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", manager);
+                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
             }
             return PartialView("_CreateCheck");
         }
@@ -160,8 +159,7 @@ namespace ExpensesCalculator.Controllers
                         return NotFound();
 
                     dayExpenses.Checks.Add(check);
-                    var manager = new ManageDayExpensesChecksViewModel { Checks = dayExpenses.Checks, DayExpensesId = dayExpensesId };
-                    return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", manager);
+                    return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -204,8 +202,7 @@ namespace ExpensesCalculator.Controllers
             if (dayExpenses is null)
                 return NotFound();
 
-            var manager = new ManageDayExpensesChecksViewModel { Checks = dayExpenses.Checks, DayExpensesId = dayExpensesId };
-            return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", manager);
+            return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
         }
 
         private bool CheckExists(int id)

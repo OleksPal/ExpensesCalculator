@@ -93,8 +93,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var manager = new ManageDayExpensesChecksViewModel { DayExpensesId = id, Checks = dayExpenses.Checks };
-            return PartialView("_ManageDayExpensesChecks", manager);
+            return PartialView("_ManageDayExpensesChecks", dayExpenses);
         }
 
         // POST: DayExpenses/Create
@@ -246,8 +245,7 @@ namespace ExpensesCalculator.Controllers
                     checks.Add(checkWithItems);
             }
 
-            var manager = new ManageDayExpensesChecksViewModel { DayExpensesId = (int)id, Checks = checks };
-            return View("ShowChecks", manager);
+            return View("ShowChecks", dayExpenses);
         }
 
         private bool DayExpensesExists(int id)
