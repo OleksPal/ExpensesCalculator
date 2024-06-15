@@ -2,11 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
-using NuGet.Protocol;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -21,13 +18,38 @@ namespace ExpensesCalculator.Controllers
         }
 
         // GET: DayExpenses
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Days.ToListAsync());
+            var days = await _context.Days.Include(d => d.Checks).ToListAsync();
+            ViewData["FormattedDayParticipants"] = new List<string>();
+            List<string> formattedDayParticipants = new List<string>();
+
+            foreach (var day in days)
+            {
+                for (int i = 0; i < day.Checks.Count; i++) 
+                {
+                    var check = await _context.Checks.Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
+                    if (check is not null)
+                        day.Checks[i] = check;
+                }
+                (ViewData["FormattedDayParticipants"] as List<string>).Add(GetFormatParticipantsNames(day.Participants));
+            }           
+
+            return View(days);
         }
 
-        // GET: DayExpenses/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: DayExpenses/CreateDayExpenses
+        [HttpGet]
+        public IActionResult CreateDayExpenses()
+        {
+            return PartialView("_CreateDayExpenses");
+        }
+
+        // GET: DayExpenses/EditDayExpenses/5
+        [HttpGet]
+        public async Task<IActionResult> EditDayExpenses(int? id)
         {
             if (id == null)
             {
@@ -42,28 +64,97 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = new DayExpensesViewModel();
-            dayExpenses.DayExpensesId = day.Id;
-            dayExpenses.Date = day.Date;
-            dayExpenses.Checks = day.Checks;
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
-            for (int i = 0; i < dayExpenses.Checks.Count; i++)
+            return PartialView("_EditDayExpenses", day);
+        }
+
+        // GET: DayExpenses/DeleteDayExpenses/5
+        [HttpGet]
+        public async Task<IActionResult> DeleteDayExpenses(int? id)
+        {
+            if (id == null)
             {
-                var check = await _context.Checks.Include(c => c.Items)
-                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
-                if (check is not null)
-                    dayExpenses.Checks[i] = check;
+                return NotFound();
+            }
+
+            var day = await _context.Days.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (day == null)
+            {
+                return NotFound();
             }
 
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
-            return View(dayExpenses);
+            return PartialView("_DeleteDayExpenses", day);
         }
 
-        // GET: DayExpenses/Create
-        public IActionResult Create()
+        // GET: DayExpenses/CalculateExpenses/5
+        [HttpGet]
+        public async Task<IActionResult> CalculateExpenses(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dayExpenses == null)
+            {
+                return NotFound();
+            }
+
+            var dayExpensesCalculation = new DayExpensesCalculationViewModel
+            { DayExpensesId = dayExpenses.Id, Participants = dayExpenses.Participants };
+
+            dayExpensesCalculation.Checks = new List<Check>();
+            dayExpensesCalculation.UserTransactions = new Dictionary<string[], double>();
+            for (int i = 0; i < dayExpenses.Checks.Count; i++)
+            {
+                var checkWithItems = await _context.Checks.Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
+
+                if (checkWithItems is not null)
+                    dayExpensesCalculation.Checks.Add(checkWithItems);
+            }
+
+            Dictionary<string[], double> transactions = CalculateTransactionList(dayExpensesCalculation.Participants,
+                dayExpensesCalculation.Checks);
+            var optimizedTransactions = OptimizeTransactions(transactions);
+            dayExpensesCalculation.UserTransactions = optimizedTransactions;
+
+            return View(dayExpensesCalculation);
+        }
+
+        // GET: DayExpenses/ShowChecks/5
+        [HttpGet]
+        public async Task<IActionResult> ShowChecks(int? id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dayExpenses is null)
+            {
+                return NotFound();
+            }
+
+            var checks = new List<Check>();
+            for (int i = 0; i < dayExpenses.Checks.Count; i++)
+            {
+                var checkWithItems = await _context.Checks.Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
+
+                if (checkWithItems is not null)
+                    checks.Add(checkWithItems);
+            }
+
+            return View("ShowChecks", dayExpenses);
         }
 
         // POST: DayExpenses/Create
@@ -84,26 +175,6 @@ namespace ExpensesCalculator.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
-        }
-
-        // GET: DayExpenses/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var dayExpenses = await _context.Days.FindAsync(id);
-
-            if (dayExpenses == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(dayExpenses.Participants);
-
             return View(dayExpenses);
         }
 
@@ -147,27 +218,9 @@ namespace ExpensesCalculator.Controllers
             return View(dayExpenses);
         }
 
-        // GET: DayExpenses/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var dayExpenses = await _context.Days
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (dayExpenses == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(dayExpenses.Participants);
-
-            return View(dayExpenses);
-        }
-
         // POST: DayExpenses/Delete/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -191,43 +244,6 @@ namespace ExpensesCalculator.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        // GET: DayExpenses/CalculateExpenses/5
-        public async Task<IActionResult> CalculateExpenses(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
-
-            if (dayExpenses == null)
-            {
-                return NotFound();
-            }
-
-            var dayExpensesCalculation = new DayExpensesCalculationViewModel 
-            { DayExpensesId = dayExpenses.Id, Participants = dayExpenses.Participants };
-
-            dayExpensesCalculation.Checks = new List<Check>();
-            dayExpensesCalculation.UserTransactions = new Dictionary<string[], double>();
-            for(int i = 0; i < dayExpenses.Checks.Count; i++)
-            {
-                var checkWithItems = await _context.Checks.Include(c => c.Items)
-                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
-
-                if (checkWithItems is not null)
-                    dayExpensesCalculation.Checks.Add(checkWithItems);
-            }
-
-            Dictionary<string[], double> transactions = CalculateTransactionList(dayExpensesCalculation.Participants,
-                dayExpensesCalculation.Checks);
-            var optimizedTransactions = OptimizeTransactions(transactions);
-            dayExpensesCalculation.UserTransactions = optimizedTransactions;          
-
-            return View(dayExpensesCalculation);
         }
 
         private bool DayExpensesExists(int id)

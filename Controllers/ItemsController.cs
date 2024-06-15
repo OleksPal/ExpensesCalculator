@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ExpensesCalculator.Controllers
 {
+    [Authorize]
     public class ItemsController : Controller
     {
         private readonly ExpensesContext _context;
@@ -13,15 +15,12 @@ namespace ExpensesCalculator.Controllers
         public ItemsController(ExpensesContext context)
         {
             _context = context;
-        }   
+        }
 
-        // GET: Items/Create
+        // GET: Items/CreateItem?checkId=1&dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> Create(int checkId, int dayExpensesId)
+        public async Task<IActionResult> CreateItem(int checkId, int dayExpensesId)
         {
-            if (Request.Headers.ContainsKey("Referer"))
-                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
-
             var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
             if (dayExpenses is not null)
             {
@@ -34,15 +33,70 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CheckId"] = checkId;
-            return View();
+            ViewData["DayExpensesId"] = dayExpensesId;
+
+            return PartialView("_CreateItem");
         }
 
-        // POST: Items/Create
+        // GET: Items/EditItem/5?checkId=1&dayExpensesId=2
+        [HttpGet]
+        public async Task<IActionResult> EditItem(int? id, int checkId, int dayExpensesId)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            if (item is null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CheckId"] = checkId;
+            ViewData["DayExpensesId"] = dayExpensesId;
+
+            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            if (dayExpenses is not null)
+            {
+                List<SelectListItem> optionList = new List<SelectListItem>();
+                foreach (var participant in dayExpenses.Participants)
+                {
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                }
+                ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
+            }
+            return PartialView("_EditItem", item);
+        }
+
+        // GET: Items/DeleteItem/5?checkId=1&dayExpensesId=2
+        [HttpGet]
+        public async Task<IActionResult> DeleteItem(int? id, int checkId, int dayExpensesId)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            if (item is null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CheckId"] = checkId;
+            ViewData["DayExpensesId"] = dayExpensesId;
+
+            ViewData["FormatParticipantNames"] = GetFormatUserNames(item.Users);
+            return PartialView("_DeleteItem", item);
+        }
+
+        // POST: Items/Create?checkId=1&dayExpensesId=2
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Users,Name,Description,Price,Id")] Item item, int checkId)
+        public async Task<IActionResult> Create([Bind("Users,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
         {
             if (ModelState.IsValid)
             {
@@ -59,49 +113,18 @@ namespace ExpensesCalculator.Controllers
                 check.Sum += item.Price;
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index), nameof(DayExpenses));
+                var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
             }
-            return View(item);
+            return PartialView("_CreateItem");
         }
 
-        // GET: Items/Edit/5
-        public async Task<IActionResult> Edit(int? id, int checkId, int dayExpensesId)
-        {
-            if (id is null)
-            {
-                return NotFound();
-            }
-
-            var item = await _context.Items.FindAsync(id);
-            if (item is null)
-            {
-                return NotFound();
-            }
-
-            if (Request.Headers.ContainsKey("Referer"))
-                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
-
-            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-            if (dayExpenses is not null)
-            {
-                List<SelectListItem> optionList = new List<SelectListItem>();
-                foreach (var participant in dayExpenses.Participants)
-                {
-                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
-                }
-                ViewData["Participants"] = new MultiSelectList(optionList, "Value", "Text");
-            }
-
-            ViewData["CheckId"] = checkId;
-            return View(item);
-        }
-
-        // POST: Items/Edit/5
+        // POST: Items/Edit/5?checkId=1&dayExpensesId=2
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Users,Name,Description,Price,Id")] Item item, int checkId)
+        public async Task<IActionResult> Edit(int id, [Bind("Users,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
         {
             if (id != item.Id)
             {
@@ -112,7 +135,7 @@ namespace ExpensesCalculator.Controllers
             {
                 try
                 {
-                    var check = await _context.Checks
+                    var check = await _context.Checks.Include(c => c.Items).AsNoTracking()                    
                         .FirstOrDefaultAsync(m => m.Id == checkId);
 
                     if (check is null)
@@ -127,10 +150,20 @@ namespace ExpensesCalculator.Controllers
                         return NotFound();
                     }
 
-                    check.Sum -= oldItem.Price;
-                    _context.Update(item);
-                    check.Sum += item.Price;
+                    var itemToReplace = check.Items.Find(i => i.Id == oldItem.Id);
+                    if(itemToReplace is not null)
+                    {
+                        check.Items.Remove(itemToReplace);
+                        check.Items.Add(item);
+                    }
+
+                    _context.Items.Update(item);
+                    check.Sum = await ChangeCheckSum(checkId, item.Price - oldItem.Price);
+
                     await _context.SaveChangesAsync();
+
+                    var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+                    return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -143,45 +176,19 @@ namespace ExpensesCalculator.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index), nameof(DayExpenses));
             }
-            return View(item);
+            return PartialView("_EditItem");
         }
 
-        // GET: Items/Delete/5
-        public async Task<IActionResult> Delete(int? id, int checkId)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var item = await _context.Items
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            if (Request.Headers.ContainsKey("Referer"))
-                ViewData["PreviousUrl"] = Request.Headers["Referer"].ToString();
-
-            ViewData["CheckId"] = checkId;
-            ViewBag.FormatParticipantNames = GetFormatUserNames(item.Users);
-
-            return View(item);
-        }
-
-        // POST: Items/Delete/5
+        // POST: Items/Delete/5?checkId=1&dayExpensesId=2
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, int checkId)
+        public async Task<IActionResult> DeleteConfirmed(int id, int checkId, int dayExpensesId)
         {
             var item = await _context.Items.FindAsync(id);
             if (item is not null)
             {
-                var check = await _context.Checks
+                var check = await _context.Checks.Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.Id == checkId);
 
                 if (check is null)
@@ -191,10 +198,13 @@ namespace ExpensesCalculator.Controllers
 
                 check.Sum -= item.Price;
                 _context.Items.Remove(item);
+
+                await _context.SaveChangesAsync();
+
+                var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), nameof(DayExpenses));
+            return PartialView("_DeleteItem");
         }
 
         private bool ItemExists(int id)
@@ -215,6 +225,21 @@ namespace ExpensesCalculator.Controllers
                 }
             }
             return formatList;
+        }
+
+        private async Task<double> ChangeCheckSum(int checkId, double sum)
+        {
+            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == checkId);
+
+            if(check is not null)
+            {
+                check.Sum += sum;
+                await _context.SaveChangesAsync();
+
+                return check.Sum;
+            }
+
+            return 0;
         }
     }
 }

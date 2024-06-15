@@ -1,0 +1,46 @@
+﻿@model ExpensesCalculator.Models.Item
+
+<script src="~/js/multiselect-dropdown.js"></script>
+<script src="~/js/ajax/items/add-item.js"></script>
+
+<div class="modal-header">
+    <h5 class="modal-title">Add item</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-action="Create" asp-route-checkid="@ViewData["CheckId"]" asp-route-dayExpensesId="@ViewData["DayExpensesId"]">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" id="name"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="control-label"></label>
+            <input asp-for="Description" class="form-control" id="description"/>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Price" class="control-label"></label>
+            <input asp-for="Price" class="form-control" id="price"/>
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Users" class="control-label"></label>
+            <div class="form-group mb-3">
+                @Html.ListBoxFor(model => model.Users, ViewData["Participants"] as MultiSelectList,
+                         new { @class = "form-control", multiple = "multiple", id = "Subjects_dropdown" })
+            </div>
+            <span asp-validation-for="Users" class="text-danger"></span>
+        </div>
+        <button type="button" value="Create" class="btn btn-success" id="createButton">
+            <i class="bi bi-plus-circle"></i> Add item
+        </button>
+    </form>
+</div>
+
+<script>
+    var token = '@Html.AntiForgeryToken()';
+    var checkId = @ViewData["CheckId"];
+    var dayExpensesId = @ViewData["DayExpensesId"];    
+</script>
