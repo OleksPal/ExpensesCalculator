@@ -110,7 +110,7 @@ namespace ExpensesCalculator.Controllers
             { DayExpensesId = dayExpenses.Id, Participants = dayExpenses.Participants };
 
             dayExpensesCalculation.Checks = new List<Check>();
-            dayExpensesCalculation.UserTransactions = new Dictionary<SenderRecipient, double>();
+            dayExpensesCalculation.UserTransactions = new Dictionary<SenderRecipient, decimal>();
             for (int i = 0; i < dayExpenses.Checks.Count; i++)
             {
                 var checkWithItems = await _context.Checks.Include(c => c.Items)
@@ -120,8 +120,7 @@ namespace ExpensesCalculator.Controllers
                     dayExpensesCalculation.Checks.Add(checkWithItems);
             }
 
-            Dictionary<SenderRecipient, double> transactions = CalculateTransactionList(dayExpensesCalculation.Participants,
-                dayExpensesCalculation.Checks);
+            Dictionary<SenderRecipient, decimal> transactions = CalculateTransactionList(dayExpensesCalculation.Checks);
             var optimizedTransactions = OptimizeTransactions(transactions);
             dayExpensesCalculation.UserTransactions = optimizedTransactions;
 
@@ -279,33 +278,33 @@ namespace ExpensesCalculator.Controllers
             return participantList;
         }
 
-        private Dictionary<SenderRecipient, double> CalculateTransactionList(List<string> participants, List<Check> checks) 
+        private Dictionary<SenderRecipient, decimal> CalculateTransactionList(List<Check> checks) 
         {
-            Dictionary<SenderRecipient, double> userTransactions = new();
-            foreach (var participant in participants)
+            Dictionary<SenderRecipient, decimal> userTransactions = new();
+            foreach (var check in checks)
             {
-                foreach (var check in checks)
+                foreach (var item in check.Items)
                 {
-                    foreach (var item in check.Items)
+                    foreach (var user in item.Users) 
                     {
-                        if (participant != check.Payer)
+                        if (user != check.Payer)
                         {
-                            var transactionKey = new SenderRecipient(participant, check.Payer);
-                            var transactionValue = Math.Round(item.Price / item.Users.Count, 2);
+                            var transactionKey = new SenderRecipient(user, check.Payer);
+                            decimal transactionValue = (decimal)(item.Price / item.Users.Count);
 
                             if (!userTransactions.Keys.Any(key => key.Equals(transactionKey)))
                                 userTransactions.Add(transactionKey, transactionValue);
                             else
-                                userTransactions[transactionKey] = userTransactions[transactionKey] + item.Price;                               
+                                userTransactions[transactionKey] += transactionValue;
                         }
-                    }
+                    }                    
                 }
             }
 
             return userTransactions;
         }
 
-        private Dictionary<SenderRecipient, double> OptimizeTransactions(Dictionary<SenderRecipient, double> transactionList)
+        private Dictionary<SenderRecipient, decimal> OptimizeTransactions(Dictionary<SenderRecipient, decimal> transactionList)
         {
             var transactionKeyList = transactionList.Keys.ToList();
             for (int i = 0; i < transactionKeyList.Count; i++)
