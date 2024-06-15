@@ -93,7 +93,7 @@
                         }
                     }
                 </ul>
-                <label>Sum per participant: @sum₴</label><br /><hr />
+                <label>Sum per participant: @Math.Round(sum, 2)₴</label><br /><hr />
             }            
         }
     </div>
@@ -104,7 +104,7 @@
     <ul>
     @foreach (var transaction in Model.UserTransactions)
     {
-        <li>@transaction.Key[0] (@transaction.Value₴) → @transaction.Key[1]</li>
+        <li>@transaction.Key.Sender (@transaction.Value₴) → @transaction.Key.Recipient</li>
     }
     </ul>
 </div>
