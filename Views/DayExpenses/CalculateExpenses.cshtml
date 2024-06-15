@@ -93,7 +93,7 @@
                         }
                     }
                 </ul>
-                <label>Sum per participant: @sum₴</label><br /><hr />
+                <label>Sum per participant: @Math.Round(sum, 2)₴</label><br /><hr />
             }            
         }
     </div>
@@ -102,11 +102,27 @@
 <div id="transactionList" class="tabcontent">
     <label>Transaction list:</label>
     <ul>
-    @foreach (var transaction in Model.UserTransactions)
+        @foreach (var transaction in Model.OptimizedUserTransactions)
     {
-        <li>@transaction.Key[0] (@transaction.Value₴) → @transaction.Key[1]</li>
+        <li>@transaction.Key.Sender (@transaction.Value₴) → @transaction.Key.Recipient</li>
     }
     </ul>
+
+    <hr />
+
+    <span role="button" style="user-select: none;" data-bs-toggle="collapse" id="fullTransactionListDropper" 
+    data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        &#9655;Full trasaction list:
+    </span>
+    <div class="collapse" id="collapseExample">
+        <ul>
+            @foreach (var transaction in Model.AllUsersTrasactions)
+            {
+                <li>@transaction.CheckName: @transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
+            }
+        </ul>
+    </div>
+    
 </div>
 
 <div>
