@@ -102,9 +102,17 @@
 <div id="transactionList" class="tabcontent">
     <label>Transaction list:</label>
     <ul>
-    @foreach (var transaction in Model.UserTransactions)
+        @foreach (var transaction in Model.OptimizedUserTransactions)
     {
         <li>@transaction.Key.Sender (@transaction.Value₴) → @transaction.Key.Recipient</li>
+    }
+    </ul>
+
+    <label>Full trasaction list:</label>
+    <ul>
+        @foreach (var transaction in Model.AllUsersTrasactions)
+    {
+        <li>@transaction.CheckName: @transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
     }
     </ul>
 </div>
