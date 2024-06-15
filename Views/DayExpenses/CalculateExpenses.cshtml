@@ -108,13 +108,21 @@
     }
     </ul>
 
-    <label>Full trasaction list:</label>
-    <ul>
-        @foreach (var transaction in Model.AllUsersTrasactions)
-    {
-        <li>@transaction.CheckName: @transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
-    }
-    </ul>
+    <hr />
+
+    <span role="button" style="user-select: none;" data-bs-toggle="collapse" id="fullTransactionListDropper" 
+    data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        &#9655;Full trasaction list:
+    </span>
+    <div class="collapse" id="collapseExample">
+        <ul>
+            @foreach (var transaction in Model.AllUsersTrasactions)
+            {
+                <li>@transaction.CheckName: @transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
+            }
+        </ul>
+    </div>
+    
 </div>
 
 <div>
