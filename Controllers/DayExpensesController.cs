@@ -23,6 +23,7 @@ namespace ExpensesCalculator.Controllers
         {
             var days = await _context.Days.Include(d => d.Checks).ToListAsync();
             ViewData["FormattedDayParticipants"] = new List<string>();
+            ViewData["CurrentUser"] = User.Identity.Name;
             List<string> formattedDayParticipants = new List<string>();
 
             foreach (var day in days)
