@@ -21,22 +21,26 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var days = await _context.Days.Include(d => d.Checks).ToListAsync();
-            ViewData["FormattedDayParticipants"] = new List<string>();
-            ViewData["CurrentUser"] = User.Identity.Name;
-            List<string> formattedDayParticipants = new List<string>();
-
-            foreach (var day in days)
+            var currentUsersName = User.Identity.Name;
+            List<DayExpenses> days = new List<DayExpenses>();
+            if (currentUsersName is not null)
             {
-                for (int i = 0; i < day.Checks.Count; i++) 
+                days = await _context.Days.Include(d => d.Checks).Where(d => d.PeopleWithAccess.Contains(currentUsersName)).ToListAsync();
+                ViewData["FormattedDayParticipants"] = new List<string>();
+                List<string> formattedDayParticipants = new List<string>();
+
+                foreach (var day in days)
                 {
-                    var check = await _context.Checks.Include(c => c.Items)
-                        .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
-                    if (check is not null)
-                        day.Checks[i] = check;
+                    for (int i = 0; i < day.Checks.Count; i++)
+                    {
+                        var check = await _context.Checks.Include(c => c.Items)
+                            .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
+                        if (check is not null)
+                            day.Checks[i] = check;
+                    }
+                    (ViewData["FormattedDayParticipants"] as List<string>).Add(GetFormatParticipantsNames(day.Participants));
                 }
-                (ViewData["FormattedDayParticipants"] as List<string>).Add(GetFormatParticipantsNames(day.Participants));
-            }           
+            }
 
             return View(days);
         }
