@@ -49,6 +49,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public IActionResult CreateDayExpenses()
         {
+            ViewData["CurrentUsersName"] = User.Identity.Name;
             return PartialView("_CreateDayExpenses");
         }
 
@@ -93,6 +94,28 @@ namespace ExpensesCalculator.Controllers
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
             return PartialView("_DeleteDayExpenses", day);
+        }
+
+        // GET: DayExpenses/ShareDayExpenses/5
+        [HttpGet]
+        public async Task<IActionResult> ShareDayExpenses(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var day = await _context.Days.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (day == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CurrentUsersName"] = User.Identity.Name;
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+
+            return PartialView("_ShareDayExpenses", day);
         }
 
         // GET: DayExpenses/CalculateExpenses/5
@@ -258,6 +281,30 @@ namespace ExpensesCalculator.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: DayExpenses/Share/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Share(int id, string newUserWithAccess)
+        {
+            var dayExpenses = await _context.Days.FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dayExpenses is null)
+                return NotFound();
+
+            if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
+            {
+                return Content("This user already has access!");
+            }
+            else
+            {
+                dayExpenses.PeopleWithAccess.Add(newUserWithAccess);
+                await _context.SaveChangesAsync();
+                return Content("Done!");
+            }            
         }
 
         private bool DayExpensesExists(int id)
