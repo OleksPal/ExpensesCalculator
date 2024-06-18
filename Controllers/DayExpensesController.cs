@@ -295,7 +295,13 @@ namespace ExpensesCalculator.Controllers
             if (dayExpenses is null)
                 return NotFound();
 
-            if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
+            var users = _context.Users.Any(u => u.UserName == newUserWithAccess);
+
+
+            if (!UserExists(newUserWithAccess)){
+                return Content("There is no such user!");
+            }
+            else if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
             {
                 return Content("This user already has access!");
             }
@@ -310,6 +316,11 @@ namespace ExpensesCalculator.Controllers
         private bool DayExpensesExists(int id)
         {
             return _context.Days.Any(e => e.Id == id);
+        }
+
+        private bool UserExists(string userName)
+        {
+            return _context.Users.Any(u => u.UserName == userName);
         }
 
         private string GetFormatParticipantsNames(List<string> participants)
