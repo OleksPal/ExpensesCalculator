@@ -70,6 +70,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            ViewData["CurrentUsersName"] = User.Identity.Name;
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
             return PartialView("_EditDayExpenses", day);
@@ -199,7 +200,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
         {
             string rareNameList = dayExpenses.Participants[0];
             dayExpenses.Participants = (List<string>)GetParticipantListFromString(rareNameList);
@@ -220,7 +221,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Edit(int id, [Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
         {            
             if (id != dayExpenses.Id)
             {

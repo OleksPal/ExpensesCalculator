@@ -17,6 +17,7 @@
             <input asp-for="Participants" class="form-control" />
             <span asp-validation-for="Participants" class="text-danger"></span>
         </div>
+        <input type="hidden" asp-for="PeopleWithAccess" value="@ViewData["CurrentUsersName"]" />
         <div class="form-group">
             <button type="submit" value="Create" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Add expenses
