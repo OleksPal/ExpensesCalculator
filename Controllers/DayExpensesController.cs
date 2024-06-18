@@ -21,21 +21,26 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var days = await _context.Days.Include(d => d.Checks).ToListAsync();
-            ViewData["FormattedDayParticipants"] = new List<string>();
-            List<string> formattedDayParticipants = new List<string>();
-
-            foreach (var day in days)
+            var currentUsersName = User.Identity.Name;
+            List<DayExpenses> days = new List<DayExpenses>();
+            if (currentUsersName is not null)
             {
-                for (int i = 0; i < day.Checks.Count; i++) 
+                days = await _context.Days.Include(d => d.Checks).Where(d => d.PeopleWithAccess.Contains(currentUsersName)).ToListAsync();
+                ViewData["FormattedDayParticipants"] = new List<string>();
+                List<string> formattedDayParticipants = new List<string>();
+
+                foreach (var day in days)
                 {
-                    var check = await _context.Checks.Include(c => c.Items)
-                        .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
-                    if (check is not null)
-                        day.Checks[i] = check;
+                    for (int i = 0; i < day.Checks.Count; i++)
+                    {
+                        var check = await _context.Checks.Include(c => c.Items)
+                            .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
+                        if (check is not null)
+                            day.Checks[i] = check;
+                    }
+                    (ViewData["FormattedDayParticipants"] as List<string>).Add(GetFormatParticipantsNames(day.Participants));
                 }
-                (ViewData["FormattedDayParticipants"] as List<string>).Add(GetFormatParticipantsNames(day.Participants));
-            }           
+            }
 
             return View(days);
         }
@@ -44,6 +49,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public IActionResult CreateDayExpenses()
         {
+            ViewData["CurrentUsersName"] = User.Identity.Name;
             return PartialView("_CreateDayExpenses");
         }
 
@@ -64,6 +70,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            ViewData["CurrentUsersName"] = User.Identity.Name;
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
             return PartialView("_EditDayExpenses", day);
@@ -88,6 +95,28 @@ namespace ExpensesCalculator.Controllers
             ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
 
             return PartialView("_DeleteDayExpenses", day);
+        }
+
+        // GET: DayExpenses/ShareDayExpenses/5
+        [HttpGet]
+        public async Task<IActionResult> ShareDayExpenses(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var day = await _context.Days.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (day == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CurrentUsersName"] = User.Identity.Name;
+            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+
+            return PartialView("_ShareDayExpenses", day);
         }
 
         // GET: DayExpenses/CalculateExpenses/5
@@ -171,7 +200,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
         {
             string rareNameList = dayExpenses.Participants[0];
             dayExpenses.Participants = (List<string>)GetParticipantListFromString(rareNameList);
@@ -192,7 +221,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Edit(int id, [Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
         {            
             if (id != dayExpenses.Id)
             {
@@ -255,9 +284,44 @@ namespace ExpensesCalculator.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // POST: DayExpenses/Share/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Share(int id, string newUserWithAccess)
+        {
+            var dayExpenses = await _context.Days.FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dayExpenses is null)
+                return NotFound();
+
+            var users = _context.Users.Any(u => u.UserName == newUserWithAccess);
+
+
+            if (!UserExists(newUserWithAccess)){
+                return Content("There is no such user!");
+            }
+            else if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
+            {
+                return Content("This user already has access!");
+            }
+            else
+            {
+                dayExpenses.PeopleWithAccess.Add(newUserWithAccess);
+                await _context.SaveChangesAsync();
+                return Content("Done!");
+            }            
+        }
+
         private bool DayExpensesExists(int id)
         {
             return _context.Days.Any(e => e.Id == id);
+        }
+
+        private bool UserExists(string userName)
+        {
+            return _context.Users.Any(u => u.UserName == userName);
         }
 
         private string GetFormatParticipantsNames(List<string> participants)

@@ -21,3 +21,11 @@ function showModalForDayExpensesDelete(dayId) {
         });
     });
 }
+
+function showModalForDayExpensesShare(dayId) {
+    $(document).ready(function () {
+        $.get(`/DayExpenses/ShareDayExpenses/${dayId}`, function (data) {
+            $('#modal-content').html(data);
+        });
+    });
+}

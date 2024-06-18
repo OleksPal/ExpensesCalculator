@@ -18,6 +18,7 @@
             <span asp-validation-for="Participants" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="PeopleWithAccess" value="@ViewData["CurrentUsersName"]" />
         <div class="form-group">
             <button type="submit" value="Save" class="btn btn-warning">
                 <i class="bi bi-pencil"></i> Save

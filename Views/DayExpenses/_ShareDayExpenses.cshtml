@@ -1,0 +1,40 @@
+﻿@model ExpensesCalculator.Models.DayExpenses
+
+<script src="~/js/ajax/day-expenses/share-expenses.js"></script>
+
+<div class="modal-header">
+    <h5 class="modal-title">Share expenses</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-action="Share">
+        <div class="form-group mb-3">
+            <label asp-for="Date" class="control-label"></label>
+            <input asp-for="Date" class="form-control" disabled readonly />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Participants" class="control-label"></label>
+            <input asp-for="Participants" value="@ViewBag.FormatParticipantNames" class="form-control"
+                   disabled readonly />
+            <span asp-validation-for="Participants" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Add user with access</label>
+            <input class="form-control" id="newUserWithAccess"/>
+        </div>
+        <div class="form-group mb-3" id="statusString"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <button type="button" class="btn btn-dark" id="shareExpensesButton">
+                <i class="bi bi-share"></i> Share
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    var token = '@Html.AntiForgeryToken()';
+    var currentUsersName = "@ViewData["CurrentUsersName"]";
+    var dayExpensesId = $("#Id").val();
+</script>
