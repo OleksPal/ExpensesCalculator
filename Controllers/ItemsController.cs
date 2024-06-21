@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
+using ExpensesCalculator.Repositories;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 
@@ -11,10 +12,12 @@ namespace ExpensesCalculator.Controllers
     public class ItemsController : Controller
     {
         private readonly ExpensesContext _context;
+        private readonly ItemRepository repository;
 
         public ItemsController(ExpensesContext context)
         {
             _context = context;
+            repository = new ItemRepository(context);
         }
 
         // GET: Items/CreateItem?checkId=1&dayExpensesId=2
@@ -47,7 +50,8 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            var item = await repository.GetById((int)id);
+
             if (item is null)
             {
                 return NotFound();
@@ -78,7 +82,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            var item = await repository.GetById((int)id);
             if (item is null)
             {
                 return NotFound();
@@ -100,18 +104,10 @@ namespace ExpensesCalculator.Controllers
         {
             if (ModelState.IsValid)
             {
+                await repository.Insert(item, checkId);
+
                 var check = await _context.Checks.Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.Id == checkId);
-
-                if (check is null)
-                {
-                    return NotFound();
-                }
-
-                _context.Items.Add(item);
-                check.Items.Add(item);
-                check.Sum += item.Price;
-                await _context.SaveChangesAsync();
 
                 var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
                 return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
@@ -132,35 +128,12 @@ namespace ExpensesCalculator.Controllers
             }
 
             if (ModelState.IsValid)
-            {
+            {                
                 try
                 {
-                    var check = await _context.Checks.Include(c => c.Items).AsNoTracking()                    
-                        .FirstOrDefaultAsync(m => m.Id == checkId);
+                    await repository.Update(item, checkId);
 
-                    if (check is null)
-                    {
-                        return NotFound();
-                    }
-
-                    var oldItem = await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == item.Id);
-
-                    if (oldItem is null)
-                    {
-                        return NotFound();
-                    }
-
-                    var itemToReplace = check.Items.Find(i => i.Id == oldItem.Id);
-                    if(itemToReplace is not null)
-                    {
-                        check.Items.Remove(itemToReplace);
-                        check.Items.Add(item);
-                    }
-
-                    _context.Items.Update(item);
-                    check.Sum = await ChangeCheckSum(checkId, item.Price - oldItem.Price);
-
-                    await _context.SaveChangesAsync();
+                    var check = await _context.Checks.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == checkId);
 
                     var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
                     return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
@@ -185,26 +158,12 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int checkId, int dayExpensesId)
         {
-            var item = await _context.Items.FindAsync(id);
-            if (item is not null)
-            {
-                var check = await _context.Checks.Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.Id == checkId);
+            await repository.Delete(id, checkId);
 
-                if (check is null)
-                {
-                    return NotFound();
-                }
+            var check = await _context.Checks.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == checkId);
 
-                check.Sum -= item.Price;
-                _context.Items.Remove(item);
-
-                await _context.SaveChangesAsync();
-
-                var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
-                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
-            }
-            return PartialView("_DeleteItem");
+            var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", manager);
         }
 
         private bool ItemExists(int id)
@@ -225,21 +184,6 @@ namespace ExpensesCalculator.Controllers
                 }
             }
             return formatList;
-        }
-
-        private async Task<double> ChangeCheckSum(int checkId, double sum)
-        {
-            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == checkId);
-
-            if(check is not null)
-            {
-                check.Sum += sum;
-                await _context.SaveChangesAsync();
-
-                return check.Sum;
-            }
-
-            return 0;
         }
     }
 }
