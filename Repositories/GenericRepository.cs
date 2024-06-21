@@ -1,5 +1,6 @@
 ﻿using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Repositories
 {
@@ -12,30 +13,30 @@ namespace ExpensesCalculator.Repositories
             _context = context;
         }
 
-        public IEnumerable<DbObject> GetAll()
+        public async Task<IEnumerable<DbObject>> GetAll()
         {
-            return _context.Set<DbObject>().ToList();
+            return await _context.Set<DbObject>().ToListAsync();
         }
 
-        public DbObject GetById(int id)
+        public async Task<DbObject> GetById(int id)
         {
-            return _context.Set<DbObject>().Find(id);
+            return await _context.Set<DbObject>().FindAsync(id);
         }
 
-        public void Insert(DbObject obj)
+        public async Task Insert(DbObject obj)
         {
-            _context.Set<DbObject>().Add(obj);
+            await _context.Set<DbObject>().AddAsync(obj);
         }
 
-        public void Update(DbObject obj)
+        public async Task Update(DbObject obj)
         {
             _context.Set<DbObject>().Update(obj);
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
             var obj = GetById(id);
-            _context.Set<DbObject>().Remove(obj);
+            _context.Set<DbObject>().Remove(obj.Result);
         }
     }
 }

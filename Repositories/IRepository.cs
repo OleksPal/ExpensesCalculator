@@ -4,10 +4,10 @@ namespace ExpensesCalculator.Repositories
 {
     public interface IRepository
     {
-        public IEnumerable<DbObject> GetAll();
-        public DbObject GetById(int id);
-        public void Insert(DbObject obj);
-        public void Update(DbObject obj);
-        public void Delete(int id);
+        public Task<IEnumerable<DbObject>> GetAll();
+        public Task<DbObject> GetById(int id);
+        public Task Insert(DbObject obj);
+        public Task Update(DbObject obj);
+        public Task Delete(int id);
     }
 }
