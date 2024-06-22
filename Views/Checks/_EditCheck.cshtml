@@ -21,6 +21,7 @@
             <span asp-validation-for="Payer" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Sum" />
         <div class="form-group">
             <button type="button" value="Save" class="btn btn-warning" id="editCheckButton">
                 <i class="bi bi-pencil"></i> Save
@@ -32,5 +33,6 @@
 <script>
     var token = '@Html.AntiForgeryToken()';
     var checkId = $("#Id").val();
+    var sum = $("#Sum").val();
     var dayExpensesId = @ViewData["DayExpensesId"];
 </script>

@@ -14,7 +14,7 @@ $(function () {
         $.ajax({
             url: `/Checks/Edit/${checkId}?dayexpensesid=${dayExpensesId}`,
             data: {
-                Location: $("#checkLocation").val(), Payer: selectedPayer,
+                Location: $("#checkLocation").val(), Payer: selectedPayer, Sum: sum,
                 __RequestVerificationToken: $(token).val()
             },
             type: "Post",

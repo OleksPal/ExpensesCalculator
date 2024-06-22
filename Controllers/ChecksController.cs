@@ -148,7 +148,8 @@ namespace ExpensesCalculator.Controllers
                 {
                     await repository.Update(check);
 
-                    var dayExpenses = _context.Days.FindAsync(dayExpensesId);
+                    var dayExpenses = await _context.Days.Include(d => d.Checks)
+                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
                     return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
                 }
                 catch (DbUpdateConcurrencyException)

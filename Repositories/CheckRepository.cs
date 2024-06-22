@@ -33,12 +33,12 @@ namespace ExpensesCalculator.Repositories
 
         public async Task<Check> GetById(int id)
         {
-            return await _context.Checks.FindAsync(id);
+            return await _context.Checks.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<Check> GetByIdWithItems(int id)
         {
-            return await _context.Checks.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Checks.AsNoTracking().Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task Insert(Check check, int dayExpensesId)
@@ -56,10 +56,11 @@ namespace ExpensesCalculator.Repositories
 
         public async Task Update(Check check)
         {
-            var checkToUpdate = await GetById(check.Id);
+            var checkToUpdate = await _context.Checks.AsNoTracking().Include(c => c.Items).FirstOrDefaultAsync(i => i.Id == check.Id);
 
             if (checkToUpdate is not null)
             {
+                check.Items = checkToUpdate.Items;
                 _context.Checks.Update(check);
                 await _context.SaveChangesAsync();
             }
