@@ -4,6 +4,7 @@ using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using ExpensesCalculator.Repositories;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -11,10 +12,12 @@ namespace ExpensesCalculator.Controllers
     public class ChecksController : Controller
     {
         private readonly ExpensesContext _context;
+        private readonly CheckRepository repository;
 
         public ChecksController(ExpensesContext context)
         {
             _context = context;
+            repository = new CheckRepository(context);
         }
 
         // GET: Checks/CreateCheck?dayExpensesId=1
@@ -46,7 +49,8 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == id);
+            var check = await repository.GetById((int)id);
+
             if (check is null)
             {
                 return NotFound();
@@ -76,7 +80,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == id);
+            var check = await repository.GetById((int)id);
             if (check is null)
             {
                 return NotFound();
@@ -90,8 +94,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCheckItemsManager(int id, int dayExpensesId)
         {
-            var check = await _context.Checks.Include(c => c.Items)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var check = await repository.GetByIdWithItems(id);
 
             if (check is null)
             {
@@ -107,7 +110,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Payer,Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
+        public async Task<IActionResult> Create([Bind("Payer,Sum,Location,Items,Id")] Check check, int dayExpensesId)
         {
             check.Items = new List<Item>();
             ModelState.ClearValidationState(nameof(Check));
@@ -119,9 +122,7 @@ namespace ExpensesCalculator.Controllers
                 if (dayExpenses is null)
                     return NotFound();
 
-                _context.Checks.Add(check);
-                dayExpenses.Checks.Add(check);
-                await _context.SaveChangesAsync();
+                await repository.Insert(check, dayExpensesId);
 
                 return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
             }
@@ -133,23 +134,11 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Payer,Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
+        public async Task<IActionResult> Edit(int id, [Bind("Payer,Sum,Location,Items,Id")] Check check, int dayExpensesId)
         {
             if (id != check.Id)
             {
                 return NotFound();
-            }
-
-            if (check.Items is null) 
-            {
-                var oldCheck = await _context.Checks.Include(c => c.Items).AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.Id == id);
-
-                if (oldCheck is null)
-                    return NotFound();
-
-                check.Items = oldCheck.Items;
-                check.Sum = oldCheck.Sum;
             }
 
             ModelState.ClearValidationState(nameof(Check));
@@ -157,16 +146,9 @@ namespace ExpensesCalculator.Controllers
             {
                 try
                 {
-                    _context.Update(check);
-                    await _context.SaveChangesAsync();
+                    await repository.Update(check);
 
-                    var dayExpenses = await _context.Days.Include(d => d.Checks)
-                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-
-                    if (dayExpenses is null)
-                        return NotFound();
-
-                    dayExpenses.Checks.Add(check);
+                    var dayExpenses = _context.Days.FindAsync(dayExpensesId);
                     return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -191,20 +173,7 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int dayExpensesId)
         {
-            var check = await _context.Checks.Include(c => c.Items).AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (check is null)
-                return NoContent();
-
-            _context.Items.RemoveRange(check.Items);
-
-            if (check != null)
-            {
-                _context.Checks.Remove(check);
-            }
-
-            await _context.SaveChangesAsync();
+            await repository.Delete(id);
 
             var dayExpenses = await _context.Days.Include(d => d.Checks)
                     .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
