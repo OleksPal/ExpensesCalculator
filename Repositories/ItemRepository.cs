@@ -32,9 +32,6 @@ namespace ExpensesCalculator.Repositories
             {
                 await _context.Items.AddAsync(item);
 
-                if (check.Items is null)
-                    check.Items = new List<Item>();
-
                 check.Items.Add(item);
                 check.Sum += item.Price;
                 await _context.SaveChangesAsync();

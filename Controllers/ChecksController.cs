@@ -112,7 +112,6 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Payer,Sum,Location,Items,Id")] Check check, int dayExpensesId)
         {
-            check.Items = new List<Item>();
             ModelState.ClearValidationState(nameof(Check));
             if (!TryValidateModel(nameof(Check)))
             {

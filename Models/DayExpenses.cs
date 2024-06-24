@@ -2,9 +2,9 @@
 {
     public class DayExpenses : DbObject
     {
-        public List<Check> Checks { get; set; }
+        public ICollection<Check> Checks { get; } = new List<Check>();
         public DateOnly Date { get; set; }
-        public List<string> Participants { get; set; }
-        public List<string> PeopleWithAccess { get; set; }
+        public ICollection<string> Participants { get; } = new List<string>();
+        public ICollection<string> PeopleWithAccess { get; } = new List<string>();
     }
 }

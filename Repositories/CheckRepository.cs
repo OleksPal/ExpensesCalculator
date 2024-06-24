@@ -73,7 +73,6 @@ namespace ExpensesCalculator.Repositories
             if (checkToDelete is not null)
             {
                 _context.Checks.Remove(checkToDelete);
-                _context.Items.RemoveRange(checkToDelete.Items);
                 await _context.SaveChangesAsync();
             }
         }
