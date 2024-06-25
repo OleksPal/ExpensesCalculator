@@ -4,10 +4,10 @@ namespace ExpensesCalculator.Repositories
 {
     public interface IItemRepository
     {
-        Task<IEnumerable<Item>> GetAll(int checkId);
+        Task<IEnumerable<Item>> GetAllCheckItems(int checkId);
         Task<Item> GetById(int id);
-        Task Insert(Item item, int checkId);
-        Task Update(Item item, int checkId);
-        Task Delete(int id, int checkId);
+        Task<Item> Insert(Item item);
+        Task<Item> Update(Item item);
+        Task<Item> Delete(int id);
     }
 }

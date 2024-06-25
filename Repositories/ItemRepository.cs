@@ -12,11 +12,11 @@ namespace ExpensesCalculator.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Item>> GetAll(int checkId)
+        public async Task<IEnumerable<Item>> GetAllCheckItems(int checkId)
         {
-            var check = await _context.Checks.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == checkId);
+            var items = await _context.Items.Where(i => i.CheckId == checkId).ToListAsync();
 
-            return (check is not null) ? check.Items : new List<Item>();
+            return (items is not null) ? items : new List<Item>();
         }
 
         public async Task<Item> GetById(int id)
@@ -24,47 +24,38 @@ namespace ExpensesCalculator.Repositories
             return await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task Insert(Item item, int checkId)
+        public async Task<Item> Insert(Item item)
         {
-            var check = await _context.Checks.FindAsync(checkId);
+            await _context.Items.AddAsync(item);
+            await _context.SaveChangesAsync();
 
-            if (check is not null)
-            {
-                await _context.Items.AddAsync(item);
-
-                check.Items.Add(item);
-                check.Sum += item.Price;
-                await _context.SaveChangesAsync();
-            }
+            return item;
         }
 
-        public async Task Update(Item item, int checkId)
+        public async Task<Item> Update(Item item)
         {
             var itemToUpdate = await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == item.Id);
-            var check = await _context.Checks.FindAsync(checkId);
 
-            if (itemToUpdate is not null && check is not null) 
+            if (itemToUpdate is not null) 
             {
-                check.Sum -= itemToUpdate.Price;
                 _context.Items.Update(item);
-                check.Sum += item.Price;
-
                 await _context.SaveChangesAsync();
             }
+
+            return item;
         }
 
-        public async Task Delete(int id, int checkId)
+        public async Task<Item> Delete(int id)
         {
             var itemToDelete = await _context.Items.FindAsync(id);
-            var check = await _context.Checks.FindAsync(checkId);
 
-            if (itemToDelete is not null && check is not null) 
+            if (itemToDelete is not null) 
             {
-                check.Sum -= itemToDelete.Price;
-                _context.Remove(itemToDelete);
-
+                _context.Items.Remove(itemToDelete);
                 await _context.SaveChangesAsync();
             }
+
+            return itemToDelete;
         }
     }
 }
