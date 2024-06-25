@@ -12,23 +12,11 @@ namespace ExpensesCalculator.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Check>> GetAll(int dayExpensesId)
+        public async Task<IEnumerable<Check>> GetAllDayChecks(int dayExpensesId)
         {
-            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == dayExpensesId);
+            var checks = await _context.Checks.Where(c => c.DayExpensesId == dayExpensesId).ToListAsync();
 
-            return (dayExpenses is not null) ? dayExpenses.Checks : new List<Check>();
-        }
-
-        public async Task<IEnumerable<Check>> GetAllWithItems(int dayExpensesId)
-        {
-            var checks = GetAll(dayExpensesId).Result.ToList();
-
-            for (int i = 0; i < checks.Count(); i++) 
-            {
-                checks[i] = _context.Checks.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == checks[i].Id).Result;
-            }
-
-            return checks;
+            return (checks is not null) ? checks : new List<Check>();
         }
 
         public async Task<Check> GetById(int id)
@@ -36,45 +24,38 @@ namespace ExpensesCalculator.Repositories
             return await _context.Checks.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<Check> GetByIdWithItems(int id)
+        public async Task<Check> Insert(Check check)
         {
-            return await _context.Checks.AsNoTracking().Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == id);
+            _context.Checks.Add(check);
+            await _context.SaveChangesAsync();
+
+            return check;
         }
 
-        public async Task Insert(Check check, int dayExpensesId)
+        public async Task<Check> Update(Check check)
         {
-            var dayExpenses = await _context.Days.Include(d => d.Checks)
-                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-
-            if (dayExpenses is not null)
-            {
-                _context.Checks.Add(check);
-                dayExpenses.Checks.Add(check);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Update(Check check)
-        {
-            var checkToUpdate = await _context.Checks.AsNoTracking().Include(c => c.Items).FirstOrDefaultAsync(i => i.Id == check.Id);
+            var checkToUpdate = await _context.Checks.AsNoTracking().FirstOrDefaultAsync(i => i.Id == check.Id);
 
             if (checkToUpdate is not null)
             {
-                check.Items = checkToUpdate.Items;
                 _context.Checks.Update(check);
                 await _context.SaveChangesAsync();
             }
+
+            return check;
         }
 
-        public async Task Delete(int id)
+        public async Task<Check> Delete(int id)
         {
-            var checkToDelete = await GetByIdWithItems(id);
+            var checkToDelete = await GetById(id);
 
             if (checkToDelete is not null)
             {
                 _context.Checks.Remove(checkToDelete);
                 await _context.SaveChangesAsync();
             }
+
+            return checkToDelete;
         }
     }
 }
