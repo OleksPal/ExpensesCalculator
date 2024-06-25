@@ -15,6 +15,7 @@ namespace ExpensesCalculator.Models
         [StringLength(100, ErrorMessage = "Description can have a max of 100 characters")]
         public string? Description { get; set; }
 
+        [Required(ErrorMessage = "Please enter item price")]
         [DataType(DataType.Currency)]
         [Display(Name = "Price")]
         [DisplayFormat(DataFormatString = "{0}₴")]
