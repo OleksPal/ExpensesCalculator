@@ -26,22 +26,26 @@ namespace ExpensesCalculator.Repositories
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public async Task Insert(DayExpenses dayExpenses)
+        public async Task<DayExpenses> Insert(DayExpenses dayExpenses)
         {
             await _context.Days.AddAsync(dayExpenses);
             await _context.SaveChangesAsync();
+
+            return dayExpenses;
         }
 
-        public async Task Update(DayExpenses dayExpenses)
+        public async Task<DayExpenses> Update(DayExpenses dayExpenses)
         {
             if (dayExpenses.PeopleWithAccess.Contains(_requestorName))
             {
                 _context.Days.Update(dayExpenses);
                 await _context.SaveChangesAsync();
-            }            
+            }
+
+            return dayExpenses;
         }
 
-        public async Task Delete(int id)
+        public async Task<DayExpenses> Delete(int id)
         {
             var dayToDelete = await _context.Days.FindAsync(id);
 
@@ -50,6 +54,8 @@ namespace ExpensesCalculator.Repositories
                 _context.Days.Remove(dayToDelete);
                 await _context.SaveChangesAsync();
             }
+
+            return dayToDelete;
         }
     }
 }
