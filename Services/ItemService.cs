@@ -65,8 +65,7 @@ namespace ExpensesCalculator.Services
 
         public async Task<ManageCheckItemsViewModel> AddItem(Item item, int checkId, int dayExpensesId)
         {
-            var check = await _checkRepository.GetById(checkId);
-            check.Items.AddRange(_itemRepository.GetAllCheckItems(checkId).Result);
+            var check = await GetCheckWithItems(checkId);
 
             await _itemRepository.Insert(item);
             check.Items.Add(item);
@@ -77,8 +76,7 @@ namespace ExpensesCalculator.Services
 
         public async Task<ManageCheckItemsViewModel> EditItem(Item item, int checkId, int dayExpensesId)
         {
-            var check = await _checkRepository.GetById(checkId);
-            check.Items.AddRange(_itemRepository.GetAllCheckItems(checkId).Result);
+            var check = await GetCheckWithItems(checkId);
 
             var oldItem = await _itemRepository.GetById(item.Id);
             check.Sum -= oldItem.Price;
@@ -90,14 +88,21 @@ namespace ExpensesCalculator.Services
 
         public async Task<ManageCheckItemsViewModel> DeleteItem(int id, int checkId, int dayExpensesId)
         {
-            var check = await _checkRepository.GetById(checkId);
-            check.Items.AddRange(_itemRepository.GetAllCheckItems(checkId).Result);
+            var check = await GetCheckWithItems(checkId);
 
             var item = await _itemRepository.GetById(id);
             check.Sum -= item.Price;
             await _itemRepository.Delete(id);
 
             return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+        }
+
+        private async Task<Check> GetCheckWithItems(int checkId)
+        {
+            var check = await _checkRepository.GetById(checkId);
+            check.Items.AddRange(await _itemRepository.GetAllCheckItems(checkId));
+
+            return check;
         }
     }
 }
