@@ -1,6 +1,5 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories;
-using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using System.Text.RegularExpressions;
 
@@ -11,13 +10,16 @@ namespace ExpensesCalculator.Services
         private readonly IItemRepository _itemRepository;
         private readonly ICheckRepository _checkRepository;
         private readonly IDayExpensesRepository _dayExpensesRepository;
+        private readonly IUserRepository _userRepository;
 
         public DayExpensesService(IItemRepository itemRepository, 
-            ICheckRepository checkRepository, IDayExpensesRepository dayExpensesRepository)
+            ICheckRepository checkRepository, IDayExpensesRepository dayExpensesRepository, 
+            IUserRepository userRepository)
         {
             _itemRepository = itemRepository;
             _checkRepository = checkRepository;
             _dayExpensesRepository = dayExpensesRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<ICollection<DayExpenses>> GetAllDays()
@@ -220,9 +222,9 @@ namespace ExpensesCalculator.Services
 
             if (dayExpenses is not null)
             {
-                var users = _context.Users.Any(u => u.UserName == newUserWithAccess);
+                bool isUserExist = _userRepository.UserExists(newUserWithAccess);
 
-                if (!UserExists(newUserWithAccess))
+                if (!isUserExist)
                     return "There is no such user!";
                 else if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
                     return "This user already has access!";
