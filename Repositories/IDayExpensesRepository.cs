@@ -4,7 +4,7 @@ namespace ExpensesCalculator.Repositories
 {
     public interface IDayExpensesRepository
     {
-        Task<IEnumerable<DayExpenses>> GetAll();
+        Task<ICollection<DayExpenses>> GetAll();
         Task<DayExpenses> GetById(int id);
         Task<DayExpenses> Insert(DayExpenses dayExpenses);
         Task<DayExpenses> Update(DayExpenses dayExpenses);

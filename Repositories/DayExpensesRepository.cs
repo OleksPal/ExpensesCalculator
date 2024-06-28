@@ -15,7 +15,7 @@ namespace ExpensesCalculator.Repositories
             _requestorName = requestorName;
         }
 
-        public async Task<IEnumerable<DayExpenses>> GetAll()
+        public async Task<ICollection<DayExpenses>> GetAll()
         {
             return await _context.Days.Where(d => d.PeopleWithAccess.Contains(_requestorName)).ToListAsync();
         }
