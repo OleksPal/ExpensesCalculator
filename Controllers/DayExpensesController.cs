@@ -1,4 +1,5 @@
-﻿using ExpensesCalculator.Models;
+﻿using AspNetCore;
+using ExpensesCalculator.Models;
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,9 @@ namespace ExpensesCalculator.Controllers
         private readonly IDayExpensesService _dayExpensesService;
 
         public DayExpensesController(IDayExpensesService dayExpensesService)
-        {
+        { 
             _dayExpensesService = dayExpensesService;
+            _dayExpensesService.RequestorName = User.Identity.Name;
         }
 
         // GET: DayExpenses

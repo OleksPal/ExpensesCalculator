@@ -4,6 +4,8 @@ namespace ExpensesCalculator.Services
 {
     public interface IDayExpensesService
     {
+        public string RequestorName { get; set; }
+
         Task<ICollection<DayExpenses>> GetAllDays();
         Task<DayExpenses> GetDayExpensesById(int id);
         Task<DayExpenses> GetDayExpensesByIdWithChecks(int id);

@@ -7,23 +7,20 @@ namespace ExpensesCalculator.Repositories
     public class DayExpensesRepository : IDayExpensesRepository
     {
         private readonly ExpensesContext _context;
-        private readonly string _requestorName;
 
-        public DayExpensesRepository(ExpensesContext context, string requestorName)
+        public DayExpensesRepository(ExpensesContext context)
         {
             _context = context;
-            _requestorName = requestorName;
         }
 
         public async Task<ICollection<DayExpenses>> GetAll()
         {
-            return await _context.Days.Where(d => d.PeopleWithAccess.Contains(_requestorName)).ToListAsync();
+            return await _context.Days.ToListAsync();
         }
 
         public async Task<DayExpenses> GetById(int id)
         {
-            return await _context.Days.Where(d => d.PeopleWithAccess.Contains(_requestorName))
-                .FirstOrDefaultAsync(d => d.Id == id);
+            return await _context.Days.FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task<DayExpenses> Insert(DayExpenses dayExpenses)
@@ -36,11 +33,8 @@ namespace ExpensesCalculator.Repositories
 
         public async Task<DayExpenses> Update(DayExpenses dayExpenses)
         {
-            if (dayExpenses.PeopleWithAccess.Contains(_requestorName))
-            {
-                _context.Days.Update(dayExpenses);
-                await _context.SaveChangesAsync();
-            }
+            _context.Days.Update(dayExpenses);
+            await _context.SaveChangesAsync();
 
             return dayExpenses;
         }
@@ -49,7 +43,7 @@ namespace ExpensesCalculator.Repositories
         {
             var dayToDelete = await _context.Days.FindAsync(id);
 
-            if (dayToDelete is not null && dayToDelete.PeopleWithAccess.Contains(_requestorName)) 
+            if (dayToDelete is not null) 
             {
                 _context.Days.Remove(dayToDelete);
                 await _context.SaveChangesAsync();

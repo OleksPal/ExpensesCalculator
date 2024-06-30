@@ -12,6 +12,8 @@ namespace ExpensesCalculator.Services
         private readonly IDayExpensesRepository _dayExpensesRepository;
         private readonly IUserRepository _userRepository;
 
+        public string RequestorName { get; set; } = "Guest";
+
         public DayExpensesService(IItemRepository itemRepository, 
             ICheckRepository checkRepository, IDayExpensesRepository dayExpensesRepository, 
             IUserRepository userRepository)
@@ -24,18 +26,22 @@ namespace ExpensesCalculator.Services
 
         public async Task<ICollection<DayExpenses>> GetAllDays()
         {            
-            return await _dayExpensesRepository.GetAll();
+            var result = await _dayExpensesRepository.GetAll();
+            return result.Where(r => r.PeopleWithAccess.Contains(RequestorName)).ToList();
         }
 
         public async Task<DayExpenses> GetDayExpensesById(int id)
         {
-            return await _dayExpensesRepository.GetById(id);
+            var result = await _dayExpensesRepository.GetById(id);
+            return result.PeopleWithAccess.Contains(RequestorName) ? result : null;
         }
 
         public async Task<DayExpenses> GetDayExpensesByIdWithChecks(int id)
         {
             var dayExpenses = await GetDayExpensesById(id);
-            dayExpenses.Checks.AddRange(await _checkRepository.GetAllDayChecks(id));
+
+            if (dayExpenses is not null) 
+                dayExpenses.Checks.AddRange(await _checkRepository.GetAllDayChecks(id));
 
             return dayExpenses;
         }
@@ -44,10 +50,13 @@ namespace ExpensesCalculator.Services
         {
             var dayExpenses = await GetDayExpensesById(id);
 
-            dayExpenses.Checks.AddRange(await _checkRepository.GetAllDayChecks(id));
+            if (dayExpenses is not null)
+            {
+                dayExpenses.Checks.AddRange(await _checkRepository.GetAllDayChecks(id));
 
-            foreach (var check in dayExpenses.Checks)
-                check.Items.AddRange(await _itemRepository.GetAllCheckItems(check.Id));
+                foreach (var check in dayExpenses.Checks)
+                    check.Items.AddRange(await _itemRepository.GetAllCheckItems(check.Id));
+            }
 
             return dayExpenses;
         }
