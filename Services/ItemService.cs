@@ -54,7 +54,7 @@ namespace ExpensesCalculator.Services
 
             if (dayExpenses is not null)          
             {
-                foreach (var participant in dayExpenses.Participants)
+                foreach (var participant in dayExpenses.ParticipantsList)
                 {
                     optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
                 }

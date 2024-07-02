@@ -15,13 +15,14 @@ namespace ExpensesCalculator.Controllers
         public DayExpensesController(IDayExpensesService dayExpensesService)
         { 
             _dayExpensesService = dayExpensesService;
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            
         }
 
         // GET: DayExpenses
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            _dayExpensesService.RequestorName = User.Identity.Name;
             var currentUsersName = User.Identity.Name;
             List<DayExpenses> days = new List<DayExpenses>();
 

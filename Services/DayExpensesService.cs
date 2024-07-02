@@ -74,7 +74,7 @@ namespace ExpensesCalculator.Services
             if (dayExpenses is not null)
             {
                 dayExpensesCalculation.DayExpensesId = dayExpenses.Id;
-                dayExpensesCalculation.Participants = dayExpenses.Participants.ToList();
+                dayExpensesCalculation.Participants = dayExpenses.ParticipantsList.ToList();
                 dayExpensesCalculation.Checks = dayExpenses.Checks.ToList();
                 dayExpensesCalculation.AllUsersTrasactions = CalculateTransactionList(dayExpensesCalculation.Checks);
 
@@ -96,9 +96,9 @@ namespace ExpensesCalculator.Services
 
         public async Task<DayExpenses> AddDayExpenses(DayExpenses dayExpenses)
         {
-            string rareNameList = dayExpenses.Participants.ToList()[0];
-            dayExpenses.Participants.Clear();
-            dayExpenses.Participants.AddRange(GetParticipantListFromString(rareNameList));
+            string rareNameList = dayExpenses.ParticipantsList.ToList()[0];
+            dayExpenses.ParticipantsList.Clear();
+            dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
 
             await _dayExpensesRepository.Insert(dayExpenses);
 
@@ -107,9 +107,9 @@ namespace ExpensesCalculator.Services
 
         public async Task<DayExpenses> EditDayExpenses(DayExpenses dayExpenses)
         {
-            string rareNameList = dayExpenses.Participants.ToList()[0];
-            dayExpenses.Participants.Clear();
-            dayExpenses.Participants.AddRange(GetParticipantListFromString(rareNameList));
+            string rareNameList = dayExpenses.ParticipantsList.ToList()[0];
+            dayExpenses.ParticipantsList.Clear();
+            dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
 
             await _dayExpensesRepository.Update(dayExpenses);
 
@@ -128,7 +128,7 @@ namespace ExpensesCalculator.Services
         public async Task<string> GetFormatParticipantsNames(int id)
         {
             var dayExpenses = await GetDayExpensesById(id);
-            var participants = dayExpenses.Participants.ToList();
+            var participants = dayExpenses.ParticipantsList.ToList();
 
             string formatList = String.Empty;
             for (int i = 0; i < participants.Count; i++)
@@ -239,7 +239,7 @@ namespace ExpensesCalculator.Services
                     return "This user already has access!";
                 else
                 {
-                    dayExpenses.PeopleWithAccess.Add(newUserWithAccess);
+                    dayExpenses.PeopleWithAccessList.Add(newUserWithAccess);
                     return "Done!";
                 }
             }

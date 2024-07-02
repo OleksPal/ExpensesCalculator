@@ -18,9 +18,9 @@ namespace ExpensesCalculator.Data
 
             var dayExpenses = new DayExpenses { Id = 1, Date = new DateOnly(2024, 1, 1) };
             dayExpenses.Checks.Add(check);
-            dayExpenses.Participants.Add("User1");
-            dayExpenses.Participants.Add("User2");
-            dayExpenses.PeopleWithAccess.Add("Guest");
+            dayExpenses.ParticipantsList.Add("User1");
+            dayExpenses.ParticipantsList.Add("User2");
+            dayExpenses.PeopleWithAccessList.Add("Guest");
 
             context.Items.Add(item);
             context.Checks.Add(check);
