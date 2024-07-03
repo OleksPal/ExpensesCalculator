@@ -151,10 +151,21 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
         {
-            var model = await _dayExpensesService.AddDayExpenses(dayExpenses);
-            return View(model);
+            if (dayExpenses.ParticipantsList.ToList()[0] is null) 
+            {
+                ModelState.AddModelError("ParticipantsList", "Add some participants!");
+            }
+            if (ModelState.IsValid)
+            {
+                await _dayExpensesService.AddDayExpenses(dayExpenses);
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return PartialView("_CreateDayExpenses", dayExpenses);
+            }             
         }
 
         // POST: DayExpenses/Edit/5

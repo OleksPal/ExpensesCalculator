@@ -16,6 +16,7 @@ namespace ExpensesCalculator.Models
         public DateOnly Date { get; set; }
 
         [NotMapped]
+        [Required(ErrorMessage = "Please enter participants")]
         public ICollection<string> ParticipantsList { get; set; } = new List<string>();
 
         [Display(Name = "Participants")]
@@ -30,6 +31,7 @@ namespace ExpensesCalculator.Models
         }
 
         [NotMapped]
+        [Required(ErrorMessage = "Please enter people with access")]
         public ICollection<string> PeopleWithAccessList { get; set; } = new List<string>();
 
         [Display(Name = "People with access")]

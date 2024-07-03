@@ -27,7 +27,7 @@ namespace ExpensesCalculator.Services
         public async Task<ICollection<DayExpenses>> GetAllDays()
         {            
             var result = await _dayExpensesRepository.GetAll();
-            return result.Where(r => r.PeopleWithAccess.Contains(RequestorName)).ToList();
+            return result.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
         }
 
         public async Task<DayExpenses> GetDayExpensesById(int id)
