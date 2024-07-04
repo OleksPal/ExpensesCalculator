@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ExpensesCalculator.Models
 {
@@ -22,7 +23,7 @@ namespace ExpensesCalculator.Models
         [Display(Name = "Participants")]
         public string Participants
         {
-            get { return string.Join(", ", ParticipantsList); }
+            get { return JsonConvert.SerializeObject(ParticipantsList); }
             set 
             {
                 var participantsList = JsonConvert.DeserializeObject<List<string>>(value);
@@ -37,7 +38,7 @@ namespace ExpensesCalculator.Models
         [Display(Name = "People with access")]
         public string PeopleWithAccess
         {
-            get { return string.Join(", ", PeopleWithAccessList); }
+            get { return JsonConvert.SerializeObject(PeopleWithAccessList); }
             set
             {
                 var peopleWithAccessList = JsonConvert.DeserializeObject<List<string>>(value);

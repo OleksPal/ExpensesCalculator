@@ -164,6 +164,7 @@ namespace ExpensesCalculator.Controllers
             }
             else
             {
+                ViewData["CurrentUsersName"] = User.Identity.Name;
                 return PartialView("_CreateDayExpenses", dayExpenses);
             }             
         }

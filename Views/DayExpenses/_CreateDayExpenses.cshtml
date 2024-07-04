@@ -19,7 +19,6 @@
             <input asp-for="ParticipantsList" class="form-control" id="participants" />
             <span asp-validation-for="ParticipantsList" class="text-danger"></span>
         </div>
-        <input type="hidden" asp-for="PeopleWithAccessList" value="@ViewData["CurrentUsersName"]" />
         <div class="form-group">
             <button type="button" value="Create" class="btn btn-success" id="createDayExpensesButton">
                 <i class="bi bi-plus-circle"></i> Add expenses
@@ -30,4 +29,5 @@
 
 <script>
     var token = '@Html.AntiForgeryToken()';
+    var currentUsersName = "@ViewData["CurrentUsersName"]";
 </script>

@@ -42,8 +42,10 @@
                     @Html.DisplayFor(model => day.Date)
                 </td>
                 <td>
-                    @foreach (var participant in day.Participants)
-                        @participant
+                    @foreach (var participant in day.ParticipantsList)
+                    {
+                        <label>@participant; </label>
+                    }
                 </td>
                 <td>
                     <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"

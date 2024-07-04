@@ -4,7 +4,7 @@ $(function () {
             url: `/DayExpenses/Create`,
             data: {
                 Date: $("#date").val(), ParticipantsList: $("#participants").val(),
-                PeopleWithAccessList: $("#PeopleWithAccessList").val(),
+                PeopleWithAccessList: currentUsersName,
                 __RequestVerificationToken: $(token).val()
             },
             type: "Post",
