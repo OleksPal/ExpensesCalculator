@@ -3,7 +3,6 @@ using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -15,7 +14,6 @@ namespace ExpensesCalculator.Controllers
         public DayExpensesController(IDayExpensesService dayExpensesService)
         { 
             _dayExpensesService = dayExpensesService;
-            
         }
 
         // GET: DayExpenses
@@ -154,9 +152,7 @@ namespace ExpensesCalculator.Controllers
         public async Task<IActionResult> Create([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
         {
             if (dayExpenses.ParticipantsList.ToList()[0] is null) 
-            {
                 ModelState.AddModelError("ParticipantsList", "Add some participants!");
-            }
             if (ModelState.IsValid)
             {
                 await _dayExpensesService.AddDayExpenses(dayExpenses);

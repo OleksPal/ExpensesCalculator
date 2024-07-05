@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ExpensesCalculator.Models
 {
@@ -17,10 +16,9 @@ namespace ExpensesCalculator.Models
         public DateOnly Date { get; set; }
 
         [NotMapped]
-        [Required(ErrorMessage = "Please enter participants")]
+        [Display(Name = "Participants")]
         public ICollection<string> ParticipantsList { get; set; } = new List<string>();
 
-        [Display(Name = "Participants")]
         public string Participants
         {
             get { return JsonConvert.SerializeObject(ParticipantsList); }
@@ -32,10 +30,9 @@ namespace ExpensesCalculator.Models
         }
 
         [NotMapped]
-        [Required(ErrorMessage = "Please enter people with access")]
+        [Display(Name = "People with access")]
         public ICollection<string> PeopleWithAccessList { get; set; } = new List<string>();
 
-        [Display(Name = "People with access")]
         public string PeopleWithAccess
         {
             get { return JsonConvert.SerializeObject(PeopleWithAccessList); }

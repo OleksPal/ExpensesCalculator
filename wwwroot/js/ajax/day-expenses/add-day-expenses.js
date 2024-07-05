@@ -9,10 +9,14 @@ $(function () {
             },
             type: "Post",
             success: function (result) {
-                $('#modal-content').html(result);         
+                // Check if response contains div with class modal-body
+                if (result.indexOf("<div class=\"modal-body\">") >= 0)
+                    $('#modal-content').html(result);
+                else
+                    location.reload(true);
             },
             error: function (result) {
-                $('#modal-content').html(data);
+                $('#modal-content').html(result);
             }
         });      
     });
