@@ -1,5 +1,6 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories;
+using Newtonsoft.Json.Linq;
 using NuGet.Packaging;
 using System.Text.RegularExpressions;
 
@@ -214,13 +215,13 @@ namespace ExpensesCalculator.Services
 
         private IEnumerable<string> GetParticipantListFromString(string rareText)
         {
-            Regex spacesAfterComma = new Regex(@",\s+"),
-                bigSpaces = new Regex(@"\s+");
-            rareText = bigSpaces.Replace(rareText, " ");
-            rareText = spacesAfterComma.Replace(rareText, ",");
+            Regex pattern = new Regex(@"\w+");
 
-            List<string> participantList = rareText.Split(',').ToList();
-            participantList = participantList.Select(p => p != null ? p.Trim() : null).ToList();
+            var matchList = pattern.Matches(rareText).ToList();
+            List<string> participantList = new List<string>();
+
+            foreach (var match in matchList)
+                participantList.Add(match.Value);
 
             return participantList;
         }
