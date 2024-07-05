@@ -170,19 +170,21 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Edit(int id, [Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
         {            
             if (id != dayExpenses.Id)
             {
                 return NotFound();
             }
 
-            ModelState.ClearValidationState(nameof(DayExpenses));
-            if (!TryValidateModel(nameof(DayExpenses)))
+            _dayExpensesService.RequestorName = User.Identity.Name;
+
+            if (dayExpenses.ParticipantsList.ToList()[0] is null)
+                ModelState.AddModelError("ParticipantsList", "Add some participants!");
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    _dayExpensesService.RequestorName = User.Identity.Name;
                     var model = await _dayExpensesService.EditDayExpenses(dayExpenses);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -198,7 +200,8 @@ namespace ExpensesCalculator.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.Id);
+            return PartialView("_EditDayExpenses", dayExpenses);
         }
 
         // POST: DayExpenses/Delete/5
