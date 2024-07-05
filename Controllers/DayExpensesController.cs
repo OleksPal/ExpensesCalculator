@@ -21,14 +21,9 @@ namespace ExpensesCalculator.Controllers
         public async Task<IActionResult> Index()
         {
             _dayExpensesService.RequestorName = User.Identity.Name;
-            var currentUsersName = User.Identity.Name;
-            List<DayExpenses> days = new List<DayExpenses>();
 
-            if (currentUsersName is not null)
-            {
-                var collection = await _dayExpensesService.GetAllDays();
-                days = collection.ToList();
-            }
+            var collection = await _dayExpensesService.GetAllDays();
+            List<DayExpenses> days = collection.ToList();
 
             return View(days);
         }
@@ -50,6 +45,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            _dayExpensesService.RequestorName = User.Identity.Name;
             var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
             if (day == null)
@@ -58,7 +54,7 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CurrentUsersName"] = User.Identity.Name;
-            ViewBag.FormatParticipantNames = _dayExpensesService.GetFormatParticipantsNames(day.Id);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
 
             return PartialView("_EditDayExpenses", day);
         }
@@ -72,6 +68,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            _dayExpensesService.RequestorName = User.Identity.Name;
             var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
             if (day == null)
@@ -79,7 +76,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            ViewBag.FormatParticipantNames = _dayExpensesService.GetFormatParticipantsNames(day.Id);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
 
             return PartialView("_DeleteDayExpenses", day);
         }
@@ -93,6 +90,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            _dayExpensesService.RequestorName = User.Identity.Name;
             var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
             if (day == null)
@@ -115,6 +113,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            _dayExpensesService.RequestorName = User.Identity.Name;
             var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses((int)id);
 
             if (dayExpensesCalculation == null)
@@ -134,6 +133,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
+            _dayExpensesService.RequestorName = User.Identity.Name;
             var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((int)id);
 
             if (dayExpenses is null)
@@ -182,6 +182,7 @@ namespace ExpensesCalculator.Controllers
             {
                 try
                 {
+                    _dayExpensesService.RequestorName = User.Identity.Name;
                     var model = await _dayExpensesService.EditDayExpenses(dayExpenses);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -207,6 +208,7 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            _dayExpensesService.RequestorName = User.Identity.Name;
             await _dayExpensesService.DeleteDayExpenses(id);
             return RedirectToAction(nameof(Index));
         }
@@ -218,6 +220,7 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Share(int id, string newUserWithAccess)
         {
+            _dayExpensesService.RequestorName = User.Identity.Name;
             var response = await _dayExpensesService.ChangeDayExpensesAccess(id, newUserWithAccess);
             if (response is null)
                 return NotFound();

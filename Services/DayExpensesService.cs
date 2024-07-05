@@ -108,11 +108,14 @@ namespace ExpensesCalculator.Services
 
         public async Task<DayExpenses> EditDayExpenses(DayExpenses dayExpenses)
         {
-            string rareNameList = dayExpenses.ParticipantsList.ToList()[0];
-            dayExpenses.ParticipantsList.Clear();
-            dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
+            if (dayExpenses.PeopleWithAccessList.Contains(RequestorName))
+            {
+                string rareNameList = dayExpenses.ParticipantsList.ToList()[0];
+                dayExpenses.ParticipantsList.Clear();
+                dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
 
-            await _dayExpensesRepository.Update(dayExpenses);
+                await _dayExpensesRepository.Update(dayExpenses);
+            }            
 
             return dayExpenses;
         }
@@ -121,7 +124,8 @@ namespace ExpensesCalculator.Services
         {
             var dayExpensesToDelete = await GetDayExpensesById(id);
 
-            await _dayExpensesRepository.Delete(id);
+            if(dayExpensesToDelete is not null)
+                await _dayExpensesRepository.Delete(id);
 
             return dayExpensesToDelete;
         }
