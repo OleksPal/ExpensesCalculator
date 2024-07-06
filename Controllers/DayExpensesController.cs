@@ -99,7 +99,7 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CurrentUsersName"] = User.Identity.Name;
-            ViewBag.FormatParticipantNames = _dayExpensesService.GetFormatParticipantsNames(day.Id);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
 
             return PartialView("_ShareDayExpenses", day);
         }
