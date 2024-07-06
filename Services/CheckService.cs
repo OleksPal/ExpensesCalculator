@@ -73,11 +73,10 @@ namespace ExpensesCalculator.Services
         }
 
         public async Task<DayExpenses> DeleteCheck(int id, int dayExpensesId)
-        {
-            var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
-
+        {          
             await _checkRepository.Delete(id);
 
+            var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
             return dayExpenses;
         }
 

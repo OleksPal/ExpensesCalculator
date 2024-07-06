@@ -53,7 +53,8 @@ namespace ExpensesCalculator.Services
 
             if (dayExpenses is not null)
             {
-                dayExpenses.Checks.AddRange(await _checkRepository.GetAllDayChecks(id));
+                var checks = await _checkRepository.GetAllDayChecks(id);
+                dayExpenses.Checks = checks.ToList();
 
                 foreach (var check in dayExpenses.Checks)
                     check.Items.AddRange(await _itemRepository.GetAllCheckItems(check.Id));

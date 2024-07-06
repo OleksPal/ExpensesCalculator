@@ -7,7 +7,7 @@ namespace ExpensesCalculator.Models
 {
     public class DayExpenses : DbObject
     {
-        public ICollection<Check> Checks { get; } = new List<Check>();
+        public ICollection<Check> Checks { get; set; } = new List<Check>();
 
         [Required(ErrorMessage = "Please enter expenses date")]
         [DataType(DataType.Date)]
