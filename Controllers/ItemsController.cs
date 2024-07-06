@@ -78,15 +78,19 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Users,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
+        public async Task<IActionResult> Create([Bind("CheckId,Users,Name,Description,Price,Id")] Item item, int dayExpensesId)
         {
             if (ModelState.IsValid)
             {
-                var model = await _itemService.AddItem(item, checkId, dayExpensesId);
+                var model = await _itemService.AddItem(item, item.CheckId, dayExpensesId);
                 return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
             }
 
-            return PartialView("_CreateItem");
+            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+            ViewData["CheckId"] = item.CheckId;
+            ViewData["DayExpensesId"] = dayExpensesId;
+
+            return PartialView("_CreateItem", item);
         }
 
         // POST: Items/Edit/5?checkId=1&dayExpensesId=2
