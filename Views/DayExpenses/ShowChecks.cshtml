@@ -31,7 +31,7 @@
                 @Html.DisplayFor(model => model.Date)
             </td>
             <td>
-                @foreach (var participant in Model.Participants)
+                @foreach (var participant in Model.ParticipantsList)
                 {
                     <label>@participant; </label>
                 }

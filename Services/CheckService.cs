@@ -59,7 +59,6 @@ namespace ExpensesCalculator.Services
             var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
 
             await _checkRepository.Insert(check);
-            dayExpenses.Checks.Add(check);
 
             return dayExpenses;
         }

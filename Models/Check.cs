@@ -19,7 +19,7 @@ namespace ExpensesCalculator.Models
         [StringLength(100, ErrorMessage = "Location can have a max of 100 characters")]
         public string Location { get; set; }
 
-        [Required(ErrorMessage = "Please enter check payer")]
+        [Required(ErrorMessage = "Please choose check payer")]
         [DataType(DataType.Text)]
         [Display(Name = "Payer")]
         [StringLength(50, ErrorMessage = "Payer`s name can have a max of 50 characters")]

@@ -89,15 +89,18 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Payer,Sum,Location,Items,Id")] Check check, int dayExpensesId)
+        public async Task<IActionResult> Create([Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
-            ModelState.ClearValidationState(nameof(Check));
-            if (!TryValidateModel(nameof(Check)))
+            if (ModelState.IsValid)
             {
-                var model = _checkService.AddCheck(check, dayExpensesId); 
+                var model = await _checkService.AddCheck(check, check.DayExpensesId); 
                 return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
             }
-            return PartialView("_CreateCheck");
+
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
+            ViewData["DayExpensesId"] = check.DayExpensesId;
+
+            return PartialView("_CreateCheck", check);
         }
 
         // POST: Checks/Edit/5?dayExpensesId=1
