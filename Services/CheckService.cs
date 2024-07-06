@@ -65,10 +65,9 @@ namespace ExpensesCalculator.Services
 
         public async Task<DayExpenses> EditCheck(Check check, int dayExpensesId)
         {
-            var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
-
             await _checkRepository.Update(check);
 
+            var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
             return dayExpenses;
         }
 
@@ -83,7 +82,8 @@ namespace ExpensesCalculator.Services
         private async Task<DayExpenses> GetDayExpensesWithCheck(int dayExpensesId)
         {
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
-            dayExpenses.Checks.AddRange(await _checkRepository.GetAllDayChecks(dayExpensesId));
+            var checks = await _checkRepository.GetAllDayChecks(dayExpensesId);
+            dayExpenses.Checks = checks.ToList();
 
             return dayExpenses;
         }

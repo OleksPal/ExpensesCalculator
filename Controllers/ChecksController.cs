@@ -108,19 +108,18 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Payer,Sum,Location,Items,Id")] Check check, int dayExpensesId)
+        public async Task<IActionResult> Edit(int id, [Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
             if (id != check.Id)
             {
                 return NotFound();
             }
 
-            ModelState.ClearValidationState(nameof(Check));
-            if (!TryValidateModel(nameof(Check)))
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    var model = await _checkService.EditCheck(check, dayExpensesId);
+                    var model = await _checkService.EditCheck(check, check.DayExpensesId);
                     return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -135,7 +134,11 @@ namespace ExpensesCalculator.Controllers
                     }
                 }
             }
-            return PartialView("_EditCheck");
+
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
+            ViewData["DayExpensesId"] = check.DayExpensesId;
+
+            return PartialView("_EditCheck", check);
         }
 
         // POST: Checks/Delete/5?dayExpensesId=1
