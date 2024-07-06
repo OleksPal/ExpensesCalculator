@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExpensesCalculator.Models
 {
@@ -22,7 +25,19 @@ namespace ExpensesCalculator.Models
         [Range(0, Double.MaxValue, ErrorMessage = "Please enter correct price")]
         public decimal Price { get; set; }
 
-        public ICollection<string> Users { get; } = new List<string>();
+        [NotMapped]
+        [Display(Name = "Users")]
+        public ICollection<string> UsersList { get; set; } = new List<string>();
+
+        public string Users
+        {
+            get { return JsonConvert.SerializeObject(UsersList); }
+            set
+            {
+                var usersList = JsonConvert.DeserializeObject<List<string>>(value);
+                UsersList = usersList.IsNullOrEmpty() ? new List<string>() : usersList;
+            }
+        }
 
         public int CheckId { get; set; }
     }
