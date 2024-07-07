@@ -34,12 +34,12 @@ namespace ExpensesCalculator.Services
             var item = await GetItemById(id);
             string formatList = String.Empty;
 
-            foreach (var user in item.Users)
+            foreach (var user in item.UsersList)
             {
                 if (user is not null)
                 {
                     formatList.Concat(user);
-                    if (user != item.Users.Last())
+                    if (user != item.UsersList.Last())
                         formatList += ", ";
                 }
             }
@@ -67,9 +67,10 @@ namespace ExpensesCalculator.Services
         {
             var check = await GetCheckWithItems(checkId);
 
-            await _itemRepository.Insert(item);
             check.Items.Add(item);
             check.Sum += item.Price;
+            await _itemRepository.Insert(item);
+            await _checkRepository.Update(check);            
 
             return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
         }
@@ -79,9 +80,9 @@ namespace ExpensesCalculator.Services
             var check = await GetCheckWithItems(checkId);
 
             var oldItem = await _itemRepository.GetById(item.Id);
-            check.Sum -= oldItem.Price;
-            await _itemRepository.Update(item);
+            check.Sum -= oldItem.Price;            
             check.Sum += item.Price;
+            await _itemRepository.Update(item);
 
             return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
         }

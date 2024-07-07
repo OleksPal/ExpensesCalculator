@@ -40,7 +40,7 @@
                             @Html.DisplayFor(model => item.Price)
                         </td>
                         <td>
-                            @foreach (var user in item.Users)
+                            @foreach (var user in item.UsersList)
                             {
                                 <label>@user; </label>
                             }

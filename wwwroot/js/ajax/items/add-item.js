@@ -1,16 +1,20 @@
 $(function () {
     $("#createButton").on("click", function () {
         var userSelect = document.getElementById("Subjects_dropdown");
-        var users = [];
+        var users = "";
         for (var i = 0; i < userSelect.length; i++) {
-            if (userSelect.options[i].selected)
-                users.push(userSelect.options[i].value);
+            if (userSelect.options[i].selected) {
+                if (users.length != 0) {
+                    users += ",";
+                }
+                users += userSelect.options[i].value;  
+            }                          
         }
 
         $.ajax({
             url: `/Items/Create?dayexpensesid=${dayExpensesId}`,
             data: {
-                Name: $("#name").val(), Description: $("#description").val(), Price: $("#price").val(), Users: users,
+                Name: $("#name").val(), Description: $("#description").val(), Price: $("#price").val(), UsersList: users,
                 CheckId: checkId,
                 __RequestVerificationToken: $(token).val()
             },

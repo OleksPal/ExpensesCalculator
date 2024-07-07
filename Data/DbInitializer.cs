@@ -10,8 +10,8 @@ namespace ExpensesCalculator.Data
                 return;
 
             var item = new Item { Id = 1, Name = "Item1", Description = "Description1", Price = 1000, CheckId = 1 };
-            item.Users.Add("User1");
-            item.Users.Add("User2");
+            item.UsersList.Add("User1");
+            item.UsersList.Add("User2");
 
             var check = new Check { Id = 1, Location = "Shop1", Sum = 1000, Payer = "User1", DayExpensesId = 1 };
             check.Items.Add(item);

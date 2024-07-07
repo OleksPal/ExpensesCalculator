@@ -158,12 +158,12 @@ namespace ExpensesCalculator.Services
                 Dictionary<SenderRecipient, decimal> userTransactions = new();
                 foreach (var item in check.Items)
                 {
-                    foreach (var user in item.Users)
+                    foreach (var user in item.UsersList)
                     {
                         if (user != check.Payer)
                         {
                             var transactionKey = new SenderRecipient(user, check.Payer);
-                            decimal transactionValue = (decimal)(item.Price / item.Users.Count);
+                            decimal transactionValue = (decimal)(item.Price / item.UsersList.Count);
 
                             if (!userTransactions.Keys.Any(key => key.Equals(transactionKey)))
                                 userTransactions.Add(transactionKey, transactionValue);
