@@ -24,9 +24,9 @@
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Users" class="control-label"></label>
-            <input asp-for="Users" value="@ViewData["FormatParticipantNames"]" class="form-control" disabled readonly />
-            <span asp-validation-for="Users" class="text-danger"></span>
+            <label asp-for="UsersList" class="control-label"></label>
+            <input asp-for="UsersList" value="@ViewData["FormatParticipantNames"]" class="form-control" disabled readonly />
+            <span asp-validation-for="UsersList" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id"/>
         <button type="button" value="Delete" class="btn btn-danger" id="deleteButton">

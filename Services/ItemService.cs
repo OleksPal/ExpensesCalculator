@@ -38,7 +38,7 @@ namespace ExpensesCalculator.Services
             {
                 if (user is not null)
                 {
-                    formatList.Concat(user);
+                    formatList += user;
                     if (user != item.UsersList.Last())
                         formatList += ", ";
                 }
@@ -90,10 +90,15 @@ namespace ExpensesCalculator.Services
         public async Task<ManageCheckItemsViewModel> DeleteItem(int id, int checkId, int dayExpensesId)
         {
             var check = await GetCheckWithItems(checkId);
-
             var item = await _itemRepository.GetById(id);
-            check.Sum -= item.Price;
-            await _itemRepository.Delete(id);
+
+            if (item is not null) 
+            {
+                check.Items.Remove(item);
+                check.Sum -= item.Price;
+                await _itemRepository.Delete(id);
+                await _checkRepository.Update(check);
+            }            
 
             return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
         }
