@@ -1,7 +1,5 @@
 $(function () {
     $("#editButton").on("click", function () {
-        $("#staticBackdrop").modal("hide");
-
         var userSelect = document.getElementById("Subjects_dropdown");
         var users = "";
         for (var i = 0; i < userSelect.length; i++) {

@@ -86,7 +86,8 @@ namespace ExpensesCalculator.Services
                 await _itemRepository.Update(item);
                 check.Sum -= oldItemPrice;
                 check.Sum += item.Price;                
-                check = await _checkRepository.Update(check);
+                await _checkRepository.Update(check);
+                check = await GetCheckWithItems(checkId);
             }
 
             return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
