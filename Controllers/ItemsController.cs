@@ -104,12 +104,15 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Users,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
+        public async Task<IActionResult> Edit(int id, [Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
         {
             if (id != item.Id)
             {
                 return NotFound();
             }
+
+            if (item.UsersList.ToList()[0] is null)
+                ModelState.AddModelError("UsersList", "Choose some users");
 
             if (ModelState.IsValid)
             {                
@@ -130,6 +133,13 @@ namespace ExpensesCalculator.Controllers
                     }
                 }
             }
+
+            if (item.UsersList.ToList()[0] is not null)
+                item.UsersList = item.UsersList.ToList()[0].Split(',');
+
+            ViewData["CheckId"] = checkId;
+            ViewData["DayExpensesId"] = dayExpensesId;
+            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
 
             return PartialView("_EditItem");
         }

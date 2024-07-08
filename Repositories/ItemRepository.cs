@@ -21,7 +21,9 @@ namespace ExpensesCalculator.Repositories
 
         public async Task<Item> GetById(int id)
         {
-            return await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            _context.ChangeTracker.Clear();
+            return item;
         }
 
         public async Task<Item> Insert(Item item)

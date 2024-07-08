@@ -77,12 +77,17 @@ namespace ExpensesCalculator.Services
 
         public async Task<ManageCheckItemsViewModel> EditItem(Item item, int checkId, int dayExpensesId)
         {
-            var check = await GetCheckWithItems(checkId);
-
+            var check = await _checkRepository.GetById(checkId);
             var oldItem = await _itemRepository.GetById(item.Id);
-            check.Sum -= oldItem.Price;            
-            check.Sum += item.Price;
-            await _itemRepository.Update(item);
+            var oldItemPrice = oldItem.Price;
+            
+            if (item is not null)
+            {
+                await _itemRepository.Update(item);
+                check.Sum -= oldItemPrice;
+                check.Sum += item.Price;                
+                check = await _checkRepository.Update(check);
+            }
 
             return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
         }
