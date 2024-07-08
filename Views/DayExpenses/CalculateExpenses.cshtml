@@ -35,7 +35,7 @@
         {
             if(check.Items.Count != 0)
             {
-                double sum = 0;
+                decimal sum = 0;
 
                 <div class="mytooltip">
                     <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id"
@@ -62,7 +62,7 @@
                                         { "dayexpensesid", Model.DayExpensesId.ToString() }
                                         };
 
-                                    double priceForUser = Math.Round((item.Price / item.Users.Count), 2);
+                                    decimal priceForUser = Math.Round((item.Price / item.UsersList.Count), 2);
                                     sum += priceForUser;
                                 }
                                 <div class="mytooltip">
@@ -77,7 +77,7 @@
                                 </div>
                                 (@item.Price₴) /
                                 <div class="mytooltip">
-                                    @item.Users.Count
+                                    @item.UsersList.Count
                                     <span class="top-tooltiptext">
                                         Users:
                                         <ul>                                            

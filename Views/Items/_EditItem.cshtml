@@ -1,5 +1,6 @@
 ﻿@model ExpensesCalculator.Models.Item
 
+<script src="~/js/multiselect-dropdown.js"></script>
 <script src="~/js/ajax/items/edit-item.js"></script>
 
 <div class="modal-header">
@@ -7,7 +8,7 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form asp-action="Edit" asp-route-checkid="@ViewData["CheckId"]" asp-route-dayexpenesesid="@ViewData["DayExpensesId"]">
+    <form asp-action="Edit">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group mb-3">
             <label asp-for="Name" class="control-label"></label>
@@ -25,12 +26,12 @@
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Users" class="control-label"></label>
+            <label asp-for="UsersList" class="control-label"></label>
             <div class="form-group mb-3">
-                @Html.ListBoxFor(model => model.Users, ViewData["Participants"] as MultiSelectList,
+                @Html.ListBoxFor(model => model.UsersList, ViewData["Participants"] as MultiSelectList,
                          new { @class = "form-control", multiple = "multiple", id = "Subjects_dropdown" })
             </div>
-            <span asp-validation-for="Users" class="text-danger"></span>
+            <span asp-validation-for="UsersList" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id"/>
         <div class="form-group">

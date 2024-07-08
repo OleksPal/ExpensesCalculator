@@ -1,37 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ExpensesCalculator.Data;
-using ExpensesCalculator.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using ExpensesCalculator.Models;
+using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Controllers
 {
     [Authorize]
     public class ChecksController : Controller
     {
-        private readonly ExpensesContext _context;
+        private readonly ICheckService _checkService;
 
-        public ChecksController(ExpensesContext context)
+        public ChecksController(ICheckService checkService)
         {
-            _context = context;
+            _checkService = checkService;
         }
 
         // GET: Checks/CreateCheck?dayExpensesId=1
         [HttpGet]
         public async Task<IActionResult> CreateCheck(int dayExpensesId)
         {
-            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-            if (dayExpenses is not null)
-            {
-                List<SelectListItem> optionList = new List<SelectListItem>();
-                foreach (var participant in dayExpenses.Participants)
-                {
-                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
-                }
-                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
-            }
-
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(dayExpensesId);
             ViewData["DayExpensesId"] = dayExpensesId;
 
             return PartialView("_CreateCheck");
@@ -46,24 +35,16 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == id);
+            var check = await _checkService.GetCheckById((int)id);
+
             if (check is null)
             {
                 return NotFound();
             }
 
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(dayExpensesId);
             ViewData["DayExpensesId"] = dayExpensesId;
 
-            var dayExpenses = await _context.Days.AsNoTracking().FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-            if (dayExpenses is not null)
-            {
-                List<SelectListItem> optionList = new List<SelectListItem>();
-                foreach (var participant in dayExpenses.Participants)
-                {
-                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
-                }
-                ViewData["Participants"] = new SelectList(optionList, "Value", "Text");
-            }
             return PartialView("_EditCheck", check);
         }
 
@@ -76,13 +57,15 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var check = await _context.Checks.FirstOrDefaultAsync(m => m.Id == id);
+            var check = await _checkService.GetCheckById((int)id);
+
             if (check is null)
             {
                 return NotFound();
             }
 
             ViewData["DayExpensesId"] = dayExpensesId;
+
             return PartialView("_DeleteCheck", check);
         }
 
@@ -90,8 +73,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCheckItemsManager(int id, int dayExpensesId)
         {
-            var check = await _context.Checks.Include(c => c.Items)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var check = await _checkService.GetCheckByIdWithItems(id);
 
             if (check is null)
             {
@@ -107,25 +89,18 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Payer,Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
+        public async Task<IActionResult> Create([Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
-            check.Items = new List<Item>();
-            ModelState.ClearValidationState(nameof(Check));
-            if (!TryValidateModel(nameof(Check)))
+            if (ModelState.IsValid)
             {
-                var dayExpenses = await _context.Days.Include(d => d.Checks)
-                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-
-                if (dayExpenses is null)
-                    return NotFound();
-
-                _context.Checks.Add(check);
-                dayExpenses.Checks.Add(check);
-                await _context.SaveChangesAsync();
-
-                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
+                var model = await _checkService.AddCheck(check, check.DayExpensesId); 
+                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
             }
-            return PartialView("_CreateCheck");
+
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
+            ViewData["DayExpensesId"] = check.DayExpensesId;
+
+            return PartialView("_CreateCheck", check);
         }
 
         // POST: Checks/Edit/5?dayExpensesId=1
@@ -133,45 +108,23 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Payer,Sum,Location,VerificationPath,Id")] Check check, int dayExpensesId)
+        public async Task<IActionResult> Edit(int id, [Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
             if (id != check.Id)
             {
                 return NotFound();
             }
 
-            if (check.Items is null) 
-            {
-                var oldCheck = await _context.Checks.Include(c => c.Items).AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.Id == id);
-
-                if (oldCheck is null)
-                    return NotFound();
-
-                check.Items = oldCheck.Items;
-                check.Sum = oldCheck.Sum;
-            }
-
-            ModelState.ClearValidationState(nameof(Check));
-            if (!TryValidateModel(nameof(Check)))
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(check);
-                    await _context.SaveChangesAsync();
-
-                    var dayExpenses = await _context.Days.Include(d => d.Checks)
-                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-
-                    if (dayExpenses is null)
-                        return NotFound();
-
-                    dayExpenses.Checks.Add(check);
-                    return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
+                    var model = await _checkService.EditCheck(check, check.DayExpensesId);
+                    return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CheckExists(check.Id))
+                    if (!await _checkService.CheckExists(check.Id))
                     {
                         return NotFound();
                     }
@@ -181,7 +134,11 @@ namespace ExpensesCalculator.Controllers
                     }
                 }
             }
-            return PartialView("_EditCheck");
+
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
+            ViewData["DayExpensesId"] = check.DayExpensesId;
+
+            return PartialView("_EditCheck", check);
         }
 
         // POST: Checks/Delete/5?dayExpensesId=1
@@ -191,33 +148,8 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int dayExpensesId)
         {
-            var check = await _context.Checks.Include(c => c.Items).AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (check is null)
-                return NoContent();
-
-            _context.Items.RemoveRange(check.Items);
-
-            if (check != null)
-            {
-                _context.Checks.Remove(check);
-            }
-
-            await _context.SaveChangesAsync();
-
-            var dayExpenses = await _context.Days.Include(d => d.Checks)
-                    .FirstOrDefaultAsync(d => d.Id == dayExpensesId);
-
-            if (dayExpenses is null)
-                return NotFound();
-
-            return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", dayExpenses);
-        }
-
-        private bool CheckExists(int id)
-        {
-            return _context.Checks.Any(e => e.Id == id);
+            var model = await _checkService.DeleteCheck(id, dayExpensesId);
+            return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
         }
     }
 }

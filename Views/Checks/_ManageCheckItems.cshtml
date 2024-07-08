@@ -11,16 +11,16 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Check.Items[0].Name)
+                        @Html.DisplayNameFor(model => model.Check.Items.ToList()[0].Name)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Check.Items[0].Description)
+                        @Html.DisplayNameFor(model => model.Check.Items.ToList()[0].Description)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Check.Items[0].Price)
+                        @Html.DisplayNameFor(model => model.Check.Items.ToList()[0].Price)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Check.Items[0].Users)
+                        @Html.DisplayNameFor(model => model.Check.Items.ToList()[0].Users)
                     </th>
                     <th style="width:80px;"></th>
                     <th style="width:100px;"></th>
@@ -40,7 +40,7 @@
                             @Html.DisplayFor(model => item.Price)
                         </td>
                         <td>
-                            @foreach (var user in item.Users)
+                            @foreach (var user in item.UsersList)
                             {
                                 <label>@user; </label>
                             }

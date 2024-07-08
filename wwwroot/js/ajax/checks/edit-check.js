@@ -1,7 +1,5 @@
 $(function () {
     $("#editCheckButton").on("click", function () {
-        $("#staticBackdrop").modal("hide");
-
         var payerDropdown = document.getElementById("payerDropdown");
         var selectedPayer;
         for (var i = 0; i < payerDropdown.length; i++) {
@@ -12,17 +10,24 @@ $(function () {
         }
 
         $.ajax({
-            url: `/Checks/Edit/${checkId}?dayexpensesid=${dayExpensesId}`,
+            url: `/Checks/Edit/${checkId}`,
             data: {
-                Location: $("#checkLocation").val(), Payer: selectedPayer,
+                Location: $("#checkLocation").val(), Payer: selectedPayer, Sum: sum,
+                DayExpensesId: dayExpensesId,
                 __RequestVerificationToken: $(token).val()
             },
             type: "Post",
             success: function (result) {
-                $("#checkList").html(result);
+                // Check if response contains div with class modal-body
+                if (result.indexOf("<div class=\"modal-body\">") >= 0)
+                    $('#modal-content').html(result);
+                else {
+                    $("#staticBackdrop").modal("hide");
+                    $("#checkList").html(result);
+                }   
             },
             error: function (result) {
-                alert(result.responseText);
+                $('#modal-content').html(result);
             }
         }); 
     });

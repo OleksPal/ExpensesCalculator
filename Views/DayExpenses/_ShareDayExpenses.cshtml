@@ -1,6 +1,6 @@
 ﻿@model ExpensesCalculator.Models.DayExpenses
 
-<script src="~/js/ajax/day-expenses/share-expenses.js"></script>
+<script src="~/js/ajax/day-expenses/share-day-expenses.js"></script>
 
 <div class="modal-header">
     <h5 class="modal-title">Share expenses</h5>
@@ -10,14 +10,14 @@
     <form asp-action="Share">
         <div class="form-group mb-3">
             <label asp-for="Date" class="control-label"></label>
-            <input asp-for="Date" class="form-control" disabled readonly />
+            <input value="@Model.Date" class="form-control" disabled readonly />
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Participants" class="control-label"></label>
-            <input asp-for="Participants" value="@ViewBag.FormatParticipantNames" class="form-control"
+            <label asp-for="ParticipantsList" class="control-label"></label>
+            <input asp-for="ParticipantsList" value="@ViewBag.FormatParticipantNames" class="form-control"
                    disabled readonly />
-            <span asp-validation-for="Participants" class="text-danger"></span>
+            <span asp-validation-for="ParticipantsList" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label class="control-label">Add user with access</label>

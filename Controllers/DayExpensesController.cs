@@ -1,46 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ExpensesCalculator.Data;
-using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Models;
+using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
-using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Controllers
 {
     [Authorize]
     public class DayExpensesController : Controller
     {
-        private readonly ExpensesContext _context;
+        private readonly IDayExpensesService _dayExpensesService;
 
-        public DayExpensesController(ExpensesContext context)
-        {
-            _context = context;
+        public DayExpensesController(IDayExpensesService dayExpensesService)
+        { 
+            _dayExpensesService = dayExpensesService;
         }
 
         // GET: DayExpenses
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var currentUsersName = User.Identity.Name;
-            List<DayExpenses> days = new List<DayExpenses>();
-            if (currentUsersName is not null)
-            {
-                days = await _context.Days.Include(d => d.Checks).Where(d => d.PeopleWithAccess.Contains(currentUsersName)).ToListAsync();
-                ViewData["FormattedDayParticipants"] = new List<string>();
-                List<string> formattedDayParticipants = new List<string>();
+            _dayExpensesService.RequestorName = User.Identity.Name;
 
-                foreach (var day in days)
-                {
-                    for (int i = 0; i < day.Checks.Count; i++)
-                    {
-                        var check = await _context.Checks.Include(c => c.Items)
-                            .FirstOrDefaultAsync(c => c.Id == day.Checks[i].Id);
-                        if (check is not null)
-                            day.Checks[i] = check;
-                    }
-                    (ViewData["FormattedDayParticipants"] as List<string>).Add(GetFormatParticipantsNames(day.Participants));
-                }
-            }
+            var collection = await _dayExpensesService.GetAllDays();
+            List<DayExpenses> days = collection.ToList();
 
             return View(days);
         }
@@ -62,8 +45,8 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var day = await _context.Days.Include(d => d.Checks)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            _dayExpensesService.RequestorName = User.Identity.Name;
+            var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
             if (day == null)
             {
@@ -71,7 +54,7 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CurrentUsersName"] = User.Identity.Name;
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
 
             return PartialView("_EditDayExpenses", day);
         }
@@ -85,14 +68,15 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var day = await _context.Days.FirstOrDefaultAsync(m => m.Id == id);
+            _dayExpensesService.RequestorName = User.Identity.Name;
+            var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
             if (day == null)
             {
                 return NotFound();
             }
 
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
 
             return PartialView("_DeleteDayExpenses", day);
         }
@@ -106,7 +90,8 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var day = await _context.Days.FirstOrDefaultAsync(m => m.Id == id);
+            _dayExpensesService.RequestorName = User.Identity.Name;
+            var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
             if (day == null)
             {
@@ -114,7 +99,7 @@ namespace ExpensesCalculator.Controllers
             }
 
             ViewData["CurrentUsersName"] = User.Identity.Name;
-            ViewBag.FormatParticipantNames = GetFormatParticipantsNames(day.Participants);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
 
             return PartialView("_ShareDayExpenses", day);
         }
@@ -128,40 +113,13 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
+            _dayExpensesService.RequestorName = User.Identity.Name;
+            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses((int)id);
 
-            if (dayExpenses == null)
+            if (dayExpensesCalculation == null)
             {
                 return NotFound();
             }
-
-            var dayExpensesCalculation = new DayExpensesCalculationViewModel
-            { DayExpensesId = dayExpenses.Id, Participants = dayExpenses.Participants };
-
-            dayExpensesCalculation.Checks = new List<Check>();
-            
-            for (int i = 0; i < dayExpenses.Checks.Count; i++)
-            {
-                var checkWithItems = await _context.Checks.Include(c => c.Items)
-                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
-
-                if (checkWithItems is not null)
-                    dayExpensesCalculation.Checks.Add(checkWithItems);
-            }
-
-            dayExpensesCalculation.AllUsersTrasactions = CalculateTransactionList(dayExpensesCalculation.Checks);
-
-            var transactionsDictionary = new Dictionary<SenderRecipient, decimal>();
-            foreach(var transaction in dayExpensesCalculation.AllUsersTrasactions)
-            {
-                if (!transactionsDictionary.Keys.Any(key => key.Equals(transaction.Subjects)))
-                    transactionsDictionary.Add(transaction.Subjects, transaction.TransferAmount);
-                else
-                    transactionsDictionary[transaction.Subjects] += transaction.TransferAmount;                
-            }
-
-            var optimizedTransactions = OptimizeTransactions(transactionsDictionary);
-            dayExpensesCalculation.OptimizedUserTransactions = optimizedTransactions;
 
             return View(dayExpensesCalculation);
         }
@@ -175,21 +133,12 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
+            _dayExpensesService.RequestorName = User.Identity.Name;
+            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((int)id);
 
             if (dayExpenses is null)
             {
                 return NotFound();
-            }
-
-            var checks = new List<Check>();
-            for (int i = 0; i < dayExpenses.Checks.Count; i++)
-            {
-                var checkWithItems = await _context.Checks.Include(c => c.Items)
-                    .FirstOrDefaultAsync(c => c.Id == dayExpenses.Checks[i].Id);
-
-                if (checkWithItems is not null)
-                    checks.Add(checkWithItems);
             }
 
             return View("ShowChecks", dayExpenses);
@@ -200,20 +149,20 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
         {
-            string rareNameList = dayExpenses.Participants[0];
-            dayExpenses.Participants = (List<string>)GetParticipantListFromString(rareNameList);
-
-            dayExpenses.Checks = new List<Check>();
-            ModelState.ClearValidationState(nameof(DayExpenses));
-            if (!TryValidateModel(nameof(DayExpenses)))
+            if (dayExpenses.ParticipantsList.ToList()[0] is null) 
+                ModelState.AddModelError("ParticipantsList", "Add some participants!");
+            if (ModelState.IsValid)
             {
-                _context.Add(dayExpenses);
-                await _context.SaveChangesAsync();
+                await _dayExpensesService.AddDayExpenses(dayExpenses);
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
+            else
+            {
+                ViewData["CurrentUsersName"] = User.Identity.Name;
+                return PartialView("_CreateDayExpenses", dayExpenses);
+            }             
         }
 
         // POST: DayExpenses/Edit/5
@@ -221,28 +170,26 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PeopleWithAccess,Participants,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Edit(int id, [Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
         {            
             if (id != dayExpenses.Id)
             {
                 return NotFound();
             }
 
-            string rareNameList = dayExpenses.Participants[0];
-            dayExpenses.Participants = (List<string>)GetParticipantListFromString(rareNameList);
+            _dayExpensesService.RequestorName = User.Identity.Name;
 
-            dayExpenses.Checks = new List<Check>();
-            ModelState.ClearValidationState(nameof(DayExpenses));
-            if (!TryValidateModel(nameof(DayExpenses)))
+            if (dayExpenses.ParticipantsList.ToList()[0] is null)
+                ModelState.AddModelError("ParticipantsList", "Add some participants!");
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(dayExpenses);
-                    await _context.SaveChangesAsync();
+                    var model = await _dayExpensesService.EditDayExpenses(dayExpenses);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DayExpensesExists(dayExpenses.Id))
+                    if (!await _dayExpensesService.DayExpensesExists(dayExpenses.Id))
                     {
                         return NotFound();
                     }
@@ -253,7 +200,8 @@ namespace ExpensesCalculator.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(dayExpenses);
+            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.Id);
+            return PartialView("_EditDayExpenses", dayExpenses);
         }
 
         // POST: DayExpenses/Delete/5
@@ -263,24 +211,8 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var dayExpenses = await _context.Days.Include(d => d.Checks).FirstOrDefaultAsync(d => d.Id == id);
-
-            if (dayExpenses != null)
-            {
-                foreach(var check in dayExpenses.Checks)
-                {
-                    var checkToDelete = await _context.Checks.Include(c => c.Items)
-                        .FirstOrDefaultAsync(c => c.Id == check.Id);
-
-                    if(checkToDelete is not null)
-                        _context.Items.RemoveRange(checkToDelete.Items);
-
-                    _context.Checks.Remove(check);
-                }
-                _context.Days.Remove(dayExpenses);
-            }
-
-            await _context.SaveChangesAsync();
+            _dayExpensesService.RequestorName = User.Identity.Name;
+            await _dayExpensesService.DeleteDayExpenses(id);
             return RedirectToAction(nameof(Index));
         }
 
@@ -291,133 +223,12 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Share(int id, string newUserWithAccess)
         {
-            var dayExpenses = await _context.Days.FirstOrDefaultAsync(d => d.Id == id);
-
-            if (dayExpenses is null)
+            _dayExpensesService.RequestorName = User.Identity.Name;
+            var response = await _dayExpensesService.ChangeDayExpensesAccess(id, newUserWithAccess);
+            if (response is null)
                 return NotFound();
-
-            var users = _context.Users.Any(u => u.UserName == newUserWithAccess);
-
-
-            if (!UserExists(newUserWithAccess)){
-                return Content("There is no such user!");
-            }
-            else if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
-            {
-                return Content("This user already has access!");
-            }
             else
-            {
-                dayExpenses.PeopleWithAccess.Add(newUserWithAccess);
-                await _context.SaveChangesAsync();
-                return Content("Done!");
-            }            
-        }
-
-        private bool DayExpensesExists(int id)
-        {
-            return _context.Days.Any(e => e.Id == id);
-        }
-
-        private bool UserExists(string userName)
-        {
-            return _context.Users.Any(u => u.UserName == userName);
-        }
-
-        private string GetFormatParticipantsNames(List<string> participants)
-        {
-            string formatList = String.Empty;
-            for (int i = 0; i < participants.Count; i++)
-            {
-                if (participants[i] is not null)
-                {
-                    formatList += participants[i];
-                    if (i != participants.Count - 1)
-                        formatList += ", ";
-                }
-            }
-            return formatList;
-        }
-
-        private IEnumerable<string> GetParticipantListFromString(string rareText)
-        {
-            Regex spacesAfterComma = new Regex(@",\s+"),
-                bigSpaces = new Regex(@"\s+");
-            rareText = bigSpaces.Replace(rareText, " ");
-            rareText = spacesAfterComma.Replace(rareText, ",");
-
-            List<string> participantList = rareText.Split(',').ToList();
-            participantList = participantList.Select(p => p != null ? p.Trim() : null).ToList();
-
-            return participantList;
-        }
-
-        private List<Transaction> CalculateTransactionList(List<Check> checks) 
-        {
-            List<Transaction> fullTransactionList = new();
-            foreach (var check in checks)
-            {
-                Dictionary<SenderRecipient, decimal> userTransactions = new();
-                foreach (var item in check.Items)
-                {
-                    foreach (var user in item.Users) 
-                    {
-                        if (user != check.Payer)
-                        {
-                            var transactionKey = new SenderRecipient(user, check.Payer);
-                            decimal transactionValue = (decimal)(item.Price / item.Users.Count);
-
-                            if (!userTransactions.Keys.Any(key => key.Equals(transactionKey)))
-                                userTransactions.Add(transactionKey, transactionValue);
-                            else
-                                userTransactions[transactionKey] += transactionValue;                            
-                        }
-                    }                    
-                }
-
-                foreach(var transaction in userTransactions)
-                {
-                    var newTransaction = new Transaction();
-                    newTransaction.CheckName = check.Location;
-                    newTransaction.Subjects = transaction.Key;
-                    newTransaction.TransferAmount = transaction.Value;
-                    fullTransactionList.Add(newTransaction);
-                }                
-            }
-
-            return fullTransactionList;
-        }
-
-        private Dictionary<SenderRecipient, decimal> OptimizeTransactions(Dictionary<SenderRecipient, decimal> transactionList)
-        {
-            var transactionKeyList = transactionList.Keys.ToList();
-            for (int i = 0; i < transactionKeyList.Count; i++)
-            {
-                for (int j = 1; j < transactionKeyList.Count; j++)
-                {
-                    if (transactionKeyList[i].Sender == transactionKeyList[j].Recipient &&
-                        transactionKeyList[i].Recipient == transactionKeyList[j].Sender)
-                    {
-                        if (transactionList[transactionKeyList[i]] > transactionList[transactionKeyList[j]])
-                        {
-                            transactionList[transactionKeyList[i]] -= transactionList[transactionKeyList[j]];
-                            transactionList.Remove(transactionKeyList[j]);
-                        }
-                        else if (transactionList[transactionKeyList[i]] < transactionList[transactionKeyList[j]])
-                        {
-                            transactionList[transactionKeyList[j]] -= transactionList[transactionKeyList[i]];
-                            transactionList.Remove(transactionKeyList[i]);
-                        }
-                        else
-                        {
-                            transactionList.Remove(transactionKeyList[i]);
-                            transactionList.Remove(transactionKeyList[j]);
-                        }
-                    }
-                }
-            }
-
-            return transactionList;
-        }
+                return Content(response);        
+        }   
     }
 }

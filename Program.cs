@@ -1,4 +1,6 @@
 using ExpensesCalculator.Data;
+using ExpensesCalculator.Repositories;
+using ExpensesCalculator.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
@@ -12,6 +14,15 @@ namespace ExpensesCalculator
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<IItemRepository, ItemRepository>();
+            builder.Services.AddScoped<ICheckRepository, CheckRepository>();
+            builder.Services.AddScoped<IDayExpensesRepository, DayExpensesRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            builder.Services.AddScoped<IItemService, ItemService>();
+            builder.Services.AddScoped<ICheckService, CheckService>();
+            builder.Services.AddScoped<IDayExpensesService, DayExpensesService>();
 
             builder.Services.AddDbContext<ExpensesContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));

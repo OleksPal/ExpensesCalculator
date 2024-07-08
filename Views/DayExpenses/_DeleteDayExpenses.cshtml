@@ -8,7 +8,7 @@
     <form asp-action="Delete">
         <div class="form-group mb-3">
             <label asp-for="Date" class="control-label"></label>
-            <input asp-for="Date" class="form-control" disabled readonly/>
+            <input value="@Model.Date" class="form-control" disabled readonly/>
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
