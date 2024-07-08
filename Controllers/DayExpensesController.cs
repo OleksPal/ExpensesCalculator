@@ -2,7 +2,6 @@
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -20,10 +19,10 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null) 
+                _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var collection = await _dayExpensesService.GetAllDays();
-            List<DayExpenses> days = collection.ToList();
+            var days = await _dayExpensesService.GetAllDays();
 
             return View(days);
         }
@@ -32,7 +31,8 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public IActionResult CreateDayExpenses()
         {
-            ViewData["CurrentUsersName"] = User.Identity.Name;
+            ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
+
             return PartialView("_CreateDayExpenses");
         }
 
@@ -40,21 +40,19 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> EditDayExpenses(int? id)
         {
-            if (id == null)
-            {
+            if (id is null)
                 return NotFound();
-            }
 
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+            
             var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
-            if (day == null)
-            {
+            if (day is null)
                 return NotFound();
-            }
 
-            ViewData["CurrentUsersName"] = User.Identity.Name;
-            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
+            ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames((int)id);
 
             return PartialView("_EditDayExpenses", day);
         }
@@ -63,20 +61,18 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteDayExpenses(int? id)
         {
-            if (id == null)
-            {
+            if (id is null)
                 return NotFound();
-            }
 
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
             var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
-            if (day == null)
-            {
+            if (day is null)
                 return NotFound();
-            }
 
-            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames((int)id);
 
             return PartialView("_DeleteDayExpenses", day);
         }
@@ -85,21 +81,19 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> ShareDayExpenses(int? id)
         {
-            if (id == null)
-            {
+            if (id is null)
                 return NotFound();
-            }
 
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
             var day = await _dayExpensesService.GetDayExpensesById((int)id);
 
-            if (day == null)
-            {
+            if (day is null)
                 return NotFound();
-            }
 
-            ViewData["CurrentUsersName"] = User.Identity.Name;
-            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(day.Id);
+            ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames((int)id);
 
             return PartialView("_ShareDayExpenses", day);
         }
@@ -108,18 +102,16 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> CalculateExpenses(int? id)
         {
-            if (id == null)
-            {
+            if (id is null)
                 return NotFound();
-            }
 
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
             var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses((int)id);
 
-            if (dayExpensesCalculation == null)
-            {
+            if (dayExpensesCalculation is null)
                 return NotFound();
-            }
 
             return View(dayExpensesCalculation);
         }
@@ -133,7 +125,9 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
             }
 
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
             var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((int)id);
 
             if (dayExpenses is null)
@@ -151,56 +145,43 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
         {
-            if (dayExpenses.ParticipantsList.ToList()[0] is null) 
-                ModelState.AddModelError("ParticipantsList", "Add some participants!");
+            if (dayExpenses.ParticipantsList.First() is null) 
+                ModelState.AddModelError("ParticipantsList", "Add some participants");
+
             if (ModelState.IsValid)
             {
                 await _dayExpensesService.AddDayExpenses(dayExpenses);
+
                 return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                ViewData["CurrentUsersName"] = User.Identity.Name;
-                return PartialView("_CreateDayExpenses", dayExpenses);
-            }             
+
+            ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
+
+            return PartialView("_CreateDayExpenses", dayExpenses);
         }
 
-        // POST: DayExpenses/Edit/5
+        // POST: DayExpenses/Edit
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Edit([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
         {            
-            if (id != dayExpenses.Id)
-            {
-                return NotFound();
-            }
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
 
-            _dayExpensesService.RequestorName = User.Identity.Name;
-
-            if (dayExpenses.ParticipantsList.ToList()[0] is null)
+            if (dayExpenses.ParticipantsList.First() is null)
                 ModelState.AddModelError("ParticipantsList", "Add some participants!");
+
             if (ModelState.IsValid)
             {
-                try
-                {
-                    var model = await _dayExpensesService.EditDayExpenses(dayExpenses);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await _dayExpensesService.DayExpensesExists(dayExpenses.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _dayExpensesService.EditDayExpenses(dayExpenses);
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.FormatParticipantNames = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.Id);
+
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.Id);
+
             return PartialView("_EditDayExpenses", dayExpenses);
         }
 
@@ -211,8 +192,11 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
             await _dayExpensesService.DeleteDayExpenses(id);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -223,12 +207,12 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Share(int id, string newUserWithAccess)
         {
-            _dayExpensesService.RequestorName = User.Identity.Name;
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
             var response = await _dayExpensesService.ChangeDayExpensesAccess(id, newUserWithAccess);
-            if (response is null)
-                return NotFound();
-            else
-                return Content(response);        
+
+            return response is not null ? Content(response) : NotFound();      
         }   
     }
 }
