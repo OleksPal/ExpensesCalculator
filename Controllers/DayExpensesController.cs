@@ -52,7 +52,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames((int)id);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
 
             return PartialView("_EditDayExpenses", day);
         }
@@ -72,7 +72,7 @@ namespace ExpensesCalculator.Controllers
             if (day is null)
                 return NotFound();
 
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames((int)id);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
 
             return PartialView("_DeleteDayExpenses", day);
         }
@@ -93,7 +93,7 @@ namespace ExpensesCalculator.Controllers
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames((int)id);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
 
             return PartialView("_ShareDayExpenses", day);
         }
@@ -180,7 +180,7 @@ namespace ExpensesCalculator.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.Id);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.ParticipantsList);
 
             return PartialView("_EditDayExpenses", dayExpenses);
         }

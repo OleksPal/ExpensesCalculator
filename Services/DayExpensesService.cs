@@ -1,6 +1,5 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories;
-using Newtonsoft.Json.Linq;
 using NuGet.Packaging;
 using System.Text.RegularExpressions;
 
@@ -28,12 +27,14 @@ namespace ExpensesCalculator.Services
         public async Task<ICollection<DayExpenses>> GetAllDays()
         {            
             var result = await _dayExpensesRepository.GetAll();
+
             return result.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
         }
 
         public async Task<DayExpenses> GetDayExpensesById(int id)
         {
             var result = await _dayExpensesRepository.GetById(id);
+
             return result.PeopleWithAccess.Contains(RequestorName) ? result : null;
         }
 
@@ -49,13 +50,10 @@ namespace ExpensesCalculator.Services
 
         public async Task<DayExpenses> GetFullDayExpensesById(int id)
         {
-            var dayExpenses = await GetDayExpensesById(id);
+            var dayExpenses = await GetDayExpensesByIdWithChecks(id);
 
             if (dayExpenses is not null)
             {
-                var checks = await _checkRepository.GetAllDayChecks(id);
-                dayExpenses.Checks = checks.ToList();
-
                 foreach (var check in dayExpenses.Checks)
                     check.Items.AddRange(await _itemRepository.GetAllCheckItems(check.Id));
             }
@@ -63,9 +61,37 @@ namespace ExpensesCalculator.Services
             return dayExpenses;
         }
 
-        public async Task<bool> DayExpensesExists(int id)
+        public async Task<DayExpenses> AddDayExpenses(DayExpenses dayExpenses)
         {
-            return await GetDayExpensesById(id) is not null;
+            string rareNameList = dayExpenses.ParticipantsList.First();
+            dayExpenses.ParticipantsList.Clear();
+            dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
+
+            return await _dayExpensesRepository.Insert(dayExpenses);
+        }
+
+        public async Task<DayExpenses> EditDayExpenses(DayExpenses dayExpenses)
+        {
+            if (dayExpenses.PeopleWithAccessList.Contains(RequestorName))
+            {
+                string rareNameList = dayExpenses.ParticipantsList.First();
+                dayExpenses.ParticipantsList.Clear();
+                dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
+
+                dayExpenses = await _dayExpensesRepository.Update(dayExpenses);
+            }
+
+            return dayExpenses;
+        }
+
+        public async Task<DayExpenses> DeleteDayExpenses(int id)
+        {
+            var dayExpensesToDelete = await GetDayExpensesById(id);
+
+            if (dayExpensesToDelete is not null)
+                dayExpensesToDelete = await _dayExpensesRepository.Delete(id);
+
+            return dayExpensesToDelete;
         }
 
         public async Task<DayExpensesCalculationViewModel> GetCalculationForDayExpenses(int id)
@@ -94,60 +120,34 @@ namespace ExpensesCalculator.Services
             }
 
             return dayExpensesCalculation;
-        }
+        }        
 
-        public async Task<DayExpenses> AddDayExpenses(DayExpenses dayExpenses)
+        public async Task<string> GetFormatParticipantsNames(IEnumerable<string> participantList)
         {
-            string rareNameList = dayExpenses.ParticipantsList.ToList()[0];
-            dayExpenses.ParticipantsList.Clear();
-            dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
-
-            await _dayExpensesRepository.Insert(dayExpenses);
-
-            return dayExpenses;
+            return String.Join(", ", participantList);
         }
 
-        public async Task<DayExpenses> EditDayExpenses(DayExpenses dayExpenses)
-        {
-            if (dayExpenses.PeopleWithAccessList.Contains(RequestorName))
-            {
-                string rareNameList = dayExpenses.ParticipantsList.ToList()[0];
-                dayExpenses.ParticipantsList.Clear();
-                dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
-
-                await _dayExpensesRepository.Update(dayExpenses);
-            }            
-
-            return dayExpenses;
-        }
-
-        public async Task<DayExpenses> DeleteDayExpenses(int id)
-        {
-            var dayExpensesToDelete = await GetDayExpensesById(id);
-
-            if(dayExpensesToDelete is not null)
-                await _dayExpensesRepository.Delete(id);
-
-            return dayExpensesToDelete;
-        }
-
-        public async Task<string> GetFormatParticipantsNames(int id)
+        public async Task<string?> ChangeDayExpensesAccess(int id, string newUserWithAccess)
         {
             var dayExpenses = await GetDayExpensesById(id);
-            var participants = dayExpenses.ParticipantsList.ToList();
 
-            string formatList = String.Empty;
-            for (int i = 0; i < participants.Count; i++)
+            if (dayExpenses is not null)
             {
-                if (participants[i] is not null)
+                bool isUserExist = _userRepository.UserExists(newUserWithAccess);
+
+                if (!isUserExist)
+                    return "There is no such user!";
+                else if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
+                    return "This user already has access!";
+                else
                 {
-                    formatList += participants[i];
-                    if (i != participants.Count - 1)
-                        formatList += ", ";
+                    dayExpenses.PeopleWithAccessList.Add(newUserWithAccess);
+                    await _dayExpensesRepository.Update(dayExpenses);
+                    return "Done!";
                 }
             }
 
-            return formatList;
+            return null;
         }
 
         private List<Transaction> CalculateTransactionList(List<Check> checks)
@@ -229,28 +229,6 @@ namespace ExpensesCalculator.Services
                 participantList.Add(match.Value);
 
             return participantList;
-        }
-
-        public async Task<string?> ChangeDayExpensesAccess(int id, string newUserWithAccess)
-        {
-            var dayExpenses = await GetDayExpensesById(id);
-
-            if (dayExpenses is not null)
-            {
-                bool isUserExist = _userRepository.UserExists(newUserWithAccess);
-
-                if (!isUserExist)
-                    return "There is no such user!";
-                else if (dayExpenses.PeopleWithAccess.Contains(newUserWithAccess))
-                    return "This user already has access!";
-                else
-                {
-                    dayExpenses.PeopleWithAccessList.Add(newUserWithAccess);
-                    return "Done!";
-                }
-            }
-
-            return null;
-        }
+        }        
     }
 }
