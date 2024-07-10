@@ -104,7 +104,7 @@
     <ul>
         @foreach (var transaction in Model.OptimizedUserTransactions)
     {
-        <li>@transaction.Key.Sender (@transaction.Value₴) → @transaction.Key.Recipient</li>
+        <li>@transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
     }
     </ul>
 

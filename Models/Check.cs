@@ -4,7 +4,7 @@ namespace ExpensesCalculator.Models
 {
     public class Check : DbObject
     {
-        public ICollection<Item> Items { get; } = new List<Item>();
+        public ICollection<Item> Items { get; set; } = new List<Item>();
 
         [Required(ErrorMessage = "Please enter check sum")]
         [DataType(DataType.Currency)]

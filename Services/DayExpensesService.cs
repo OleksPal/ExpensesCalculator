@@ -42,8 +42,11 @@ namespace ExpensesCalculator.Services
         {
             var dayExpenses = await GetDayExpensesById(id);
 
-            if (dayExpenses is not null) 
-                dayExpenses.Checks.AddRange(await _checkRepository.GetAllDayChecks(id));
+            if (dayExpenses is not null)
+            {
+                var checks = await _checkRepository.GetAllDayChecks(id);
+                dayExpenses.Checks = checks.ToList();
+            }                
 
             return dayExpenses;
         }
@@ -55,7 +58,10 @@ namespace ExpensesCalculator.Services
             if (dayExpenses is not null)
             {
                 foreach (var check in dayExpenses.Checks)
-                    check.Items.AddRange(await _itemRepository.GetAllCheckItems(check.Id));
+                {
+                    var items = await _itemRepository.GetAllCheckItems(check.Id);
+                    check.Items = items.ToList();
+                }   
             }
 
             return dayExpenses;
@@ -102,21 +108,10 @@ namespace ExpensesCalculator.Services
             if (dayExpenses is not null)
             {
                 dayExpensesCalculation.DayExpensesId = dayExpenses.Id;
-                dayExpensesCalculation.Participants = dayExpenses.ParticipantsList.ToList();
-                dayExpensesCalculation.Checks = dayExpenses.Checks.ToList();
+                dayExpensesCalculation.Participants = dayExpenses.ParticipantsList;
+                dayExpensesCalculation.Checks = dayExpenses.Checks;
                 dayExpensesCalculation.AllUsersTrasactions = CalculateTransactionList(dayExpensesCalculation.Checks);
-
-                var transactionsDictionary = new Dictionary<SenderRecipient, decimal>();
-                foreach (var transaction in dayExpensesCalculation.AllUsersTrasactions)
-                {
-                    if (!transactionsDictionary.Keys.Any(key => key.Equals(transaction.Subjects)))
-                        transactionsDictionary.Add(transaction.Subjects, transaction.TransferAmount);
-                    else
-                        transactionsDictionary[transaction.Subjects] += transaction.TransferAmount;
-                }
-
-                var optimizedTransactions = OptimizeTransactions(transactionsDictionary);
-                dayExpensesCalculation.OptimizedUserTransactions = optimizedTransactions;
+                dayExpensesCalculation.OptimizedUserTransactions = OptimizeTransactions(dayExpensesCalculation.AllUsersTrasactions);
             }
 
             return dayExpensesCalculation;
@@ -150,7 +145,7 @@ namespace ExpensesCalculator.Services
             return null;
         }
 
-        private List<Transaction> CalculateTransactionList(List<Check> checks)
+        private List<Transaction> CalculateTransactionList(IEnumerable<Check> checks)
         {
             List<Transaction> fullTransactionList = new();
             foreach (var check in checks)
@@ -186,30 +181,29 @@ namespace ExpensesCalculator.Services
             return fullTransactionList;
         }
 
-        private Dictionary<SenderRecipient, decimal> OptimizeTransactions(Dictionary<SenderRecipient, decimal> transactionList)
+        private ICollection<Transaction> OptimizeTransactions(ICollection<Transaction> transactionList)
         {
-            var transactionKeyList = transactionList.Keys.ToList();
-            for (int i = 0; i < transactionKeyList.Count; i++)
+            foreach(var transaction in transactionList)
             {
-                for (int j = 1; j < transactionKeyList.Count; j++)
+                foreach(var nextTransaction in transactionList)
                 {
-                    if (transactionKeyList[i].Sender == transactionKeyList[j].Recipient &&
-                        transactionKeyList[i].Recipient == transactionKeyList[j].Sender)
+                    if (transaction.Subjects.Sender == nextTransaction.Subjects.Recipient &&
+                        transaction.Subjects.Recipient == nextTransaction.Subjects.Sender) 
                     {
-                        if (transactionList[transactionKeyList[i]] > transactionList[transactionKeyList[j]])
+                        if (transaction.TransferAmount > nextTransaction.TransferAmount)
                         {
-                            transactionList[transactionKeyList[i]] -= transactionList[transactionKeyList[j]];
-                            transactionList.Remove(transactionKeyList[j]);
+                            transaction.TransferAmount -= nextTransaction.TransferAmount;
+                            transactionList.Remove(nextTransaction);
                         }
-                        else if (transactionList[transactionKeyList[i]] < transactionList[transactionKeyList[j]])
+                        else if (transaction.TransferAmount < nextTransaction.TransferAmount)
                         {
-                            transactionList[transactionKeyList[j]] -= transactionList[transactionKeyList[i]];
-                            transactionList.Remove(transactionKeyList[i]);
+                            nextTransaction.TransferAmount -= transaction.TransferAmount;
+                            transactionList.Remove(transaction);
                         }
                         else
                         {
-                            transactionList.Remove(transactionKeyList[i]);
-                            transactionList.Remove(transactionKeyList[j]);
+                            transactionList.Remove(transaction);
+                            transactionList.Remove(nextTransaction);
                         }
                     }
                 }
