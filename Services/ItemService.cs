@@ -2,6 +2,7 @@
 using ExpensesCalculator.Repositories;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Packaging;
+using System.Text.RegularExpressions;
 
 namespace ExpensesCalculator.Services
 {
@@ -65,6 +66,10 @@ namespace ExpensesCalculator.Services
 
         public async Task<ManageCheckItemsViewModel> AddItem(Item item, int checkId, int dayExpensesId)
         {
+            string rareNameList = item.UsersList.First();
+            item.UsersList.Clear();
+            item.UsersList.AddRange(GetUserListFromString(rareNameList));
+
             var check = await GetCheckWithItems(checkId);
 
             check.Items.Add(item);
@@ -77,6 +82,10 @@ namespace ExpensesCalculator.Services
 
         public async Task<ManageCheckItemsViewModel> EditItem(Item item, int checkId, int dayExpensesId)
         {
+            string rareNameList = item.UsersList.First();
+            item.UsersList.Clear();
+            item.UsersList.AddRange(GetUserListFromString(rareNameList));
+
             var check = await _checkRepository.GetById(checkId);
             var oldItem = await _itemRepository.GetById(item.Id);
             var oldItemPrice = oldItem.Price;
@@ -115,6 +124,19 @@ namespace ExpensesCalculator.Services
             check.Items.AddRange(await _itemRepository.GetAllCheckItems(checkId));
 
             return check;
+        }
+
+        private IEnumerable<string> GetUserListFromString(string rareText)
+        {
+            Regex pattern = new Regex(@"\w+");
+
+            var matchList = pattern.Matches(rareText).ToList();
+            List<string> participantList = new List<string>();
+
+            foreach (var match in matchList)
+                participantList.Add(match.Value);
+
+            return participantList;
         }
     }
 }
