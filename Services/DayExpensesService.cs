@@ -183,6 +183,7 @@ namespace ExpensesCalculator.Services
 
         private ICollection<Transaction> OptimizeTransactions(List<Transaction> transactionList)
         {
+            transactionList = new List<Transaction>(transactionList.Select(t => (Transaction)t.Clone()));
             for (int i = 0; i < transactionList.Count; i++) 
             {
                 for (int j = 1; j < transactionList.Count; j++) 
