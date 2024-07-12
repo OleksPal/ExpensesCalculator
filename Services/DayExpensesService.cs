@@ -110,6 +110,7 @@ namespace ExpensesCalculator.Services
                 dayExpensesCalculation.DayExpensesId = dayExpenses.Id;
                 dayExpensesCalculation.Participants = dayExpenses.ParticipantsList;
                 dayExpensesCalculation.Checks = dayExpenses.Checks;
+                dayExpensesCalculation.DayExpensesCalculations = CalculateDayExpensesList(dayExpenses);
                 dayExpensesCalculation.AllUsersTrasactions = CalculateTransactionList(dayExpensesCalculation.Checks);
                 dayExpensesCalculation.OptimizedUserTransactions = OptimizeTransactions(dayExpensesCalculation.AllUsersTrasactions.ToList());
             }
@@ -143,6 +144,40 @@ namespace ExpensesCalculator.Services
             }
 
             return null;
+        }
+
+        private ICollection<DayExpensesCalculation> CalculateDayExpensesList(DayExpenses dayExpenses)
+        {
+            var dayExpensesList = new List<DayExpensesCalculation>();
+            foreach (var participant in dayExpenses.ParticipantsList) 
+            {
+                var participantExpenses = new DayExpensesCalculation { UserName = participant };
+                foreach (var check in dayExpenses.Checks)
+                {
+                    if (check.Items.Count > 0) 
+                    {
+                        var checkCalculation = new CheckCalculation { Check = check };
+                        foreach (var item in check.Items)
+                        {
+                            if (item.UsersList.Contains(participant))
+                            {
+                                decimal pricePerUser = Math.Round(item.Price / item.UsersList.Count, 2);
+                                checkCalculation.Items.Add(new ItemCalculation
+                                {
+                                    Item = item,
+                                    PricePerUser = pricePerUser
+                                });
+                                checkCalculation.SumPerParticipant += pricePerUser;
+                            }                                
+                        }
+
+                        if(checkCalculation.SumPerParticipant != 0)
+                            participantExpenses.CheckCalculations.Add(checkCalculation);
+                    }
+                }
+                dayExpensesList.Add(participantExpenses);
+            }
+            return dayExpensesList;
         }
 
         private List<Transaction> CalculateTransactionList(IEnumerable<Check> checks)

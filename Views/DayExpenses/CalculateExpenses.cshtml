@@ -10,13 +10,12 @@
 <script src="/js/open-tab.js"></script>
 <script src="/js/change-tooltip-visibility.js"></script>
 
-<div class="cn">
-    <div class="form-check form-switch inner">
-        <input class="form-check-input" type="checkbox" role="switch" onchange="changeTooltipVisibility()" id="tooltipSwitcher" checked>
-        <label class="form-check-label"  id="tooltipSwitcherText">Disable tooltips</label>
-    </div>
-    <h1>Expenses calculation</h1>
+<h1>Expenses calculation</h1>
+<div class="form-check form-switch" style="font-size: 20px;">
+    <input class="form-check-input" type="checkbox" role="switch" onchange="changeTooltipVisibility()" id="tooltipSwitcher" checked>
+    <label class="form-check-label" id="tooltipSwitcherText">Disable tooltips</label>
 </div>
+
 
 <hr />
 
@@ -28,73 +27,49 @@
     <button class="tablinks" onclick="openParticipantTab(event, 'transactionList')">Transaction List</button>
 </div>
 
-@foreach(var participant in Model.Participants)
+@foreach (var dayExpensesCalculations in Model.DayExpensesCalculations)
 {
-    <div id="@participant" class="tabcontent">
-        @foreach (var check in Model.Checks)
+    <div id="@dayExpensesCalculations.UserName" class="tabcontent">
+        @foreach (var check in dayExpensesCalculations.CheckCalculations)
         {
-            if(check.Items.Count != 0)
+            if (check.Items.Count != 0)
             {
-                decimal sum = 0;
-
                 <div class="mytooltip">
-                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Id"
-                       asp-route-dayexpensesid="@Model.DayExpensesId">@check.Location</a>:                  
-                    <span class="left-tooltiptext">
-                        Location: @check.Location<br />
-                        Sum: @check.Sum₴<br />
-                        Payer: @check.Payer<br /><br />
-                        Click the button to edit
+                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Check.Id"
+                       asp-route-dayexpensesid="@Model.DayExpensesId">@check.Check.Location</a>:
+                    <span class="top-tooltiptext">
+                        Sum: @check.Check.Sum₴<br />
+                        Payer: @check.Check.Payer
                     </span>
                 </div>
 
                 <ul>
                     @foreach (var item in check.Items)
                     {
-                        @if (item.Users.Contains(participant))
-                        {
-                            <li>
-                                @{
-                                    var itemParams = new Dictionary<string, string>
-                                        {
-                                        { "id", item.Id.ToString() },
-                                        { "checkid", check.Id.ToString() },
-                                        { "dayexpensesid", Model.DayExpensesId.ToString() }
-                                        };
-
-                                    decimal priceForUser = Math.Round((item.Price / item.UsersList.Count), 2);
-                                    sum += priceForUser;
-                                }
-                                <div class="mytooltip">
-                                    <a asp-controller="Items" asp-action="Edit"
-                                       asp-all-route-data="itemParams">@item.Name</a>
-                                    <span class="left-tooltiptext">
-                                        Name: @item.Name<br />
-                                        Description: @item.Description<br />
-                                        Price: @item.Price₴<br /><br />
-                                        Click the button to edit
-                                    </span>
-                                </div>
-                                (@item.Price₴) /
-                                <div class="mytooltip">
-                                    @item.UsersList.Count
-                                    <span class="top-tooltiptext">
-                                        Users:
-                                        <ul>                                            
-                                        @foreach(var user in item.Users)
+                        <li>
+                            @item.Item.Name (@item.Item.Price₴) /
+                            <div class="mytooltip">
+                                @item.Item.UsersList.Count
+                                <span class="top-tooltiptext">
+                                    Users:
+                                    <ul>
+                                        @foreach (var user in item.Item.UsersList)
                                         {
                                             <li>@user</li>
                                         }
-                                        </ul>
-                                    </span>
-                                </div>
-                                = @priceForUser₴
-                            </li>
-                        }
+                                    </ul>
+                                </span>
+                            </div>
+                            = @item.PricePerUser₴
+                        </li>
                     }
                 </ul>
-                <label>Sum per participant: @Math.Round(sum, 2)₴</label><br /><hr />
-            }            
+                <label>Sum per participant: @check.SumPerParticipant₴</label>
+
+                <br />
+
+                <hr />
+            }
         }
     </div>
 }
@@ -103,9 +78,9 @@
     <label>Transaction list:</label>
     <ul>
         @foreach (var transaction in Model.OptimizedUserTransactions)
-    {
-        <li>@transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
-    }
+        {
+            <li>@transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
+        }
     </ul>
 
     <hr />
