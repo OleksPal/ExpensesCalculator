@@ -111,7 +111,7 @@ namespace ExpensesCalculator.Services
                 dayExpensesCalculation.Participants = dayExpenses.ParticipantsList;
                 dayExpensesCalculation.Checks = dayExpenses.Checks;
                 dayExpensesCalculation.DayExpensesCalculations = CalculateDayExpensesList(dayExpenses);
-                dayExpensesCalculation.AllUsersTrasactions = CalculateTransactionList(dayExpensesCalculation.Checks);
+                dayExpensesCalculation.AllUsersTrasactions = CalculateTransactionList(dayExpensesCalculation.DayExpensesCalculations);
                 dayExpensesCalculation.OptimizedUserTransactions = OptimizeTransactions(dayExpensesCalculation.AllUsersTrasactions.ToList());
             }
 
@@ -148,7 +148,7 @@ namespace ExpensesCalculator.Services
 
         private ICollection<DayExpensesCalculation> CalculateDayExpensesList(DayExpenses dayExpenses)
         {
-            var dayExpensesList = new List<DayExpensesCalculation>();
+            var dayExpensesCalculationList = new List<DayExpensesCalculation>();
             foreach (var participant in dayExpenses.ParticipantsList) 
             {
                 var participantExpenses = new DayExpensesCalculation { UserName = participant };
@@ -162,11 +162,13 @@ namespace ExpensesCalculator.Services
                             if (item.UsersList.Contains(participant))
                             {
                                 decimal pricePerUser = Math.Round(item.Price / item.UsersList.Count, 2);
+
                                 checkCalculation.Items.Add(new ItemCalculation
                                 {
                                     Item = item,
                                     PricePerUser = pricePerUser
                                 });
+
                                 checkCalculation.SumPerParticipant += pricePerUser;
                             }                                
                         }
@@ -175,41 +177,31 @@ namespace ExpensesCalculator.Services
                             participantExpenses.CheckCalculations.Add(checkCalculation);
                     }
                 }
-                dayExpensesList.Add(participantExpenses);
+                dayExpensesCalculationList.Add(participantExpenses);
             }
-            return dayExpensesList;
+
+            return dayExpensesCalculationList;
         }
 
-        private List<Transaction> CalculateTransactionList(IEnumerable<Check> checks)
+        private List<Transaction> CalculateTransactionList(ICollection<DayExpensesCalculation> dayExpensesCalculations)
         {
-            List<Transaction> fullTransactionList = new();
-            foreach (var check in checks)
+            List<Transaction> fullTransactionList = new List<Transaction>();
+            foreach (var expensesCalculation in dayExpensesCalculations)
             {
-                Dictionary<SenderRecipient, decimal> userTransactions = new();
-                foreach (var item in check.Items)
+                Dictionary<SenderRecipient, decimal> userTransactions = new Dictionary<SenderRecipient, decimal>();
+                foreach (var checkCalculation in expensesCalculation.CheckCalculations)
                 {
-                    foreach (var user in item.UsersList)
+                    if (checkCalculation.Check.Payer != expensesCalculation.UserName)
                     {
-                        if (user != check.Payer)
+                        var newTransaction = new Transaction
                         {
-                            var transactionKey = new SenderRecipient(user, check.Payer);
-                            decimal transactionValue = Math.Round(item.Price / item.UsersList.Count, 2);
+                            CheckName = checkCalculation.Check.Location,
+                            Subjects = new SenderRecipient(expensesCalculation.UserName, checkCalculation.Check.Payer),
+                            TransferAmount = checkCalculation.SumPerParticipant
+                        };
 
-                            if (!userTransactions.Keys.Any(key => key.Equals(transactionKey)))
-                                userTransactions.Add(transactionKey, transactionValue);
-                            else
-                                userTransactions[transactionKey] += transactionValue;
-                        }
-                    }
-                }
-
-                foreach (var transaction in userTransactions)
-                {
-                    var newTransaction = new Transaction();
-                    newTransaction.CheckName = check.Location;
-                    newTransaction.Subjects = transaction.Key;
-                    newTransaction.TransferAmount = transaction.Value;
-                    fullTransactionList.Add(newTransaction);
+                        fullTransactionList.Add(newTransaction);
+                    }                    
                 }
             }
 
