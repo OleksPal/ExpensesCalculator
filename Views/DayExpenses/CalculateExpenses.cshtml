@@ -10,12 +10,17 @@
 <script src="/js/open-tab.js"></script>
 <script src="/js/change-tooltip-visibility.js"></script>
 
-<h1>Expenses calculation</h1>
-<div class="form-check form-switch" style="font-size: 20px;">
-    <input class="form-check-input" type="checkbox" role="switch" onchange="changeTooltipVisibility()" id="tooltipSwitcher" checked>
-    <label class="form-check-label" id="tooltipSwitcherText">Disable tooltips</label>
-</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/caret-down-animation.js"></script>
 
+<h1>Expenses calculation</h1>
+<br />
+<div class="cn">
+    <div class="form-check form-switch inner" >
+        <input class="form-check-input" type="checkbox" role="switch" onchange="changeTooltipVisibility()" id="tooltipSwitcher" checked>
+        <label class="form-check-label" id="tooltipSwitcherText">Disable tooltips</label>
+    </div>
+</div>
 
 <hr />
 
@@ -27,24 +32,23 @@
     <button class="tablinks" onclick="openParticipantTab(event, 'transactionList')">Transaction List</button>
 </div>
 
-@foreach (var dayExpensesCalculations in Model.DayExpensesCalculations)
+@foreach (var dayExpensesCalculation in Model.DayExpensesCalculations)
 {
-    <div id="@dayExpensesCalculations.UserName" class="tabcontent">
-        @foreach (var check in dayExpensesCalculations.CheckCalculations)
+    <div id="@dayExpensesCalculation.UserName" class="tabcontent">
+        @foreach (var checkCalculation in dayExpensesCalculation.CheckCalculations)
         {
-            if (check.Items.Count != 0)
+            if (checkCalculation.Items.Count != 0)
             {
                 <div class="mytooltip">
-                    <a asp-controller="Checks" asp-action="Edit" asp-route-id="@check.Check.Id"
-                       asp-route-dayexpensesid="@Model.DayExpensesId">@check.Check.Location</a>:
+                    <label>@checkCalculation.Check.Location:</label>
                     <span class="top-tooltiptext">
-                        Sum: @check.Check.Sum₴<br />
-                        Payer: @check.Check.Payer
+                        Sum: @checkCalculation.Check.Sum₴<br />
+                        Payer: @checkCalculation.Check.Payer
                     </span>
                 </div>
 
                 <ul>
-                    @foreach (var item in check.Items)
+                    @foreach (var item in checkCalculation.Items)
                     {
                         <li>
                             @item.Item.Name (@item.Item.Price₴) /
@@ -64,7 +68,7 @@
                         </li>
                     }
                 </ul>
-                <label>Sum per participant: @check.SumPerParticipant₴</label>
+                <label>Sum per participant: @checkCalculation.SumPerParticipant₴</label>
 
                 <br />
 
@@ -85,11 +89,11 @@
 
     <hr />
 
-    <span role="button" style="user-select: none;" data-bs-toggle="collapse" id="fullTransactionListDropper" 
-    data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-        &#9655;Full trasaction list:
-    </span>
-    <div class="collapse" id="collapseExample">
+    <span role="button" style="user-select: none;" data-bs-toggle="collapse"
+    id="fullTransactionListDropper" data-bs-target="#collapseFullTransactionList"
+          aria-expanded="false" aria-controls="collapseFullTransactionList">&#9655;</span> Full trasaction list:
+
+    <div class="collapse" id="collapseFullTransactionList">
         <ul>
             @foreach (var transaction in Model.AllUsersTrasactions)
             {
