@@ -83,9 +83,27 @@ namespace ExpensesCalculator.Extensions
             return fullTransactionList;
         }
 
+        private static ICollection<Transaction> SumTransactions(List<Transaction> transactionList)
+        {
+            for (int i = 0; i < transactionList.Count; i++)
+            {
+                for (int j = 1; j < transactionList.Count; j++)
+                {
+                    if (transactionList[i].Subjects.Equals(transactionList[j].Subjects) && i != j)
+                    {
+                        transactionList[i].TransferAmount += transactionList[j].TransferAmount;
+                        transactionList.Remove(transactionList[j]);
+                    }
+                }
+            }
+
+            return transactionList;
+        }
+
         private static ICollection<Transaction> OptimizeTransactions(List<Transaction> transactionList)
         {
             transactionList = new List<Transaction>(transactionList.Select(t => (Transaction)t.Clone()));
+            transactionList = SumTransactions(transactionList).ToList();
             for (int i = 0; i < transactionList.Count; i++)
             {
                 for (int j = 1; j < transactionList.Count; j++)
