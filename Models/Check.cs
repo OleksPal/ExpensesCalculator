@@ -9,7 +9,7 @@ namespace ExpensesCalculator.Models
         [Required(ErrorMessage = "Please enter check sum")]
         [DataType(DataType.Currency)]
         [Display(Name = "Sum")]
-        [DisplayFormat(DataFormatString = "{0}₴")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:n2}₴")]
         [Range(0, Double.MaxValue, ErrorMessage = "Please enter correct sum")]
         public decimal Sum { get; set; }
 

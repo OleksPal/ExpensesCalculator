@@ -42,7 +42,7 @@
                 <div class="mytooltip">
                     <label>@checkCalculation.Check.Location:</label>
                     <span class="top-tooltiptext">
-                        Sum: @checkCalculation.Check.Sum₴<br />
+                        Sum: @Html.DisplayFor(model => checkCalculation.Check.Sum)<br />
                         Payer: @checkCalculation.Check.Payer
                     </span>
                 </div>
@@ -51,7 +51,7 @@
                     @foreach (var item in checkCalculation.Items)
                     {
                         <li>
-                            @item.Item.Name (@item.Item.Price₴) /
+                            @item.Item.Name (@Html.DisplayFor(model => item.Item.Price)) /
                             <div class="mytooltip">
                                 @item.Item.UsersList.Count
                                 <span class="top-tooltiptext">
@@ -64,11 +64,11 @@
                                     </ul>
                                 </span>
                             </div>
-                            = @item.PricePerUser₴
+                            = @Html.DisplayFor(model => item.PricePerUser)
                         </li>
                     }
                 </ul>
-                <label>Sum per participant: @checkCalculation.SumPerParticipant₴</label>
+                <label>Sum per participant: @Html.DisplayFor(model => checkCalculation.SumPerParticipant)</label>
 
                 <br />
 
@@ -83,7 +83,8 @@
     <ul>
         @foreach (var transaction in Model.OptimizedUserTransactions)
         {
-            <li>@transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
+            <li>@transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount)) 
+                → @transaction.Subjects.Recipient</li>
         }
     </ul>
 
@@ -97,7 +98,8 @@
         <ul>
             @foreach (var transaction in Model.AllUsersTrasactions)
             {
-                <li>@transaction.CheckName: @transaction.Subjects.Sender (@transaction.TransferAmount₴) → @transaction.Subjects.Recipient</li>
+                <li>@transaction.CheckName: @transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount)) 
+                    → @transaction.Subjects.Recipient</li>
             }
         </ul>
     </div>
