@@ -26,5 +26,7 @@ namespace ExpensesCalculator.Models
         public string Payer { get; set; }
 
         public int DayExpensesId { get; set; }
+
+        public DayExpenses DayExpenses { get; set; }
     }
 }
