@@ -1,4 +1,4 @@
-﻿namespace ExpensesCalculator.Repositories
+﻿namespace ExpensesCalculator.Repositories.Interfaces
 {
     public interface IUserRepository
     {

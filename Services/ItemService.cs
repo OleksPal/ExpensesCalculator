@@ -1,5 +1,5 @@
 ﻿using ExpensesCalculator.Models;
-using ExpensesCalculator.Repositories;
+using ExpensesCalculator.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Packaging;
 using System.Text.RegularExpressions;

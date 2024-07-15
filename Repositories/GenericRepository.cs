@@ -1,10 +1,11 @@
 ﻿using ExpensesCalculator.Data;
 using ExpensesCalculator.Models;
+using ExpensesCalculator.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Repositories
 {
-    public class GenericRepository<T> : IRepository<T> where T : DbObject
+    public class GenericRepository<T> : IGenericRepository<T> where T : DbObject
     {
         protected readonly ExpensesContext _context;
 
@@ -13,7 +14,7 @@ namespace ExpensesCalculator.Repositories
             _context = context;
         }
 
-        public virtual async Task<IEnumerable<T>> GetAll()
+        public virtual async Task<ICollection<T>> GetAll()
         {
             return await _context.Set<T>().ToListAsync();
         }
@@ -23,20 +24,33 @@ namespace ExpensesCalculator.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public virtual async Task Insert(T obj)
+        public virtual async Task<T> Insert(T obj)
         {
             await _context.Set<T>().AddAsync(obj);
+            await _context.SaveChangesAsync();
+
+            return obj;
         }
 
-        public virtual async Task Update(T obj)
+        public virtual async Task<T> Update(T obj)
         {
             _context.Set<T>().Update(obj);
+            await _context.SaveChangesAsync();
+
+            return obj;
         }
 
-        public virtual async Task Delete(int id)
+        public virtual async Task<T> Delete(int id)
         {
-            var obj = GetById(id);
-            _context.Set<T>().Remove(obj.Result);
+            var obj = await GetById(id);
+
+            if (obj is not null) 
+            {
+                _context.Set<T>().Remove(obj);
+                await _context.SaveChangesAsync();
+            }            
+
+            return obj;
         }
     }
 }
