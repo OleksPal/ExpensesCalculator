@@ -33,5 +33,5 @@
 <script>
     var token = '@Html.AntiForgeryToken()';
     var checkId = $("#Id").val();
-    var dayExpensesId = @ViewData["DayExpensesId"];
+    var dayExpensesId = @Model.DayExpensesId;
 </script>

@@ -64,7 +64,7 @@ namespace ExpensesCalculator.Services
             return new MultiSelectList(optionList, "Value", "Text");
         }
 
-        public async Task<ManageCheckItemsViewModel> AddItem(Item item, int checkId, int dayExpensesId)
+        public async Task<Check> AddItem(Item item, int checkId, int dayExpensesId)
         {
             string rareNameList = item.UsersList.First();
             item.UsersList.Clear();
@@ -75,12 +75,12 @@ namespace ExpensesCalculator.Services
             check.Items.Add(item);
             check.Sum += item.Price;
             await _itemRepository.Insert(item);
-            await _checkRepository.Update(check);            
+            check = await _checkRepository.Update(check);            
 
-            return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return check;
         }
 
-        public async Task<ManageCheckItemsViewModel> EditItem(Item item, int checkId, int dayExpensesId)
+        public async Task<Check> EditItem(Item item, int checkId, int dayExpensesId)
         {
             string rareNameList = item.UsersList.First();
             item.UsersList.Clear();
@@ -99,10 +99,10 @@ namespace ExpensesCalculator.Services
                 check = await GetCheckWithItems(checkId);
             }
 
-            return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return check;
         }
 
-        public async Task<ManageCheckItemsViewModel> DeleteItem(int id, int checkId, int dayExpensesId)
+        public async Task<Check> DeleteItem(int id, int checkId, int dayExpensesId)
         {
             var check = await GetCheckWithItems(checkId);
             var item = await _itemRepository.GetById(id);
@@ -112,10 +112,10 @@ namespace ExpensesCalculator.Services
                 check.Items.Remove(item);
                 check.Sum -= item.Price;
                 await _itemRepository.Delete(id);
-                await _checkRepository.Update(check);
+                check = await _checkRepository.Update(check);
             }            
 
-            return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return check;
         }
 
         private async Task<Check> GetCheckWithItems(int checkId)
