@@ -1,4 +1,8 @@
-﻿.mytooltip {
+﻿ul {
+    margin: 0 !important;
+}
+
+.mytooltip {
     position: relative;
     display: inline-block;
 }
