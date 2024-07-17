@@ -1,7 +1,6 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NuGet.Packaging;
 
 namespace ExpensesCalculator.Services
 {
@@ -35,7 +34,7 @@ namespace ExpensesCalculator.Services
         public async Task<Check> GetCheckByIdWithItems(int id)
         {
             var check = await GetCheckById(id);
-            check.Items.AddRange(await _itemRepository.GetAllCheckItems(id));
+            check.Items = await _itemRepository.GetAllCheckItems(id);
 
             return check;
         }

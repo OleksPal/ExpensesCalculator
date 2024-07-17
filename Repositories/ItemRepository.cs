@@ -18,9 +18,14 @@ namespace ExpensesCalculator.Repositories
 
         public override async Task<Item> GetById(int id)
         {
-            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
-            _context.ChangeTracker.Clear();
+            var item = await _context.Items.Include(i => i.Check).FirstOrDefaultAsync(i => i.Id == id);
+
             return item;
+        }
+
+        public async Task<decimal> GetItemPriceById(int id)
+        {
+            return await _context.Items.Where(i => i.Id == id).Select(i => i.Price).SingleOrDefaultAsync();
         }
     }
 }

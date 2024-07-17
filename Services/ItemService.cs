@@ -1,7 +1,6 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NuGet.Packaging;
 using System.Text.RegularExpressions;
 
 namespace ExpensesCalculator.Services
@@ -18,34 +17,26 @@ namespace ExpensesCalculator.Services
             _itemRepository = itemRepository;
             _checkRepository = checkRepository;
             _dayExpensesRepository = dayExpensesRepository;
-        }        
+        }
+
+        public async Task<Item> SetCheck(Item item)
+        {
+            if (item.CheckId != 0)
+                item.Check = await _checkRepository.GetById(item.CheckId);
+
+            return item;
+        }
 
         public async Task<Item> GetItemById(int id)
         {
             return await _itemRepository.GetById(id);
         }
 
-        public async Task<bool> ItemExists(int id)
-        {
-            return await GetItemById(id) is not null;
-        }
-
         public async Task<string> GetItemUsers(int id)
         {
             var item = await GetItemById(id);
-            string formatList = String.Empty;
 
-            foreach (var user in item.UsersList)
-            {
-                if (user is not null)
-                {
-                    formatList += user;
-                    if (user != item.UsersList.Last())
-                        formatList += ", ";
-                }
-            }
-
-            return formatList;
+            return String.Join(", ", item.UsersList);
         }
 
         public async Task<MultiSelectList> GetAllAvailableItemUsers(int dayExpensesId)
@@ -56,23 +47,19 @@ namespace ExpensesCalculator.Services
             if (dayExpenses is not null)          
             {
                 foreach (var participant in dayExpenses.ParticipantsList)
-                {
                     optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
-                }
             }
 
             return new MultiSelectList(optionList, "Value", "Text");
         }
 
-        public async Task<Check> AddItem(Item item, int checkId, int dayExpensesId)
+        public async Task<Check> AddItem(Item item)
         {
             string rareNameList = item.UsersList.First();
-            item.UsersList.Clear();
-            item.UsersList.AddRange(GetUserListFromString(rareNameList));
+            item.UsersList = GetUserListFromString(rareNameList);
 
-            var check = await GetCheckWithItems(checkId);
+            var check = await GetCheckWithItems(item.CheckId);
 
-            check.Items.Add(item);
             check.Sum += item.Price;
             await _itemRepository.Insert(item);
             check = await _checkRepository.Update(check);            
@@ -80,36 +67,33 @@ namespace ExpensesCalculator.Services
             return check;
         }
 
-        public async Task<Check> EditItem(Item item, int checkId, int dayExpensesId)
+        public async Task<Check> EditItem(Item item)
         {
             string rareNameList = item.UsersList.First();
-            item.UsersList.Clear();
-            item.UsersList.AddRange(GetUserListFromString(rareNameList));
+            item.UsersList = GetUserListFromString(rareNameList);
 
-            var check = await _checkRepository.GetById(checkId);
-            var oldItem = await _itemRepository.GetById(item.Id);
-            var oldItemPrice = oldItem.Price;
-            
+            var check = await _checkRepository.GetById(item.CheckId);
+            var oldItemPrice = await _itemRepository.GetItemPriceById(item.Id);
+
             if (item is not null)
             {
                 await _itemRepository.Update(item);
                 check.Sum -= oldItemPrice;
                 check.Sum += item.Price;                
                 await _checkRepository.Update(check);
-                check = await GetCheckWithItems(checkId);
+                check = await GetCheckWithItems(item.CheckId);
             }
 
             return check;
         }
 
-        public async Task<Check> DeleteItem(int id, int checkId, int dayExpensesId)
+        public async Task<Check> DeleteItem(int id)
         {
-            var check = await GetCheckWithItems(checkId);
             var item = await _itemRepository.GetById(id);
+            var check = await GetCheckWithItems(item.CheckId);            
 
             if (item is not null) 
-            {
-                check.Items.Remove(item);
+            {                
                 check.Sum -= item.Price;
                 await _itemRepository.Delete(id);
                 check = await _checkRepository.Update(check);
@@ -121,12 +105,12 @@ namespace ExpensesCalculator.Services
         private async Task<Check> GetCheckWithItems(int checkId)
         {
             var check = await _checkRepository.GetById(checkId);
-            check.Items.AddRange(await _itemRepository.GetAllCheckItems(checkId));
+            check.Items = await _itemRepository.GetAllCheckItems(checkId);
 
             return check;
         }
 
-        private IEnumerable<string> GetUserListFromString(string rareText)
+        private ICollection<string> GetUserListFromString(string rareText)
         {
             Regex pattern = new Regex(@"\w+");
 
