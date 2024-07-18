@@ -71,7 +71,7 @@
 <br />
 
 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick="showModalForCheckCreate(@Model.Id)" > 
+        onclick="showModalForCheckCreate(@Model.Id)">
     <i class="bi bi-plus-circle"></i> Add check
 </button>
 
@@ -84,16 +84,15 @@
             <tr>
                 <th></th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Checks.ToList()[0].Location)
+                    @Html.DisplayNameFor(model => model.Checks.First().Location)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Checks.ToList()[0].Sum)
+                    @Html.DisplayNameFor(model => model.Checks.First().Sum)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Checks.ToList()[0].Payer)
+                    @Html.DisplayNameFor(model => model.Checks.First().Payer)
                 </th>
-                <th style="width:80px;"></th>
-                <th style="width:100px;"></th>
+                <th width="80px"></th>
             </tr>
         </thead>
         <tbody id="checkList">
