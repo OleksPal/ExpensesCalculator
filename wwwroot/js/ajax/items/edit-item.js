@@ -11,10 +11,17 @@ $(function () {
             }
         }
 
+        // Remove currency symbol if price value has one
+        var price = $("#price").val();
+        var lastSymbol = price.slice(-1);
+        if (lastSymbol < '0' || lastSymbol > '9') {
+            price = price.substring(0, price.length - 1);
+        }
+
         $.ajax({
             url: `/Items/Edit/${itemId}?checkid=${checkId}&dayexpensesid=${dayExpensesId}`,
             data: {
-                Name: $("#name").val(), Description: $("#description").val(), Price: $("#price").val(), UsersList: users,
+                Name: $("#name").val(), Description: $("#description").val(), Price: price, UsersList: users,
                 CheckId: checkId,
                 __RequestVerificationToken: $(token).val()
             },
