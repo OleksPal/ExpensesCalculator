@@ -2,6 +2,7 @@
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -40,7 +41,8 @@ namespace ExpensesCalculator.Controllers
 
             ViewData["CheckId"] = checkId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.Id);
 
             return PartialView("_EditItem", item);
         }
@@ -70,12 +72,12 @@ namespace ExpensesCalculator.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
-        {
-            if (item.UsersList.First() is null)
-                ModelState.AddModelError("UsersList", "Choose some users");
-
+        {          
             item = await _itemService.SetCheck(item);
             ModelState.Clear();
+
+            if (item.UsersList.First() is null)
+                ModelState.AddModelError("UsersList", "Choose some users");
 
             if (TryValidateModel(item))
             {
@@ -100,11 +102,11 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
         {
-            if (item.UsersList.First() is null)
-                ModelState.AddModelError("UsersList", "Choose some users");
-
             item = await _itemService.SetCheck(item);
             ModelState.Clear();
+
+            if (item.UsersList.First() is null)
+                ModelState.AddModelError("UsersList", "Choose some users");
 
             if (TryValidateModel(item))
             {
@@ -118,7 +120,7 @@ namespace ExpensesCalculator.Controllers
 
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
 
             return PartialView("_EditItem");
         }

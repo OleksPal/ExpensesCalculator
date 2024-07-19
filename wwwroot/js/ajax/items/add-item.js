@@ -1,20 +1,12 @@
 $(function () {
     $("#createButton").on("click", function () {
-        var userSelect = document.getElementById("Subjects_dropdown");
-        var users = "";
-        for (var i = 0; i < userSelect.length; i++) {
-            if (userSelect.options[i].selected) {
-                if (users.length != 0) {
-                    users += ",";
-                }
-                users += userSelect.options[i].value;  
-            }                          
-        }
+        var users = mySelectedItems.length > 0
+            ? mySelectedItems.join(', ') : "";
 
         // Remove currency symbol if price value has one
         var price = $("#price").val();
         var lastSymbol = price.slice(-1);
-        if (!(lastSymbol >= '0' && lastSymbol <= '9')) {
+        if (lastSymbol < '0' || lastSymbol > '9') {
             price = price.substring(0, price.length - 1);
         }
 

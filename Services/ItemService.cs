@@ -47,10 +47,30 @@ namespace ExpensesCalculator.Services
             if (dayExpenses is not null)          
             {
                 foreach (var participant in dayExpenses.ParticipantsList)
-                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
             }
 
             return new MultiSelectList(optionList, "Value", "Text");
+        }
+
+        public async Task<MultiSelectList> GetCheckedItemUsers(Item item, int dayExpensesId)
+        {
+            var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
+            var optionList = new List<SelectListItem>();
+
+            if (dayExpenses is not null)
+            {
+                foreach (var participant in dayExpenses.ParticipantsList)
+                {
+                    if (item.UsersList.Contains(participant))
+                        optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                    else
+                        optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = false });
+                }
+                    
+            }
+
+            return new MultiSelectList(optionList, "Value", "Text", item.UsersList);
         }
 
         public async Task<Check> AddItem(Item item)
