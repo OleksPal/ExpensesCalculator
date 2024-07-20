@@ -11,8 +11,6 @@ $(document).ready(function () {
                  mySelectedItems.filter((item) => item !== checkbox.value);
          }
 
-         alert(mySelectedItems);
-
          dropdownButton.innerText = mySelectedItems.length > 0
              ? mySelectedItems.join(', ') : 'Select users';
      }

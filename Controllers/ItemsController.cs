@@ -2,7 +2,6 @@
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -61,7 +60,7 @@ namespace ExpensesCalculator.Controllers
 
             ViewData["CheckId"] = checkId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["FormatParticipantNames"] = await _itemService.GetItemUsers((int)id);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.Id);
 
             return PartialView("_DeleteItem", item);
         }
@@ -121,6 +120,7 @@ namespace ExpensesCalculator.Controllers
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.Id);
 
             return PartialView("_EditItem");
         }

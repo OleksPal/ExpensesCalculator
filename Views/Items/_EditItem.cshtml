@@ -73,7 +73,7 @@
     var itemId = $("#Id").val();
     var checkId = @ViewData["CheckId"];
     var dayExpensesId = @ViewData["DayExpensesId"];
-    var mySelectedItems = ["PO", "VV", "SS"];
+    var mySelectedItems = @Html.Raw(Model.Users);
 
     $(document).ready(function () {
         const dropdownButton = document.getElementById('multiSelectDropdown');
