@@ -28,7 +28,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Items/EditItem/5?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> EditItem(int? id, int checkId, int dayExpensesId)
+        public async Task<IActionResult> EditItem(int? id, int dayExpensesId)
         {
             if (id is null)
                 return NotFound();
@@ -38,17 +38,17 @@ namespace ExpensesCalculator.Controllers
             if (item is null)
                 return NotFound();
 
-            ViewData["CheckId"] = checkId;
+            ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.Id);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_EditItem", item);
         }
 
         // GET: Items/DeleteItem/5?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> DeleteItem(int? id, int checkId, int dayExpensesId)
+        public async Task<IActionResult> DeleteItem(int? id, int dayExpensesId)
         {
             if (id is null)
                 return NotFound();
@@ -58,9 +58,9 @@ namespace ExpensesCalculator.Controllers
             if (item is null)
                 return NotFound();
 
-            ViewData["CheckId"] = checkId;
+            ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.Id);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_DeleteItem", item);
         }
@@ -77,6 +77,8 @@ namespace ExpensesCalculator.Controllers
 
             if (item.UsersList.First() is null)
                 ModelState.AddModelError("UsersList", "Choose some users");
+            if (item.Price <= 0)
+                ModelState.AddModelError("Price", "Enter correct price");
 
             if (TryValidateModel(item))
             {
@@ -89,7 +91,8 @@ namespace ExpensesCalculator.Controllers
             
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_CreateItem", item);
         }
@@ -106,6 +109,8 @@ namespace ExpensesCalculator.Controllers
 
             if (item.UsersList.First() is null)
                 ModelState.AddModelError("UsersList", "Choose some users");
+            if (item.Price <= 0)
+                ModelState.AddModelError("Price", "Enter correct price");
 
             if (TryValidateModel(item))
             {
@@ -120,9 +125,9 @@ namespace ExpensesCalculator.Controllers
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.Id);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
-            return PartialView("_EditItem");
+            return PartialView("_EditItem", item);
         }
 
         // POST: Items/Delete/5?dayExpensesId=2

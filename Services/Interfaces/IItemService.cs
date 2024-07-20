@@ -6,7 +6,7 @@ namespace ExpensesCalculator.Services
     public interface IItemService
     {        
         Task<Item> GetItemById(int id);
-        Task<string> GetItemUsers(int id);
+        Task<string> GetItemUsers(IEnumerable<string> userList);
         Task<MultiSelectList> GetAllAvailableItemUsers(int dayExpensesId);
         Task<MultiSelectList> GetCheckedItemUsers(Item item, int dayExpensesId);
         Task<Item> SetCheck(Item item);

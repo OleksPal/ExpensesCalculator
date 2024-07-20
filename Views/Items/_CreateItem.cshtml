@@ -33,12 +33,20 @@
                     id="multiSelectDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"> Select users
             </button>
             <ul class="dropdown-menu w-100 text single-line" aria-labelledby="multiSelectDropdown">
-                @foreach (var participant in ViewData["Participants"] as MultiSelectList)
+                @foreach (var participant in (ViewData["Participants"] as MultiSelectList))
                 {
                     <li class="dropdown-item w-100">
                         <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input"
-                                   value=@participant.Value>
+                            @if (participant.Selected)
+                            {
+                                <input type="checkbox" class="form-check-input"
+                                       value=@participant.Value checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="form-check-input"
+                                       value=@participant.Value>
+                            }
                             @participant.Text
                         </label>
                     </li>
@@ -52,9 +60,28 @@
     </form>
 </div>
 
-<script>
-    var token = '@Html.AntiForgeryToken()';
-    var checkId = @ViewData["CheckId"];
-    var dayExpensesId = @ViewData["DayExpensesId"]; 
-    var mySelectedItems = [];
-</script>
+@if(Model is null)
+{
+    <script>
+        var token = '@Html.AntiForgeryToken()';
+        var checkId = @ViewData["CheckId"];
+        var dayExpensesId = @ViewData["DayExpensesId"];
+        var mySelectedItems = [];
+    </script>
+}
+else
+{
+    <script>
+        var token = '@Html.AntiForgeryToken()';
+        var checkId = @ViewData["CheckId"];
+        var dayExpensesId = @ViewData["DayExpensesId"];
+        var userList = @Html.Raw(Model.Users);
+        var mySelectedItems = (userList[0] === null) ? [] : @Html.Raw(Model.Users);
+
+        $(document).ready(function () {
+            const dropdownButton = document.getElementById('multiSelectDropdown');
+            dropdownButton.innerText = "@ViewData["FormatUserList"]";
+        });
+    </script>
+}
+

@@ -11,7 +11,7 @@ $(function () {
         }
 
         $.ajax({
-            url: `/Items/Edit/${itemId}?checkid=${checkId}&dayexpensesid=${dayExpensesId}`,
+            url: `/Items/Edit/${itemId}?dayexpensesid=${dayExpensesId}`,
             data: {
                 Name: $("#name").val(), Description: $("#description").val(), Price: price, UsersList: users,
                 CheckId: checkId,

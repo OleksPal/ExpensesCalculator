@@ -51,14 +51,6 @@
             </ul>
             <span asp-validation-for="UsersList" class="text-danger"></span>
         </div>
-        @* <div class="form-group mb-3">
-            <label asp-for="UsersList" class="control-label"></label>
-            <div class="form-group mb-3">
-                @Html.ListBoxFor(model => model.UsersList, ViewData["Participants"] as MultiSelectList,
-                         new { @class = "form-control", multiple = "multiple", id = "Subjects_dropdown" })
-            </div>
-            <span asp-validation-for="UsersList" class="text-danger"></span>
-        </div> *@
         <input type="hidden" asp-for="Id"/>
         <div class="form-group">
             <button type="button" value="Save" class="btn btn-warning" id="editButton">
@@ -70,13 +62,13 @@
 
 <script>
     var token = '@Html.AntiForgeryToken()';
-    var itemId = $("#Id").val();
     var checkId = @ViewData["CheckId"];
     var dayExpensesId = @ViewData["DayExpensesId"];
-    var mySelectedItems = @Html.Raw(Model.Users);
+    var userList = @Html.Raw(Model.Users);
+    var mySelectedItems = (userList[0] === null) ? [] : @Html.Raw(Model.Users);
 
     $(document).ready(function () {
         const dropdownButton = document.getElementById('multiSelectDropdown');
         dropdownButton.innerText = "@ViewData["FormatUserList"]";
-    });    
+    });
 </script>

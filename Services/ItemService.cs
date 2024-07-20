@@ -32,11 +32,9 @@ namespace ExpensesCalculator.Services
             return await _itemRepository.GetById(id);
         }
 
-        public async Task<string> GetItemUsers(int id)
+        public async Task<string> GetItemUsers(IEnumerable<string> userList)
         {
-            var item = await GetItemById(id);
-
-            return String.Join(", ", item.UsersList);
+            return String.Join(", ", userList);
         }
 
         public async Task<MultiSelectList> GetAllAvailableItemUsers(int dayExpensesId)

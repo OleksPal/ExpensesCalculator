@@ -1,7 +1,7 @@
 $(function () {
     $("#createButton").on("click", function () {
         var users = mySelectedItems.length > 0
-            ? mySelectedItems.join(', ') : "";
+            ? mySelectedItems.join(',') : "";
 
         // Remove currency symbol if price value has one
         var price = $("#price").val();
