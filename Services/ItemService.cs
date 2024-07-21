@@ -114,7 +114,8 @@ namespace ExpensesCalculator.Services
             {                
                 check.Sum -= item.Price;
                 await _itemRepository.Delete(id);
-                check = await _checkRepository.Update(check);
+                await _checkRepository.Update(check);
+                check = await GetCheckWithItems(item.CheckId);
             }            
 
             return check;

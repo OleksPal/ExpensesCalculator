@@ -28,7 +28,7 @@
         <div class="form-group mb-3 dropdown">
             <label asp-for="UsersList" class="control-label"></label>
             <button class="btn btn-outline-dark dropdown-toggle w-100 text single-line" type="button" style="text-align: left;"
-                    id="multiSelectDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                    id="multiSelectDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"> Select users
             </button>
             <ul class="dropdown-menu w-100 text single-line" aria-labelledby="multiSelectDropdown">
                 @foreach (var participant in (ViewData["Participants"] as MultiSelectList))
@@ -40,7 +40,8 @@
                                 <input type="checkbox" class="form-check-input"
                                        value=@participant.Value checked>
                             }
-                            else{
+                            else
+                            {
                                 <input type="checkbox" class="form-check-input"
                                        value=@participant.Value>
                             }                            
@@ -62,6 +63,7 @@
 
 <script>
     var token = '@Html.AntiForgeryToken()';
+    var itemId = $("#Id").val();
     var checkId = @ViewData["CheckId"];
     var dayExpensesId = @ViewData["DayExpensesId"];
     var userList = @Html.Raw(Model.Users);

@@ -48,7 +48,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Items/DeleteItem/5?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> DeleteItem(int? id, int dayExpensesId)
+        public async Task<IActionResult> DeleteItem(int? id)
         {
             if (id is null)
                 return NotFound();
@@ -58,8 +58,6 @@ namespace ExpensesCalculator.Controllers
             if (item is null)
                 return NotFound();
 
-            ViewData["CheckId"] = item.CheckId;
-            ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_DeleteItem", item);
