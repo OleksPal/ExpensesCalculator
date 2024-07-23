@@ -7,13 +7,12 @@
 }
 
 function showModalForCheckEdit(checkId) {
-    alert(checkId);
     $(document).ready(function () {
         $.get(`/Checks/EditCheck/${checkId}`, function (data) {
             $('#modal-content').html(data);            
         });
     });
-}z
+}
 
 function showModalForCheckDelete(checkId) {
     $(document).ready(function () {
