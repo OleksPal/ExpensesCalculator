@@ -1,10 +1,5 @@
 ﻿@model DayExpenses
 
-<script src="~/js/modalviews/day-expenses-modal-views.js"></script>
-<script src="~/js/modalviews/checks-modal-views.js"></script>
-<script src="~/js/modalviews/items-modal-views.js"></script>
-<script src="~/js/managers/check-items-manager.js"></script>
-
 @foreach (var check in @Model.Checks)
 {
     <tr>
@@ -27,11 +22,13 @@
         </td>
         <td>
             <div class="btn-group" role="group">
-                <button class="btn btn-warning bi bi-pencil" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                         onclick="showModalForCheckEdit(@check.Id)">
+                    <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-danger bi bi-trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                         onclick="showModalForCheckDelete(@check.Id)">
+                    <i class="bi bi-trash"></i>
                 </button>
             </div>            
         </td>

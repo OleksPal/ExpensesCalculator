@@ -7,12 +7,28 @@ function getCheckItemsManager(checkId, dayId) {
             });
         }
         else {
-            var collapsedRow = document.getElementById(`check-${checkId}`);
-            $(`check-${checkId}`).collapse('hide');
+            var attr = $(`#checkItemList-${checkId}`).attr('hidden');
 
-            collapsedRow.addEventListener('hidden.bs.collapse', () => {
-                $(`#check-${checkId}-Items`).empty();
-            });
-        }
+            // For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
+            if (typeof attr !== typeof undefined && attr !== false) {
+                // Element has the hidden attribute   
+                $(`#checkItemList-${checkId}`).removeAttr('hidden');
+
+                function delayShow() {
+                    $(`#check-${checkId}`).collapse('show');
+                }
+
+                setTimeout(delayShow, 100);
+            }
+            else {
+                $(`check-${checkId}`).collapse('hide');
+ 
+                function delayHide() {
+                    $(`#checkItemList-${checkId}`).attr('hidden', true);
+                }
+
+                setTimeout(delayHide, 300);
+            }
+        }        
     });
 }

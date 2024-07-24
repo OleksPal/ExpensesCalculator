@@ -1,6 +1,6 @@
 ﻿@model Check
 
-<td colspan="6">
+<td id="checkItemList-@Model.Id" colspan="6">
     <div class="collapse" id="check-@Model.Id">
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                 onclick="showModalForItemCreate(@Model.Id, @Model.DayExpensesId)">
