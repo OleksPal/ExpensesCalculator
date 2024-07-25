@@ -8,26 +8,21 @@ function getCheckItemsManager(checkId, dayId) {
         }
         else {
             var attr = $(`#checkItemList-${checkId}`).attr('hidden');
+            var myCollapsible = $(`#check-${checkId}`);
 
             // For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
             if (typeof attr !== typeof undefined && attr !== false) {
                 // Element has the hidden attribute   
                 $(`#checkItemList-${checkId}`).removeAttr('hidden');
 
-                function delayShow() {
-                    $(`#check-${checkId}`).collapse('show');
-                }
-
-                setTimeout(delayShow, 100);
+                myCollapsible.collapse('show');
             }
-            else {
-                $(`check-${checkId}`).collapse('hide');
- 
-                function delayHide() {
+            else {              
+                myCollapsible.on('hidden.bs.collapse', function () {
                     $(`#checkItemList-${checkId}`).attr('hidden', true);
-                }
+                })
 
-                setTimeout(delayHide, 300);
+                myCollapsible.collapse('hide');
             }
         }        
     });
