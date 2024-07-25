@@ -71,6 +71,6 @@
 
     $(document).ready(function () {
         const dropdownButton = document.getElementById('multiSelectDropdown');
-        dropdownButton.innerText = "@ViewData["FormatUserList"]";
+        dropdownButton.innerText = "@Html.Raw(ViewData["FormatUserList"])";
     });
 </script>
