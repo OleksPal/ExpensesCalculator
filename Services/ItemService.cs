@@ -1,7 +1,7 @@
 ﻿using ExpensesCalculator.Models;
-using ExpensesCalculator.Repositories;
+using ExpensesCalculator.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NuGet.Packaging;
+using System.Text.RegularExpressions;
 
 namespace ExpensesCalculator.Services
 {
@@ -17,34 +17,24 @@ namespace ExpensesCalculator.Services
             _itemRepository = itemRepository;
             _checkRepository = checkRepository;
             _dayExpensesRepository = dayExpensesRepository;
-        }        
+        }
+
+        public async Task<Item> SetCheck(Item item)
+        {
+            if (item.CheckId != 0)
+                item.Check = await _checkRepository.GetById(item.CheckId);
+
+            return item;
+        }
 
         public async Task<Item> GetItemById(int id)
         {
             return await _itemRepository.GetById(id);
         }
 
-        public async Task<bool> ItemExists(int id)
+        public async Task<string> GetItemUsers(IEnumerable<string> userList)
         {
-            return await GetItemById(id) is not null;
-        }
-
-        public async Task<string> GetItemUsers(int id)
-        {
-            var item = await GetItemById(id);
-            string formatList = String.Empty;
-
-            foreach (var user in item.UsersList)
-            {
-                if (user is not null)
-                {
-                    formatList += user;
-                    if (user != item.UsersList.Last())
-                        formatList += ", ";
-                }
-            }
-
-            return formatList;
+            return String.Join(", ", userList);
         }
 
         public async Task<MultiSelectList> GetAllAvailableItemUsers(int dayExpensesId)
@@ -55,66 +45,101 @@ namespace ExpensesCalculator.Services
             if (dayExpenses is not null)          
             {
                 foreach (var participant in dayExpenses.ParticipantsList)
-                {
-                    optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
-                }
+                    optionList.Add(new SelectListItem { Text = participant, Value = participant });
             }
 
             return new MultiSelectList(optionList, "Value", "Text");
         }
 
-        public async Task<ManageCheckItemsViewModel> AddItem(Item item, int checkId, int dayExpensesId)
+        public async Task<MultiSelectList> GetCheckedItemUsers(Item item, int dayExpensesId)
         {
-            var check = await GetCheckWithItems(checkId);
+            var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
+            var optionList = new List<SelectListItem>();
 
-            check.Items.Add(item);
-            check.Sum += item.Price;
-            await _itemRepository.Insert(item);
-            await _checkRepository.Update(check);            
+            if (dayExpenses is not null)
+            {
+                foreach (var participant in dayExpenses.ParticipantsList)
+                {
+                    if (item.UsersList.Contains(participant))
+                        optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
+                    else
+                        optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = false });
+                }
+                    
+            }
 
-            return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return new MultiSelectList(optionList, "Value", "Text", item.UsersList);
         }
 
-        public async Task<ManageCheckItemsViewModel> EditItem(Item item, int checkId, int dayExpensesId)
+        public async Task<Check> AddItem(Item item)
         {
-            var check = await _checkRepository.GetById(checkId);
-            var oldItem = await _itemRepository.GetById(item.Id);
-            var oldItemPrice = oldItem.Price;
-            
+            string rareNameList = item.UsersList.First();
+            item.UsersList = GetUserListFromString(rareNameList);
+
+            var check = await GetCheckWithItems(item.CheckId);
+
+            check.Sum += item.Price;
+            await _itemRepository.Insert(item);
+            check = await _checkRepository.Update(check);            
+
+            return check;
+        }
+
+        public async Task<Check> EditItem(Item item)
+        {
+            string rareNameList = item.UsersList.First();
+            item.UsersList = GetUserListFromString(rareNameList);
+
+            var check = await _checkRepository.GetById(item.CheckId);
+            var oldItemPrice = await _itemRepository.GetItemPriceById(item.Id);
+
             if (item is not null)
             {
                 await _itemRepository.Update(item);
                 check.Sum -= oldItemPrice;
                 check.Sum += item.Price;                
                 await _checkRepository.Update(check);
-                check = await GetCheckWithItems(checkId);
+                check = await GetCheckWithItems(item.CheckId);
             }
 
-            return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return check;
         }
 
-        public async Task<ManageCheckItemsViewModel> DeleteItem(int id, int checkId, int dayExpensesId)
+        public async Task<Check> DeleteItem(int id)
         {
-            var check = await GetCheckWithItems(checkId);
             var item = await _itemRepository.GetById(id);
+            var check = await GetCheckWithItems(item.CheckId);            
 
             if (item is not null) 
-            {
-                check.Items.Remove(item);
+            {                
                 check.Sum -= item.Price;
                 await _itemRepository.Delete(id);
                 await _checkRepository.Update(check);
+                check = await GetCheckWithItems(item.CheckId);
             }            
 
-            return new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
+            return check;
         }
 
         private async Task<Check> GetCheckWithItems(int checkId)
         {
             var check = await _checkRepository.GetById(checkId);
-            check.Items.AddRange(await _itemRepository.GetAllCheckItems(checkId));
+            check.Items = await _itemRepository.GetAllCheckItems(checkId);
 
             return check;
+        }
+
+        private ICollection<string> GetUserListFromString(string rareText)
+        {
+            Regex pattern = new Regex(@"\w+");
+
+            var matchList = pattern.Matches(rareText).ToList();
+            List<string> participantList = new List<string>();
+
+            foreach (var match in matchList)
+                participantList.Add(match.Value);
+
+            return participantList;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using ExpensesCalculator.Models;
-using ExpensesCalculator.Repositories;
+using ExpensesCalculator.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using NuGet.Packaging;
 
 namespace ExpensesCalculator.Services
 {
@@ -20,6 +18,14 @@ namespace ExpensesCalculator.Services
             _dayExpensesRepository = dayExpensesRepository;
         }
 
+        public async Task<Check> SetDayExpenses(Check check)
+        {
+            if (check.DayExpensesId != 0) 
+                check.DayExpenses = await _dayExpensesRepository.GetById(check.DayExpensesId);
+
+            return check;
+        }
+
         public async Task<Check> GetCheckById(int id)
         {
             return await _checkRepository.GetById(id);
@@ -28,7 +34,7 @@ namespace ExpensesCalculator.Services
         public async Task<Check> GetCheckByIdWithItems(int id)
         {
             var check = await GetCheckById(id);
-            check.Items.AddRange(await _itemRepository.GetAllCheckItems(id));
+            check.Items = await _itemRepository.GetAllCheckItems(id);
 
             return check;
         }
@@ -54,28 +60,28 @@ namespace ExpensesCalculator.Services
             return new SelectList(optionList, "Value", "Text");
         }
 
-        public async Task<DayExpenses> AddCheck(Check check, int dayExpensesId)
+        public async Task<DayExpenses> AddCheck(Check check)
         {
-            var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
+            var dayExpenses = await GetDayExpensesWithCheck(check.DayExpensesId);
 
             await _checkRepository.Insert(check);
 
             return dayExpenses;
         }
 
-        public async Task<DayExpenses> EditCheck(Check check, int dayExpensesId)
+        public async Task<DayExpenses> EditCheck(Check check)
         {
             await _checkRepository.Update(check);
 
-            var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
+            var dayExpenses = await GetDayExpensesWithCheck(check.DayExpensesId);
             return dayExpenses;
         }
 
-        public async Task<DayExpenses> DeleteCheck(int id, int dayExpensesId)
+        public async Task<DayExpenses> DeleteCheck(int id)
         {          
-            await _checkRepository.Delete(id);
+            var check = await _checkRepository.Delete(id);
 
-            var dayExpenses = await GetDayExpensesWithCheck(dayExpensesId);
+            var dayExpenses = await GetDayExpensesWithCheck(check.DayExpensesId);
             return dayExpenses;
         }
 

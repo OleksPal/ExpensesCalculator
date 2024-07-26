@@ -1,4 +1,5 @@
 ﻿using ExpensesCalculator.Data;
+using ExpensesCalculator.Repositories.Interfaces;
 
 namespace ExpensesCalculator.Repositories
 {

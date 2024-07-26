@@ -3,6 +3,7 @@ using ExpensesCalculator.Repositories;
 using ExpensesCalculator.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using ExpensesCalculator.Repositories.Interfaces;
 
 namespace ExpensesCalculator
 {
@@ -15,17 +16,19 @@ namespace ExpensesCalculator
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            #region Repositories
             builder.Services.AddScoped<IItemRepository, ItemRepository>();
             builder.Services.AddScoped<ICheckRepository, CheckRepository>();
             builder.Services.AddScoped<IDayExpensesRepository, DayExpensesRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            #endregion
 
             builder.Services.AddScoped<IItemService, ItemService>();
             builder.Services.AddScoped<ICheckService, CheckService>();
             builder.Services.AddScoped<IDayExpensesService, DayExpensesService>();
 
             builder.Services.AddDbContext<ExpensesContext>(options =>
-            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ExpensesContext>();
 

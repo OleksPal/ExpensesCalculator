@@ -2,7 +2,6 @@
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -26,62 +25,48 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_CreateCheck");
         }
 
-        // GET: Checks/EditCheck/5?dayExpensesId=1
+        // GET: Checks/EditCheck/5
         [HttpGet]
-        public async Task<IActionResult> EditCheck(int? id, int dayExpensesId)
+        public async Task<IActionResult> EditCheck(int? id)
         {
             if (id is null)
-            {
                 return NotFound();
-            }
 
             var check = await _checkService.GetCheckById((int)id);
 
             if (check is null)
-            {
                 return NotFound();
-            }
 
-            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(dayExpensesId);
-            ViewData["DayExpensesId"] = dayExpensesId;
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
 
             return PartialView("_EditCheck", check);
         }
 
-        // GET: Checks/DeleteCheck/5?dayExpensesId=1
+        // GET: Checks/DeleteCheck/5
         [HttpGet]
-        public async Task<IActionResult> DeleteCheck(int? id, int dayExpensesId)
+        public async Task<IActionResult> DeleteCheck(int? id)
         {
             if (id is null)
-            {
                 return NotFound();
-            }
 
             var check = await _checkService.GetCheckById((int)id);
 
             if (check is null)
-            {
                 return NotFound();
-            }
-
-            ViewData["DayExpensesId"] = dayExpensesId;
 
             return PartialView("_DeleteCheck", check);
         }
 
-        // GET: Checks/GetCheckItemsManager/5?dayExpensesId=1
+        // GET: Checks/GetCheckItemsManager/5
         [HttpGet]
-        public async Task<IActionResult> GetCheckItemsManager(int id, int dayExpensesId)
+        public async Task<IActionResult> GetCheckItemsManager(int id)
         {
             var check = await _checkService.GetCheckByIdWithItems(id);
 
             if (check is null)
-            {
                 return NotFound();
-            }
 
-            var manager = new ManageCheckItemsViewModel { Check = check, DayExpensesId = dayExpensesId };
-            return PartialView("_ManageCheckItems", manager);
+            return PartialView("_ManageCheckItems", check);
         }
 
         // POST: Checks/Create?dayExpensesId=1
@@ -91,14 +76,17 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
-            if (ModelState.IsValid)
+            check = await _checkService.SetDayExpenses(check);
+            ModelState.Clear();
+
+            if (TryValidateModel(check))
             {
-                var model = await _checkService.AddCheck(check, check.DayExpensesId); 
+                var model = await _checkService.AddCheck(check); 
                 return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
             }
 
-            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
             ViewData["DayExpensesId"] = check.DayExpensesId;
+            ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
 
             return PartialView("_CreateCheck", check);
         }
@@ -108,35 +96,19 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
+        public async Task<IActionResult> Edit([Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
-            if (id != check.Id)
-            {
-                return NotFound();
-            }
+            check = await _checkService.SetDayExpenses(check);
+            ModelState.Clear();
 
-            if (ModelState.IsValid)
+            if (TryValidateModel(check))
             {
-                try
-                {
-                    var model = await _checkService.EditCheck(check, check.DayExpensesId);
-                    return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await _checkService.CheckExists(check.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                var model = await _checkService.EditCheck(check);
+
+                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
             }
 
             ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
-            ViewData["DayExpensesId"] = check.DayExpensesId;
 
             return PartialView("_EditCheck", check);
         }
@@ -146,9 +118,10 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, int dayExpensesId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var model = await _checkService.DeleteCheck(id, dayExpensesId);
+            var model = await _checkService.DeleteCheck(id);
+
             return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
         }
     }

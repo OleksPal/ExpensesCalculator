@@ -6,17 +6,17 @@
     });
 }
 
-function showModalForCheckEdit(checkId, dayId) {
+function showModalForCheckEdit(checkId) {
     $(document).ready(function () {
-        $.get(`/Checks/EditCheck/${checkId}?dayExpensesId=${dayId}`, function (data) {
-            $('#modal-content').html(data);
+        $.get(`/Checks/EditCheck/${checkId}`, function (data) {
+            $('#modal-content').html(data);            
         });
     });
 }
 
-function showModalForCheckDelete(checkId, dayId) {
+function showModalForCheckDelete(checkId) {
     $(document).ready(function () {
-        $.get(`/Checks/DeleteCheck/${checkId}?dayExpensesId=${dayId}`, function (data) {
+        $.get(`/Checks/DeleteCheck/${checkId}`, function (data) {
             $('#modal-content').html(data);
         });
     });

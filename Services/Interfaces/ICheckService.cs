@@ -9,8 +9,9 @@ namespace ExpensesCalculator.Services
         Task<Check> GetCheckByIdWithItems(int id);
         Task<bool> CheckExists(int id);
         Task<SelectList> GetAllAvailableCheckPayers(int dayExpensesId);
-        Task<DayExpenses> AddCheck(Check check, int dayExpensesId);
-        Task<DayExpenses> EditCheck(Check check, int dayExpensesId);
-        Task<DayExpenses> DeleteCheck(int id, int dayExpensesId);
+        Task<Check> SetDayExpenses(Check check);
+        Task<DayExpenses> AddCheck(Check check);
+        Task<DayExpenses> EditCheck(Check check);
+        Task<DayExpenses> DeleteCheck(int id);
     }
 }

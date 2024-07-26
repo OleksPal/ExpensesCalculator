@@ -2,7 +2,6 @@
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -19,56 +18,47 @@ namespace ExpensesCalculator.Controllers
         // GET: Items/CreateItem?dayExpensesId=2
         [HttpGet]
         public async Task<IActionResult> CreateItem(int checkId, int dayExpensesId)
-        {
-            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+        {            
             ViewData["CheckId"] = checkId;
             ViewData["DayExpensesId"] = dayExpensesId;
+            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
 
             return PartialView("_CreateItem");
         }
 
         // GET: Items/EditItem/5?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> EditItem(int? id, int checkId, int dayExpensesId)
+        public async Task<IActionResult> EditItem(int? id, int dayExpensesId)
         {
             if (id is null)
-            {
                 return NotFound();
-            }
 
             var item = await _itemService.GetItemById((int)id);
 
             if (item is null)
-            {
                 return NotFound();
-            }
 
-            ViewData["CheckId"] = checkId;
+            ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_EditItem", item);
         }
 
         // GET: Items/DeleteItem/5?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> DeleteItem(int? id, int checkId, int dayExpensesId)
+        public async Task<IActionResult> DeleteItem(int? id)
         {
             if (id is null)
-            {
                 return NotFound();
-            }
 
             var item = await _itemService.GetItemById((int)id);
 
             if (item is null)
-            {
                 return NotFound();
-            }
 
-            ViewData["CheckId"] = checkId;
-            ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["FormatParticipantNames"] = await _itemService.GetItemUsers((int)id);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_DeleteItem", item);
         }
@@ -79,22 +69,28 @@ namespace ExpensesCalculator.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
-        {
-            if (item.UsersList.ToList()[0] is null)
+        {          
+            item = await _itemService.SetCheck(item);
+            ModelState.Clear();
+
+            if (item.UsersList.First() is null)
                 ModelState.AddModelError("UsersList", "Choose some users");
-                
-            if (ModelState.IsValid)
+            if (item.Price <= 0)
+                ModelState.AddModelError("Price", "Enter correct price");
+
+            if (TryValidateModel(item))
             {
-                var model = await _itemService.AddItem(item, item.CheckId, dayExpensesId);
+                var model = await _itemService.AddItem(item);
                 return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
             }
 
-            if(item.UsersList.ToList()[0] is not null)
-                item.UsersList = item.UsersList.ToList()[0].Split(',');
-
-            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+            if(item.UsersList.First() is not null)
+                item.UsersList = item.UsersList.First().Split(',');
+            
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_CreateItem", item);
         }
@@ -104,52 +100,40 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int checkId, int dayExpensesId)
+        public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
         {
-            if (id != item.Id)
-            {
-                return NotFound();
-            }
+            item = await _itemService.SetCheck(item);
+            ModelState.Clear();
 
-            if (item.UsersList.ToList()[0] is null)
+            if (item.UsersList.First() is null)
                 ModelState.AddModelError("UsersList", "Choose some users");
+            if (item.Price <= 0)
+                ModelState.AddModelError("Price", "Enter correct price");
 
-            if (ModelState.IsValid)
-            {                
-                try
-                {
-                    var model = await _itemService.EditItem(item, checkId, dayExpensesId);
-                    return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await _itemService.ItemExists(item.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+            if (TryValidateModel(item))
+            {
+                var model = await _itemService.EditItem(item);
+
+                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
             }
 
-            if (item.UsersList.ToList()[0] is not null)
-                item.UsersList = item.UsersList.ToList()[0].Split(',');
+            if (item.UsersList.First() is not null)
+                item.UsersList = item.UsersList.First().Split(',');
 
-            ViewData["CheckId"] = checkId;
+            ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetAllAvailableItemUsers(dayExpensesId);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
-            return PartialView("_EditItem");
+            return PartialView("_EditItem", item);
         }
 
         // POST: Items/Delete/5?dayExpensesId=2
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, int checkId, int dayExpensesId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var model = await _itemService.DeleteItem(id, checkId, dayExpensesId);
+            var model = await _itemService.DeleteItem(id);
             return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
         }
     }

@@ -3,7 +3,7 @@ $(function () {
         $("#staticBackdrop").modal("hide");
 
         $.ajax({
-            url: `/Items/Delete/${itemId}?checkid=${checkId}&dayexpensesid=${dayExpensesId}`,
+            url: `/Items/Delete/${itemId}`,
             data: {
                 __RequestVerificationToken: $(token).val()
             },

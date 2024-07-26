@@ -1,7 +1,7 @@
-﻿@model ExpensesCalculator.Models.Item
+﻿@model Item
 
-<script src="~/js/multiselect-dropdown.js"></script>
 <script src="~/js/ajax/items/edit-item.js"></script>
+<script src="~/js/multiselect-dropdown.js"></script>
 
 <div class="modal-header">
     <h5 class="modal-title">Edit item</h5>
@@ -25,12 +25,31 @@
             <input asp-for="Price" class="form-control" id="price"/>
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
-        <div class="form-group mb-3">
+        <div class="form-group mb-3 dropdown">
             <label asp-for="UsersList" class="control-label"></label>
-            <div class="form-group mb-3">
-                @Html.ListBoxFor(model => model.UsersList, ViewData["Participants"] as MultiSelectList,
-                         new { @class = "form-control", multiple = "multiple", id = "Subjects_dropdown" })
-            </div>
+            <button class="btn btn-outline-dark dropdown-toggle w-100 text single-line" type="button" style="text-align: left;"
+                    id="multiSelectDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"> Select users
+            </button>
+            <ul class="dropdown-menu w-100 text single-line" aria-labelledby="multiSelectDropdown">
+                @foreach (var participant in (ViewData["Participants"] as MultiSelectList))
+                {
+                    <li class="dropdown-item w-100">
+                        <label class="form-check-label">
+                            @if (participant.Selected)
+                            {
+                                <input type="checkbox" class="form-check-input"
+                                       value=@participant.Value checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="form-check-input"
+                                       value=@participant.Value>
+                            }                            
+                            @participant.Text
+                        </label>
+                    </li>
+                }
+            </ul>
             <span asp-validation-for="UsersList" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id"/>
@@ -47,4 +66,11 @@
     var itemId = $("#Id").val();
     var checkId = @ViewData["CheckId"];
     var dayExpensesId = @ViewData["DayExpensesId"];
+    var userList = @Html.Raw(Model.Users);
+    var mySelectedItems = (userList[0] === null) ? [] : @Html.Raw(Model.Users);
+
+    $(document).ready(function () {
+        const dropdownButton = document.getElementById('multiSelectDropdown');
+        dropdownButton.innerText = "@Html.Raw(ViewData["FormatUserList"])";
+    });
 </script>

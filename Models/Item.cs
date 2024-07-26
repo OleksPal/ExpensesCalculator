@@ -21,7 +21,7 @@ namespace ExpensesCalculator.Models
         [Required(ErrorMessage = "Please enter item price")]
         [DataType(DataType.Currency)]
         [Display(Name = "Price")]
-        [DisplayFormat(DataFormatString = "{0}₴")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:n2}₴")]
         [Range(0, Double.MaxValue, ErrorMessage = "Please enter correct price")]
         public decimal Price { get; set; }
 
@@ -40,5 +40,7 @@ namespace ExpensesCalculator.Models
         }
 
         public int CheckId { get; set; }
+
+        public Check Check { get; set; }
     }
 }
