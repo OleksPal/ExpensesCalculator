@@ -12,15 +12,15 @@
     <main>
         <div class="container-fluid">
             <div class="row flex-nowrap">
-                <div class="col-2 px-sm-2 px-0 bg-dark">
-                    <div class="d-flex flex-column align-items-left align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                        <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-sm-start" style="margin-left:0px;" id="menu">
-                            <li class="nav-item">
-                                <a class="align-middle px-0 text-white text-decoration-none" style="user-select: none; font-family: 'Brush Script MT', cursive;">
-                                    <i class="fs-4 bi-calculator"></i><span class="ms-1 d-none d-sm-inline">ExpensesCalculator</span>
-                                </a>
-                            </li>
-                            <hr />
+                <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                        <div class="nav-item">
+                            <a class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none" style="user-select: none; font-family: 'Brush Script MT', cursive;">
+                                <i class="fs-5 bi-calculator"></i> <span class="fs-5 d-none d-sm-inline">ExpensesCalculator</span>
+                            </a>                            
+                        </div>  
+                        <hr class="w-100" />
+                        <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-sm-start mx-0" id="menu">                              
                             <li class="nav-item">
                                 <a class="nav-link align-middle px-0" asp-controller="Home" asp-action="Index">
                                     <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
@@ -28,13 +28,13 @@
                             </li>
                             <li class="nav-item">
                                 <a asp-area="" asp-controller="DayExpenses" asp-action="Index" class="nav-link align-middle px-0">
-                                    <i class="fs-4 bi-list-nested"></i> <span class="ms-1 d-none d-sm-inline">Expenses list</span>
+                                    <i class="fs-4 bi-list-nested"></i> <span class="ms-1 d-none d-sm-inline">My expenses list</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-8 py-3">
+                <div class="col-10 py-3">
                     @RenderBody()
                 </div>
             </div>
