@@ -3,16 +3,16 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-<ul class="navbar-nav ml-auto">
+<ul class="navbar-nav ml-auto" style="margin-left: auto;">
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <button class="btn btn-default nav-link text-dark">
+        <button class="btn nav-link">
             <img src="~/images/gb.svg" alt="English - eng" width="30">
         </button>      
     </li>
     <li class="nav-item">        
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+        <a id="manage" class="nav-link text-white" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
             <img class="rounded-circle" width="30" alt="avatar1" src="~/images/default-profile-account-image.jpg" />
             @UserManager.GetUserName(User)
         </a>
