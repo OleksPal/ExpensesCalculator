@@ -14,73 +14,76 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/caret-down-animation.js"></script>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Participants)
-            </th>
-            <th width="160px"></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                @Html.DisplayFor(model => model.Date)
-            </td>
-            <td>
-                <div class="mytooltip" id="Test">
-                    <label>@Model.ParticipantsList.Count people</label>
-                    <span class="center-tooltiptext">
-                        Participants:
-                        <ul>
-                            @foreach (var user in Model.ParticipantsList)
-                            {
-                                <li>@user</li>
-                            }
-                        </ul>
-                    </span>
-                </div>
-            </td>
-            <td>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                            onclick="showModalForDayExpensesShare(@Model.Id)">
-                        <i class="bi bi-share"></i>
-                    </button>
-                    <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">
-                        <i class="bi bi-calculator"></i>
-                    </a>
-                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                            onclick="showModalForDayExpensesEdit(@Model.Id)">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-danger" data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@Model.Id)">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="rounded mx-5 my-4 pt-3" style="background: #0b1739">
+    <div class="table-responsive">
+        <table class="table table-borderless text-white">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Participants)
+                    </th>
+                    <th width="200px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height: 80px;">
+                    <td>
+                        @Html.DisplayFor(model => model.Date)
+                    </td>
+                    <td>
+                        <div class="mytooltip" id="Test">
+                            <label>@Model.ParticipantsList.Count people</label>
+                            <span class="center-tooltiptext">
+                                Participants:
+                                <ul>
+                                    @foreach (var user in Model.ParticipantsList)
+                                    {
+                                    <li>@user</li>
+                                    }
+                                </ul>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                    onclick="showModalForDayExpensesShare(@Model.Id)">
+                                <i class="bi bi-share"></i>
+                            </button>
+                            <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">
+                                <i class="bi bi-calculator"></i>
+                            </a>
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                    onclick="showModalForDayExpensesEdit(@Model.Id)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@Model.Id)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-<h2>Check List</h2>
-<br />
+    <div class="container-fluid p-3 text-white">
+        <h4>Check List</h4>
+        <br />
 
-<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick="showModalForCheckCreate(@Model.Id)">
-    <i class="bi bi-plus-circle"></i> Add check
-</button>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                onclick="showModalForCheckCreate(@Model.Id)">
+            <i class="bi bi-plus-circle"></i> Add check
+        </button>
+    </div>
 
-<hr />
-
-@if (Model.Checks is not null)
-{
-    <table class="table table-hover">
+    @if (Model.Checks is not null)
+    {
+    <table class="table table-borderless text-white" id="checkTable">
         <thead>
             <tr>
                 <th></th>
@@ -93,18 +96,19 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Checks.First().Payer)
                 </th>
-                <th width="80px"></th>
+                <th width="120px"></th>
             </tr>
         </thead>
         <tbody id="checkList">
             @await Html.PartialAsync("_ManageDayExpensesChecks", Model)
         </tbody>
     </table>
-}
+    }
 
-<div>
-    <br />
-    <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
+    <div class="container-fluid p-3 text-white">
+        <br />
+        <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
+    </div>
 </div>
 
 <!-- Modal -->

@@ -12,7 +12,7 @@
     <main>
         <div class="container-fluid">
             <div class="row flex-nowrap">
-                <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-black">
+                <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0" style="background: #0b1739">
                     <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                         <div class="nav-item">
                             <a class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none" style="user-select: none; font-family: 'Brush Script MT', cursive;">
@@ -22,22 +22,23 @@
                         <hr class="w-100" />
                         <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-sm-start mx-0" id="menu">                              
                             <li class="nav-item">
-                                <a class="nav-link align-middle px-0" asp-controller="Home" asp-action="Index">
+                                <a class="nav-link text-white align-middle px-0" asp-controller="Home" asp-action="Index">
                                     <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-area="" asp-controller="DayExpenses" asp-action="Index" class="nav-link align-middle px-0">
+                                <a asp-area="" asp-controller="DayExpenses" asp-action="Index" class="nav-link text-white align-middle px-0">
                                     <i class="fs-4 bi-list-nested"></i> <span class="ms-1 d-none d-sm-inline">My expenses list</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </div>   
-                <div class="col-10" style="padding: 0;">
-                    <nav class="navbar navbar-expand-sm bg-dark px-4">
+                <div class="col-10" style="padding: 0; background: #080f27">
+                    <nav class="navbar navbar-expand-sm px-4">
                         <partial name="_LoginPartial" />
                     </nav>
+                    <hr />
                     <div>
                         @RenderBody()
                     </div>

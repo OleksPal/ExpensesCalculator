@@ -32,3 +32,27 @@ html {
 td {
     vertical-align: middle !important;
 }
+
+.table tr:nth-child(odd) td {
+    background: #0a1330 !important;
+}
+
+.table tr > *:nth-child(1) {
+    padding-left: 20px;
+}
+
+#checkTable tr:nth-child(n) td {
+    background: #0b1739 !important;
+}
+
+#checkTable tr:nth-child(4n + 1) td {
+    background: #0a1330 !important;
+}
+
+.tab .tablinks:hover {
+    background: red !important;
+}
+
+.tab .tablinks.active {
+    background: blue !important;
+}

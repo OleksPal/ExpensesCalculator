@@ -2,7 +2,7 @@
 
 @foreach (var check in @Model.Checks)
 {
-    <tr>
+    <tr style="height: 80px;">
         <td>
             <span role="button" style="user-select: none;" id="checkDropper-@check.Id"
                   onclick="getCheckItemsManager(@check.Id, @Model.Id)">▷</span>

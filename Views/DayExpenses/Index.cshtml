@@ -9,19 +9,19 @@
 
 <script src="~/js/modalviews/day-expenses-modal-views.js"></script>
 
-<h1>Expenses List</h1><br />
+<div class="rounded mx-5 my-4" style="background: #0b1739">
+    <div class="container-fluid p-3 text-white"> 
+        <h4>Expenses List</h4>
+        <br />
 
-<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick="showModalForDayExpensesCreate()">
-    <i class="bi bi-plus-circle"></i> Add expenses
-</button>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                onclick="showModalForDayExpensesCreate()">
+            <i class="bi bi-plus-circle"></i> Add expenses
+        </button>
 
-
-<hr />
-
-<div class="container">
-    <div class="inner">
-        <table class="table table-striped table-hover" style='font-size:16px' id="daysTable">
+    </div>
+    <div class="table-responsive">
+        <table class="table table-borderless text-white" id="daysTable">
             <thead>
                 <tr>
                     <th>
@@ -36,50 +36,51 @@
             <tbody>
                 @foreach (var day in Model)
                 {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(model => day.Date)
-                    </td>
-                    <td>
-                        <div class="mytooltip">
-                            <label>@day.ParticipantsList.Count people</label>
-                            <span class="center-tooltiptext">
-                                Participants:
-                                <ul>
-                                    @foreach (var user in day.ParticipantsList)
-                                    {
-                                    <li>@user</li>
-                                    }
-                                </ul>
-                            </span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                    onclick="showModalForDayExpensesShare(@day.Id)">
-                                <i class="bi bi-share"></i>
-                            </button>
-                            <a role="button" class="btn btn-info" asp-controller="DayExpenses" asp-action="ShowChecks" asp-route-id="@day.Id">
-                                <i class="bi bi-list-check"></i>
-                            </a>
-                            <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@day.Id">
-                                <i class="bi bi-calculator"></i>
-                            </a>
-                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                    onclick="showModalForDayExpensesEdit(@day.Id)">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@day.Id)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                    <tr style="height: 80px;">
+                        <td>
+                            @Html.DisplayFor(model => day.Date)
+                        </td>
+                        <td>
+                            <div class="mytooltip">
+                                <label>@day.ParticipantsList.Count people</label>
+                                <span class="center-tooltiptext">
+                                    Participants:
+                                    <ul>
+                                        @foreach (var user in day.ParticipantsList)
+                                        {
+                                            <li>@user</li>
+                                        }
+                                    </ul>
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        onclick="showModalForDayExpensesShare(@day.Id)">
+                                    <i class="bi bi-share"></i>
+                                </button>
+                                <a role="button" class="btn btn-info" asp-controller="DayExpenses" asp-action="ShowChecks" asp-route-id="@day.Id">
+                                    <i class="bi bi-list-check"></i>
+                                </a>
+                                <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@day.Id">
+                                    <i class="bi bi-calculator"></i>
+                                </a>
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        onclick="showModalForDayExpensesEdit(@day.Id)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@day.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>
+        <hr />
     </div>
 </div>
 
