@@ -9,22 +9,39 @@ namespace ExpensesCalculator.Data
             if (context.Days.Any() && context.Checks.Any() && context.Items.Any())
                 return;
 
-            var item = new Item { Id = 1, Name = "Item1", Description = "Description1", Price = 1000, CheckId = 1 };
-            item.UsersList.Add("User1");
-            item.UsersList.Add("User2");
+            var dayExpenses = new DayExpenses
+            {
+                Date = new DateOnly(2024, 1, 1),
+                ParticipantsList = ["User1", "User2"],
+                PeopleWithAccessList = ["Guest"]
+            };
 
-            var check = new Check { Id = 1, Location = "Shop1", Sum = 1000, Payer = "User1", DayExpensesId = 1 };
-            check.Items.Add(item);
+            context.Days.Add(dayExpenses);
+            context.SaveChanges();
 
-            var dayExpenses = new DayExpenses { Id = 1, Date = new DateOnly(2024, 1, 1) };
-            dayExpenses.Checks.Add(check);
-            dayExpenses.ParticipantsList.Add("User1");
-            dayExpenses.ParticipantsList.Add("User2");
-            dayExpenses.PeopleWithAccessList.Add("Guest");
+            int dayExpensesId = context.Days.First().Id;
+            var check = new Check
+            {
+                Location = "Shop1",
+                Sum = 1000,
+                Payer = "User1",
+                DayExpensesId = dayExpensesId
+            };
+
+            context.Checks.Add(check);
+            context.SaveChanges();
+
+            int checkId = context.Checks.First().Id;
+            var item = new Item
+            {
+                Name = "Item1",
+                Description = "Description1",
+                Price = 1000,
+                CheckId = checkId,
+                UsersList = ["User1", "User2"]
+            };
 
             context.Items.Add(item);
-            context.Checks.Add(check);
-            context.Days.Add(dayExpenses);
             context.SaveChanges();
         }
     }
