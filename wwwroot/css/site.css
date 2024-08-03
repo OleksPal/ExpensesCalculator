@@ -50,9 +50,9 @@ td {
 }
 
 .tab .tablinks:hover {
-    background: red !important;
+    background: dodgerblue !important;
 }
 
 .tab .tablinks.active {
-    background: blue !important;
+    background: mediumblue !important;
 }
