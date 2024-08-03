@@ -41,11 +41,19 @@ td {
     padding-left: 20px;
 }
 
-#checkTable tr:nth-child(n) td {
+.check-table tr:nth-child(n) td {
     background: #0b1739 !important;
 }
 
-#checkTable tr:nth-child(4n + 1) td {
+.check-table tr:nth-child(4n + 1) td {
+    background: #0a1330 !important;
+}
+
+.item-table tr:nth-child(odd) td {
+    background: #0b1739 !important;
+}
+
+.item-table tr:nth-child(even) td {
     background: #0a1330 !important;
 }
 
