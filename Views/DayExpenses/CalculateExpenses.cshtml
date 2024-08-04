@@ -13,100 +13,106 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/caret-down-animation.js"></script>
 
-<h1>Expenses calculation</h1>
-<br />
-<div class="cn">
-    <div class="form-check form-switch inner" >
-        <input class="form-check-input" type="checkbox" role="switch" onchange="changeTooltipVisibility()" id="tooltipSwitcher" checked>
-        <label class="form-check-label" id="tooltipSwitcherText">Disable tooltips</label>
-    </div>
-</div>
+<div class="rounded m-3 m-sm-5 dark-blue-1">
+    <div class="container-fluid p-3 text-white">
+        <h4>Expenses calculation</h4>
+        <br />
+        <div class="cn">
+            <div class="form-check form-switch inner">
+                <input class="form-check-input" type="checkbox" role="switch" onchange="changeTooltipVisibility()" id="tooltipSwitcher" checked>
+                <label class="form-check-label" id="tooltipSwitcherText">Disable tooltips</label>
+            </div>
+        </div>
 
-<hr />
+        <hr />
 
-<div class="tab">
-    @foreach(var participant in Model.Participants)
-    {
-        <button class="tablinks" onclick="openParticipantTab(event, '@participant')">@participant</button>
-    }
-    <button class="tablinks" onclick="openParticipantTab(event, 'transactionList')">Transaction List</button>
-</div>
-
-@foreach (var dayExpensesCalculation in Model.DayExpensesCalculations)
-{
-    <div id="@dayExpensesCalculation.UserName" class="tabcontent">
-        @foreach (var checkCalculation in dayExpensesCalculation.CheckCalculations)
-        {
-            if (checkCalculation.Items.Count != 0)
+        <div class="tab rounded-top border-primary" style="background:#0a1330">
+            @foreach(var participant in Model.Participants)
             {
-                <div class="mytooltip">
-                    <label>@checkCalculation.Check.Location:</label>
-                    <span class="top-tooltiptext">
-                        Sum: @Html.DisplayFor(model => checkCalculation.Check.Sum)<br />
-                        Payer: @checkCalculation.Check.Payer
-                    </span>
-                </div>
+                <button class="tablinks text-white" onclick="openParticipantTab(event, '@participant')">@participant</button>
+            }
+            <button class="tablinks text-white" onclick="openParticipantTab(event, 'transactionList')">Transaction List</button>
+        </div>
 
+        @foreach (var dayExpensesCalculation in Model.DayExpensesCalculations)
+        {
+            <div id="@dayExpensesCalculation.UserName" class="tabcontent rounded-bottom border-primary">
+                @foreach (var checkCalculation in dayExpensesCalculation.CheckCalculations)
+                {
+                    if (checkCalculation.Items.Count != 0)
+                    {
+                        <div class="mytooltip">
+                            <label>@checkCalculation.Check.Location:</label>
+                            <span class="top-tooltiptext">
+                                Sum: @Html.DisplayFor(model => checkCalculation.Check.Sum)<br />
+                                Payer: @checkCalculation.Check.Payer
+                            </span>
+                        </div>
+
+                        <ul>
+                            @foreach (var item in checkCalculation.Items)
+                            {
+                                <li>
+                                    @item.Item.Name (@Html.DisplayFor(model => item.Item.Price)) /
+                                    <div class="mytooltip">
+                                        @item.Item.UsersList.Count
+                                        <span class="center-tooltiptext">
+                                            Users:
+                                            <ul>
+                                                @foreach (var user in item.Item.UsersList)
+                                                {
+                                                    <li>@user</li>
+                                                }
+                                            </ul>
+                                        </span>
+                                    </div>
+                                    = @Html.DisplayFor(model => item.PricePerUser)
+                                </li>
+                            }
+                        </ul>
+                        <label>Sum per participant: @Html.DisplayFor(model => checkCalculation.SumPerParticipant)</label>
+
+                        <br />
+
+                        <hr />
+                    }
+                }
+            </div>
+        }
+
+        <div id="transactionList" class="tabcontent rounded-bottom border-primary">
+            <label>Transaction list:</label>
+            <ul>
+                @foreach (var transaction in Model.OptimizedUserTransactions)
+                {
+                    <li>
+                        @transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount)) → @transaction.Subjects.Recipient
+                    </li>
+                }
+            </ul>
+
+            <hr />
+
+            <span role="button" style="user-select: none;" data-bs-toggle="collapse"
+                  id="fullTransactionListDropper" data-bs-target="#collapseFullTransactionList"
+                  aria-expanded="false" aria-controls="collapseFullTransactionList">▷</span> Full trasaction list:
+
+            <div class="collapse" id="collapseFullTransactionList">
                 <ul>
-                    @foreach (var item in checkCalculation.Items)
+                    @foreach (var transaction in Model.AllUsersTrasactions)
                     {
                         <li>
-                            @item.Item.Name (@Html.DisplayFor(model => item.Item.Price)) /
-                            <div class="mytooltip">
-                                @item.Item.UsersList.Count
-                                <span class="center-tooltiptext">
-                                    Users:
-                                    <ul>
-                                        @foreach (var user in item.Item.UsersList)
-                                        {
-                                            <li>@user</li>
-                                        }
-                                    </ul>
-                                </span>
-                            </div>
-                            = @Html.DisplayFor(model => item.PricePerUser)
+                            @transaction.CheckName: @transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount))
+                            → @transaction.Subjects.Recipient
                         </li>
                     }
                 </ul>
-                <label>Sum per participant: @Html.DisplayFor(model => checkCalculation.SumPerParticipant)</label>
+            </div>
+        </div>
 
-                <br />
-
-                <hr />
-            }
-        }
-    </div>
-}
-
-<div id="transactionList" class="tabcontent">
-    <label>Transaction list:</label>
-    <ul>
-        @foreach (var transaction in Model.OptimizedUserTransactions)
-        {
-            <li>@transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount)) 
-                → @transaction.Subjects.Recipient</li>
-        }
-    </ul>
-
-    <hr />
-
-    <span role="button" style="user-select: none;" data-bs-toggle="collapse"
-    id="fullTransactionListDropper" data-bs-target="#collapseFullTransactionList"
-          aria-expanded="false" aria-controls="collapseFullTransactionList">▷</span> Full trasaction list:
-
-    <div class="collapse" id="collapseFullTransactionList">
-        <ul>
-            @foreach (var transaction in Model.AllUsersTrasactions)
-            {
-                <li>@transaction.CheckName: @transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount)) 
-                    → @transaction.Subjects.Recipient</li>
-            }
-        </ul>
-    </div>
-    
-</div>
-
-<div>
-    <br />
-    <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
+        <div>
+            <br />
+            <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
+        </div>
+    </div>    
 </div>
