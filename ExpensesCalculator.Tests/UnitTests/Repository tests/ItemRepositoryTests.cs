@@ -1,37 +1,11 @@
-﻿using ExpensesCalculator.Data;
-using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
 
 namespace ExpensesCalculator.UnitTests
 {
-    public class ItemRepositoryTests : IDisposable
+    public class ItemRepositoryTests : GenericRepositoryTests<Item>
     {
-        private readonly DbConnection _connection;
-        private readonly DbContextOptions<ExpensesContext> _contextOptions;
-
-        private readonly List<Item> emptyItemList = new List<Item>();
-
-        public ItemRepositoryTests()
-        {
-            _connection = new SqliteConnection("Filename=:memory:");
-            _connection.Open();
-
-            _contextOptions = new DbContextOptionsBuilder<ExpensesContext>()
-                .UseSqlite(_connection)
-                .Options;
-
-            using var context = new ExpensesContext(_contextOptions);
-
-            context.Database.EnsureCreated();
-            DbInitializer.Initialize(context);
-        }
-
-        ExpensesContext CreateContext() => new ExpensesContext(_contextOptions);
-
-        public void Dispose() => _connection.Dispose();
+        public ItemRepositoryTests() : base() { }
 
         #region GetAllItems method
         [Fact]
@@ -42,7 +16,7 @@ namespace ExpensesCalculator.UnitTests
 
             var itemList = await repository.GetAllCheckItems(0);
 
-            Assert.Equal(emptyItemList, itemList);
+            Assert.Equal(emptyList, itemList);
         }
 
         [Fact]
@@ -53,7 +27,7 @@ namespace ExpensesCalculator.UnitTests
 
             var itemList = await repository.GetAllCheckItems(-1);
 
-            Assert.Equal(emptyItemList, itemList);
+            Assert.Equal(emptyList, itemList);
         }
 
         [Fact]
@@ -64,7 +38,7 @@ namespace ExpensesCalculator.UnitTests
 
             var itemList = await repository.GetAllCheckItems(5);
 
-            Assert.Equal(emptyItemList, itemList);
+            Assert.Equal(emptyList, itemList);
         }
 
         [Fact]

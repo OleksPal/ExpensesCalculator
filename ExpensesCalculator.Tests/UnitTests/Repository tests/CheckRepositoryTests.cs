@@ -1,37 +1,11 @@
-﻿using ExpensesCalculator.Data;
-using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
 
 namespace ExpensesCalculator.UnitTests
 {
-    public class CheckRepositoryTests : IDisposable
+    public class CheckRepositoryTests : GenericRepositoryTests<Check>
     {
-        private readonly DbConnection _connection;
-        private readonly DbContextOptions<ExpensesContext> _contextOptions;
-
-        private readonly List<Check> emptyCheckList = new List<Check>();
-
-        public CheckRepositoryTests()
-        {
-            _connection = new SqliteConnection("Filename=:memory:");
-            _connection.Open();
-
-            _contextOptions = new DbContextOptionsBuilder<ExpensesContext>()
-                .UseSqlite(_connection)
-                .Options;
-
-            using var context = new ExpensesContext(_contextOptions);
-
-            context.Database.EnsureCreated();
-            DbInitializer.Initialize(context);
-        }
-
-        ExpensesContext CreateContext() => new ExpensesContext(_contextOptions);
-
-        public void Dispose() => _connection.Dispose();
+        public CheckRepositoryTests() : base() { }
 
         #region GetAllDayChecks method
         [Fact]
@@ -42,7 +16,7 @@ namespace ExpensesCalculator.UnitTests
 
             var checkList = await repository.GetAllDayChecks(0);
 
-            Assert.Equal(emptyCheckList, checkList);
+            Assert.Equal(emptyList, checkList);
         }
 
         [Fact]
@@ -53,7 +27,7 @@ namespace ExpensesCalculator.UnitTests
 
             var checkList = await repository.GetAllDayChecks(-1);
 
-            Assert.Equal(emptyCheckList, checkList);
+            Assert.Equal(emptyList, checkList);
         }
 
         [Fact]
@@ -64,7 +38,7 @@ namespace ExpensesCalculator.UnitTests
 
             var checkList = await repository.GetAllDayChecks(5);
 
-            Assert.Equal(emptyCheckList, checkList);
+            Assert.Equal(emptyList, checkList);
         }
 
         [Fact]
