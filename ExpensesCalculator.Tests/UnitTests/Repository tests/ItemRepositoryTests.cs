@@ -57,7 +57,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void GetAllItemsWhenCheckWithSuchIdIsNoExists()
+        public async void GetAllItemsWhenCheckWithSuchIdDoesNotExists()
         {
             using var context = CreateContext();
             var repository = new ItemRepository(context);
@@ -68,7 +68,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void GetAllItemsWhenCheckWithSuchIdIsExists()
+        public async void GetAllItemsWhenCheckWithSuchIdExists()
         {
             using var context = CreateContext();
             var repository = new ItemRepository(context);
@@ -103,7 +103,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void GetByIdWhenItemWithSuchIdIsNoExists()
+        public async void GetByIdWhenItemWithSuchIdDoesNotExists()
         {
             using var context = CreateContext();
             var repository = new ItemRepository(context);
@@ -114,7 +114,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void GetByIdWhenItemWithSuchIdIsExists()
+        public async void GetByIdWhenItemWithSuchIdExists()
         {
             using var context = CreateContext();
             var repository = new ItemRepository(context);
@@ -149,7 +149,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void GetItemPriceByIdWhenItemWithSuchIdIsNoExists()
+        public async void GetItemPriceByIdWhenItemWithSuchDoesNotExists()
         {
             using var context = CreateContext();
             var repository = new ItemRepository(context);
@@ -160,7 +160,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void GetItemPriceByIdWhenItemWithSuchIdIsExists()
+        public async void GetItemPriceByIdWhenItemWithSuchIdExists()
         {
             using var context = CreateContext();
             var repository = new ItemRepository(context);
