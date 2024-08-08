@@ -1,5 +1,6 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.UnitTests
 {
@@ -8,28 +9,6 @@ namespace ExpensesCalculator.UnitTests
         public ItemRepositoryTests() : base() { }
 
         #region GetAllItems method
-        [Fact]
-        public async void GetAllItemsWhenCheckIdIsZero()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context); 
-
-            var itemList = await repository.GetAllCheckItems(0);
-
-            Assert.Equal(emptyList, itemList);
-        }
-
-        [Fact]
-        public async void GetAllItemsWhenCheckIdIsNegative()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var itemList = await repository.GetAllCheckItems(-1);
-
-            Assert.Equal(emptyList, itemList);
-        }
-
         [Fact]
         public async void GetAllItemsWhenCheckWithSuchIdDoesNotExists()
         {
@@ -53,75 +32,7 @@ namespace ExpensesCalculator.UnitTests
         }
         #endregion
 
-        #region GetById method
-        [Fact]
-        public async void GetByIdWhenIdIsZero()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var item = await repository.GetById(0);
-
-            Assert.Null(item);
-        }
-
-        [Fact]
-        public async void GetByIdWhenIdIsNegative()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var item = await repository.GetById(-1);
-
-            Assert.Null(item);
-        }
-
-        [Fact]
-        public async void GetByIdWhenItemWithSuchIdDoesNotExists()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var item = await repository.GetById(5);
-
-            Assert.Null(item);
-        }
-
-        [Fact]
-        public async void GetByIdWhenItemWithSuchIdExists()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var item = await repository.GetById(1);
-
-            Assert.Equal("Item1", item.Name);
-        }
-        #endregion
-
         #region GetItemPriceById method
-        [Fact]
-        public async void GetItemPriceByIdWhenIdIsZero()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var price = await repository.GetItemPriceById(0);
-
-            Assert.Equal(0, price);
-        }
-
-        [Fact]
-        public async void GetItemPriceByIdWhenIdIsNegative()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var price = await repository.GetItemPriceById(-1);
-
-            Assert.Equal(0, price);
-        }
-
         [Fact]
         public async void GetItemPriceByIdWhenItemWithSuchDoesNotExists()
         {
@@ -142,6 +53,19 @@ namespace ExpensesCalculator.UnitTests
             var price = await repository.GetItemPriceById(1);
 
             Assert.Equal(1000m, price);
+        }
+        #endregion
+
+        #region Update method
+        public async override void UpdateValidObject()
+        {
+            using var context = CreateContext();
+            var repository = new ItemRepository(context);
+            var item = new Item();
+
+            Func<Task> act = () => repository.Update(item);
+
+            await Assert.ThrowsAsync<DbUpdateException>(act);
         }
         #endregion
     }

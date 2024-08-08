@@ -1,5 +1,6 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.UnitTests
 {
@@ -8,28 +9,6 @@ namespace ExpensesCalculator.UnitTests
         public CheckRepositoryTests() : base() { }
 
         #region GetAllDayChecks method
-        [Fact]
-        public async void GetAllDayChecksWhenDayExpensesIdIsZero()
-        {
-            using var context = CreateContext();
-            var repository = new CheckRepository(context); 
-
-            var checkList = await repository.GetAllDayChecks(0);
-
-            Assert.Equal(emptyList, checkList);
-        }
-
-        [Fact]
-        public async void GetAllDayChecksWhenDayExpensesIdIsNegative()
-        {
-            using var context = CreateContext();
-            var repository = new CheckRepository(context);
-
-            var checkList = await repository.GetAllDayChecks(-1);
-
-            Assert.Equal(emptyList, checkList);
-        }
-
         [Fact]
         public async void GetAllDayChecksWhenDayExpensesWithSuchIdDoesNotExists()
         {
@@ -55,29 +34,7 @@ namespace ExpensesCalculator.UnitTests
 
         #region GetById method
         [Fact]
-        public async void GetByIdWhenIdIsZero()
-        {
-            using var context = CreateContext();
-            var repository = new CheckRepository(context);
-
-            var check = await repository.GetById(0);
-
-            Assert.Null(check);
-        }
-
-        [Fact]
-        public async void GetByIdWhenIdIsNegative()
-        {
-            using var context = CreateContext();
-            var repository = new CheckRepository(context);
-
-            var check = await repository.GetById(-1);
-
-            Assert.Null(check);
-        }
-
-        [Fact]
-        public async void GetByIdWhenItemWithSuchIdDoesNotExists()
+        public override async void GetByIdWhenItemWithSuchIdDoesNotExists()
         {
             using var context = CreateContext();
             var repository = new CheckRepository(context);
@@ -88,7 +45,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void GetByIdWhenItemWithSuchIdExists()
+        public override async void GetByIdWhenItemWithSuchIdExists()
         {
             using var context = CreateContext();
             var repository = new CheckRepository(context);
@@ -96,6 +53,19 @@ namespace ExpensesCalculator.UnitTests
             var check = await repository.GetById(1);
 
             Assert.Equal("Shop1", check.Location);
+        }
+        #endregion
+
+        #region Update method
+        public async override void UpdateValidObject()
+        {
+            using var context = CreateContext();
+            var repository = new CheckRepository(context);
+            var check = new Check();
+
+            Func<Task> act = () => repository.Update(check);
+
+            await Assert.ThrowsAsync<DbUpdateException>(act);
         }
         #endregion
     }
