@@ -33,5 +33,21 @@ namespace ExpensesCalculator.UnitTests
 
             Assert.Equal(emptyDayCollection, dayCollection);
         }
+
+        [Fact]
+        public async void GetDayExpensesByIdThatDoesNotExists()
+        {
+            var dayExpenses = await _dayExpensesService.GetDayExpensesById(5);
+
+            Assert.Null(dayExpenses);
+        }
+
+        [Fact]
+        public async void GetDayExpensesByIdThatExists()
+        {
+            var dayExpenses = await _dayExpensesService.GetDayExpensesById(1);
+
+            Assert.NotNull(dayExpenses);
+        }
     }
 }
