@@ -49,5 +49,37 @@ namespace ExpensesCalculator.UnitTests
 
             Assert.NotNull(dayExpenses);
         }
+
+        [Fact]
+        public async void GetDayExpensesByIdWithChecksThatDoesNotExists()
+        {
+            var dayExpenses = await _dayExpensesService.GetDayExpensesById(5);
+
+            Assert.Null(dayExpenses);
+        }
+
+        [Fact]
+        public async void GetDayExpensesByIdWithChecksThatExists()
+        {
+            var dayExpenses = await _dayExpensesService.GetDayExpensesById(1);
+
+            Assert.NotNull(dayExpenses);
+        }
+
+        [Fact]
+        public async void GetFullDayExpensesByIdThatDoesNotExists()
+        {
+            var dayExpenses = await _dayExpensesService.GetDayExpensesById(5);
+
+            Assert.Null(dayExpenses);
+        }
+
+        [Fact]
+        public async void GetFullDayExpensesByIdThatExists()
+        {
+            var dayExpenses = await _dayExpensesService.GetDayExpensesById(1);
+
+            Assert.NotNull(dayExpenses);
+        }
     }
 }
