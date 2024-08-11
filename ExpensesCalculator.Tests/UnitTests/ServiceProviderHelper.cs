@@ -1,9 +1,9 @@
-﻿using ExpensesCalculator.Repositories.Interfaces;
+﻿using ExpensesCalculator.Data;
 using ExpensesCalculator.Repositories;
+using ExpensesCalculator.Repositories.Interfaces;
 using ExpensesCalculator.Services;
-using Microsoft.Extensions.DependencyInjection;
-using ExpensesCalculator.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ExpensesCalculator.UnitTests
 {
@@ -26,7 +26,7 @@ namespace ExpensesCalculator.UnitTests
                 .AddScoped<IDayExpensesService, DayExpensesService>();
             #endregion
 
-            services.AddDbContext<ExpensesContext>(o => o.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+            services.AddDbContext<ExpensesContext>(o => o.UseInMemoryDatabase("TestDB"));
 
             return services.BuildServiceProvider();
         }
@@ -35,7 +35,20 @@ namespace ExpensesCalculator.UnitTests
         {
             var provider = Provider();
 
-            return provider.GetRequiredService<T>();
+            var requiredService = provider.GetRequiredService<T>();
+
+            var scope = provider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ExpensesContext>();
+
+            AddData(context);
+
+            return requiredService;
+        }
+
+        private static void AddData(ExpensesContext context)
+        {
+            context.Database.EnsureCreated();
+            DbInitializer.Initialize(context);
         }
     }
 }
