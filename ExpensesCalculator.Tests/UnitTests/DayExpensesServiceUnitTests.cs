@@ -158,5 +158,23 @@ namespace ExpensesCalculator.UnitTests
             Assert.Null(dayExpenses);
         }
         #endregion
+
+        #region ChangeDayExpensesAccess method
+        [Fact]
+        public async void ChangeDayExpensesAccessForNullUser()
+        {
+            var response = await _dayExpensesService.ChangeDayExpensesAccess(1, null);
+
+            Assert.Equal("There is no such user!", response);
+        }
+
+        [Fact]
+        public async void ChangeDayExpensesAccessForDayExpensesThatDoesNotExists()
+        {
+            var response = await _dayExpensesService.ChangeDayExpensesAccess(5, "abc");
+
+            Assert.Null(response);
+        }
+        #endregion
     }
 }
