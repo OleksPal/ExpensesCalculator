@@ -176,5 +176,38 @@ namespace ExpensesCalculator.UnitTests
             Assert.Null(response);
         }
         #endregion
+
+        #region GetFormatParticipantsNames method
+        [Fact]
+        public async void GetFormatParticipantsNamesFromNull()
+        {
+            List<string> participantList = null;
+
+            Func<Task> act = () => _dayExpensesService.GetFormatParticipantsNames(participantList);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(act);
+        }
+
+        [Fact]
+        public async void GetFormatParticipantsNamesFromValidString()
+        {
+            List<string> participantList = ["Participant1", "Participant2", "Participant3"];
+            var expenctedValue = "Participant1, Participant2, Participant3";
+
+            var actualValue = await _dayExpensesService.GetFormatParticipantsNames(participantList);
+
+            Assert.Equal(expenctedValue, actualValue);
+        }
+        #endregion
+
+        #region GetCalculationForDayExpenses method
+        [Fact]
+        public async void GetCalculationForDayExpensesThatDoesNotExists()
+        {
+            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses(5);
+
+            Assert.Null(dayExpensesCalculation.AllUsersTrasactions);
+        }
+        #endregion
     }
 }
