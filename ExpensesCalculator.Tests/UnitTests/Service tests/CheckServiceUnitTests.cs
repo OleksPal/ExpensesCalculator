@@ -97,5 +97,77 @@ namespace ExpensesCalculator.UnitTests
             Assert.NotEmpty(selectList.Items);
         }
         #endregion
+
+        #region AddCheck method
+        [Fact]
+        public async void AddNullCheck()
+        {
+            Check checkToAdd = null;
+
+            Func<Task> act = () => _checkService.AddCheck(checkToAdd);
+
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async void AddCheck()
+        {
+            var checkToAdd = _checkDefaultObject;
+
+            await _checkService.AddCheck(checkToAdd);
+            var addedDayExpenses = await _checkService.GetCheckById(checkToAdd.Id);
+
+            Assert.Equal(checkToAdd.Id, addedDayExpenses.Id);
+        }
+        #endregion
+
+        #region EditCheck method
+        [Fact]
+        public async void EditNullCheck()
+        {
+            Check checkToEdit = null;
+
+            Func<Task> act = () => _checkService.EditCheck(checkToEdit);
+
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async void EditCheck()
+        {
+            var checkToAdd = _checkDefaultObject;
+
+            await _checkService.AddCheck(checkToAdd);
+            var checkToEdit = await _checkService.GetCheckById(checkToAdd.Id);
+            checkToEdit.Location = "Shop10";
+            await _checkService.EditCheck(checkToEdit);
+            var editedCheck = await _checkService.GetCheckById(checkToAdd.Id);
+
+            Assert.Equal("Shop10", editedCheck.Location);
+        }
+        #endregion
+
+        #region DeleteCheck method
+        [Fact]
+        public async void DeleteCheckThatDoesNotExists()
+        {
+            Func<Task> act = () => _checkService.DeleteCheck(5);
+
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async void DeleteCheckThatExists()
+        {
+            var checkToAdd = _checkDefaultObject;
+
+            await _checkService.AddCheck(checkToAdd);
+            var checkToDelete = await _checkService.GetCheckById(checkToAdd.Id);
+            await _checkService.DeleteCheck(checkToDelete.Id);
+            var deletedCheck = await _checkService.GetCheckById(checkToAdd.Id);
+
+            Assert.Null(deletedCheck);
+        }
+        #endregion
     }
 }
