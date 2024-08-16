@@ -23,7 +23,7 @@ namespace ExpensesCalculator.UnitTests
 
         #region SetDayExpenses method
         [Fact]
-        public async void SetDayExpensesWithDayExpensesThatDoesNotExists()
+        public async void SetDayExpensesThatDoesNotExists()
         {
             var check = _checkDefaultObject;
             check.DayExpensesId = 0;
@@ -34,7 +34,7 @@ namespace ExpensesCalculator.UnitTests
         }
 
         [Fact]
-        public async void SetDayExpensesWithDayExpensesThatExists()
+        public async void SetDayExpensesThatExists()
         {
             var check = _checkDefaultObject;
 
