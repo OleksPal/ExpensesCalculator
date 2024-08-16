@@ -26,7 +26,7 @@ namespace ExpensesCalculator.UnitTests
         {
             var dayCollection = await _dayExpensesService.GetAllDays();
 
-            Assert.Single(dayCollection);
+            Assert.Contains(dayCollection, d => d.PeopleWithAccessList.Contains("Guest"));
         }
 
         [Fact]
@@ -109,10 +109,12 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void AddDayExpenses()
         {
-            await _dayExpensesService.AddDayExpenses(_dayExpensesDefaultObject);
-            var dayCollection = await _dayExpensesService.GetAllDays();
+            var dayExpensesToAdd = _dayExpensesDefaultObject;
 
-            Assert.Equal(2, dayCollection.Count);
+            await _dayExpensesService.AddDayExpenses(dayExpensesToAdd);
+            var addedDayExpenses = await _dayExpensesService.GetDayExpensesById(dayExpensesToAdd.Id);
+
+            Assert.Equal(dayExpensesToAdd.Id, addedDayExpenses.Id);
         }
         #endregion
 

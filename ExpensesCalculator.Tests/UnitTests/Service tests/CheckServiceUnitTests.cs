@@ -1,5 +1,6 @@
 using ExpensesCalculator.Models;
 using ExpensesCalculator.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExpensesCalculator.UnitTests
 {
@@ -76,6 +77,24 @@ namespace ExpensesCalculator.UnitTests
             var check = await _checkService.GetCheckByIdWithItems(1);
 
             Assert.NotNull(check.Items);
+        }
+        #endregion
+
+        #region GetAllAvailableCheckPayers method
+        [Fact]
+        public async void GetAllAvailableCheckThatDoesNotExistsPayers()
+        {
+            var selectList = await _checkService.GetAllAvailableCheckPayers(5);
+
+            Assert.Empty(selectList.Items);
+        }
+
+        [Fact]
+        public async void GetAllAvailableCheckThatExistsPayers()
+        {
+            var selectList = await _checkService.GetAllAvailableCheckPayers(1);
+
+            Assert.NotEmpty(selectList.Items);
         }
         #endregion
     }
