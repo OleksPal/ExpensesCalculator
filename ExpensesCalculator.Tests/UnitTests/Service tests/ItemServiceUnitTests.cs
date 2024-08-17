@@ -83,5 +83,113 @@ namespace ExpensesCalculator.UnitTests
             Assert.Equal("User1, User2", userListSting);
         }
         #endregion
+
+        #region GetAllAvailableItemUsers method
+        [Fact]
+        public async void GetAllAvailableItemUsersThatDoesNotExists()
+        {
+            var selectList = await _itemService.GetAllAvailableItemUsers(0);
+
+            Assert.Empty(selectList.Items);
+        }
+
+        [Fact]
+        public async void GetAllAvailableItemUsersThatExistsUsers()
+        {
+            var selectList = await _itemService.GetAllAvailableItemUsers(1);
+
+            Assert.NotEmpty(selectList.Items);
+        }
+        #endregion
+
+        #region GetCheckedItemUsers method
+        [Fact]
+        public async void GetCheckedItemUsersThatDoesNotExists()
+        {
+            var selectList = await _itemService.GetAllAvailableItemUsers(0);
+
+            Assert.Empty(selectList.Items);
+        }
+
+        [Fact]
+        public async void GetCheckedItemUsersThatExists()
+        {
+            var selectList = await _itemService.GetAllAvailableItemUsers(1);
+
+            Assert.NotEmpty(selectList.Items);
+        }
+        #endregion
+
+        #region AddItem method
+        [Fact]
+        public async void AddNullItem()
+        {
+            Item itemToAdd = null;
+
+            Func<Task> act = () => _itemService.AddItem(itemToAdd);
+
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async void AddItem()
+        {
+            var itemToAdd = _itemDefaultObject;
+
+            await _itemService.AddItem(itemToAdd);
+            var addedItem = await _itemService.GetItemById(itemToAdd.Id);
+
+            Assert.Equal(itemToAdd.Id, addedItem.Id);
+        }
+        #endregion
+
+        #region EditItem method
+        [Fact]
+        public async void EditNullCheck()
+        {
+            Item itemToEdit = null;
+
+            Func<Task> act = () => _itemService.EditItem(itemToEdit);
+
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async void EditCheck()
+        {
+            var itemToAdd = _itemDefaultObject;
+
+            await _itemService.AddItem(itemToAdd);
+            var itemToEdit = await _itemService.GetItemById(itemToAdd.Id);
+            itemToEdit.Name = "Name10";
+            await _itemService.EditItem(itemToEdit);
+            var editedItem = await _itemService.GetItemById(itemToAdd.Id);
+
+            Assert.Equal("Name10", editedItem.Name);
+        }
+        #endregion
+
+        #region DeleteItem method
+        [Fact]
+        public async void DeleteItemThatDoesNotExists()
+        {
+            Func<Task> act = () => _itemService.DeleteItem(0);
+
+            await Assert.ThrowsAsync<NullReferenceException>(act);
+        }
+
+        [Fact]
+        public async void DeleteCheckThatExists()
+        {
+            var itemToAdd = _itemDefaultObject;
+
+            await _itemService.AddItem(itemToAdd);
+            var itemToDelete = await _itemService.GetItemById(itemToAdd.Id);
+            await _itemService.DeleteItem(itemToDelete.Id);
+            var deletedCheck = await _itemService.GetItemById(itemToAdd.Id);
+
+            Assert.Null(deletedCheck);
+        }
+        #endregion
     }
 }
