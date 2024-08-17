@@ -15,7 +15,7 @@ namespace ExpensesCalculator.UnitTests
             using var context = CreateContext();
             var repository = new ItemRepository(context);
 
-            var itemList = await repository.GetAllCheckItems(5);
+            var itemList = await repository.GetAllCheckItems(0);
 
             Assert.Equal(emptyList, itemList);
         }
@@ -39,7 +39,7 @@ namespace ExpensesCalculator.UnitTests
             using var context = CreateContext();
             var repository = new ItemRepository(context);
 
-            var price = await repository.GetItemPriceById(5);
+            var price = await repository.GetItemPriceById(0);
 
             Assert.Equal(0, price);
         }

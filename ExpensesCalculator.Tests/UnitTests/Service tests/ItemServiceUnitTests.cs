@@ -48,7 +48,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetItemByIdThatDoesNotExists()
         {
-            var item = await _itemService.GetItemById(5);
+            var item = await _itemService.GetItemById(0);
 
             Assert.Null(item);
         }

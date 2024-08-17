@@ -15,7 +15,7 @@ namespace ExpensesCalculator.UnitTests
             using var context = CreateContext();
             var repository = new CheckRepository(context);
 
-            var checkList = await repository.GetAllDayChecks(5);
+            var checkList = await repository.GetAllDayChecks(0);
 
             Assert.Equal(emptyList, checkList);
         }
@@ -39,7 +39,7 @@ namespace ExpensesCalculator.UnitTests
             using var context = CreateContext();
             var repository = new CheckRepository(context);
 
-            var check = await repository.GetById(5);
+            var check = await repository.GetById(0);
 
             Assert.Null(check);
         }

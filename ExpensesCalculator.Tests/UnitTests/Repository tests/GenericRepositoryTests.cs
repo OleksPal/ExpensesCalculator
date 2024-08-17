@@ -53,7 +53,7 @@ namespace ExpensesCalculator.UnitTests
             using var context = CreateContext();
             var repository = new GenericRepository<T>(context);
 
-            var obj = await repository.GetById(5);
+            var obj = await repository.GetById(0);
 
             Assert.Null(obj);
         }
@@ -132,7 +132,7 @@ namespace ExpensesCalculator.UnitTests
             using var context = CreateContext();
             var repository = new GenericRepository<T>(context);
 
-            var deletedItem = await repository.Delete(5);
+            var deletedItem = await repository.Delete(0);
 
             Assert.Null(deletedItem);
         }

@@ -48,7 +48,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetCheckByIdThatDoesNotExists()
         {
-            var check = await _checkService.GetCheckById(5);
+            var check = await _checkService.GetCheckById(0);
 
             Assert.Null(check);
         }
@@ -66,7 +66,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetCheckByIdWithItemsThatDoesNotExists()
         {
-            var check = await _checkService.GetCheckByIdWithItems(5);
+            var check = await _checkService.GetCheckByIdWithItems(0);
 
             Assert.Null(check);
         }
@@ -84,7 +84,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetAllAvailableCheckThatDoesNotExistsPayers()
         {
-            var selectList = await _checkService.GetAllAvailableCheckPayers(5);
+            var selectList = await _checkService.GetAllAvailableCheckPayers(0);
 
             Assert.Empty(selectList.Items);
         }
@@ -136,9 +136,9 @@ namespace ExpensesCalculator.UnitTests
         public async void EditCheck()
         {
             var checkToAdd = _checkDefaultObject;
-
             await _checkService.AddCheck(checkToAdd);
             var checkToEdit = await _checkService.GetCheckById(checkToAdd.Id);
+
             checkToEdit.Location = "Shop10";
             await _checkService.EditCheck(checkToEdit);
             var editedCheck = await _checkService.GetCheckById(checkToAdd.Id);
@@ -151,7 +151,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void DeleteCheckThatDoesNotExists()
         {
-            Func<Task> act = () => _checkService.DeleteCheck(5);
+            Func<Task> act = () => _checkService.DeleteCheck(0);
 
             await Assert.ThrowsAsync<NullReferenceException>(act);
         }
@@ -160,9 +160,9 @@ namespace ExpensesCalculator.UnitTests
         public async void DeleteCheckThatExists()
         {
             var checkToAdd = _checkDefaultObject;
-
             await _checkService.AddCheck(checkToAdd);
             var checkToDelete = await _checkService.GetCheckById(checkToAdd.Id);
+
             await _checkService.DeleteCheck(checkToDelete.Id);
             var deletedCheck = await _checkService.GetCheckById(checkToAdd.Id);
 

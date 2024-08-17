@@ -44,7 +44,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetDayExpensesByIdThatDoesNotExists()
         {
-            var dayExpenses = await _dayExpensesService.GetDayExpensesById(5);
+            var dayExpenses = await _dayExpensesService.GetDayExpensesById(0);
 
             Assert.Null(dayExpenses);
         }
@@ -62,7 +62,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetDayExpensesByIdWithChecksThatDoesNotExists()
         {
-            var dayExpenses = await _dayExpensesService.GetDayExpensesByIdWithChecks(5);
+            var dayExpenses = await _dayExpensesService.GetDayExpensesByIdWithChecks(0);
 
             Assert.Null(dayExpenses);
         }
@@ -80,7 +80,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetFullDayExpensesByIdThatDoesNotExists()
         {
-            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById(5);
+            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById(0);
 
             Assert.Null(dayExpenses);
         }
@@ -132,13 +132,16 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void EditDayExpenses()
         {
-            var dayExpenses = await _dayExpensesService.AddDayExpenses(_dayExpensesDefaultObject);
-            dayExpenses.Date = new DateOnly(2025, 12, 12);
+            var dayExpensesToAdd = _dayExpensesDefaultObject;
+            await _dayExpensesService.AddDayExpenses(dayExpensesToAdd);
+            var dayExpensesToEdit = await _dayExpensesService.GetDayExpensesById(dayExpensesToAdd.Id);
+            var newDate = new DateOnly(2025, 12, 12);
 
-            await _dayExpensesService.EditDayExpenses(dayExpenses);
-            var updatedDayExpenses = await _dayExpensesService.GetDayExpensesById(dayExpenses.Id);
+            dayExpensesToEdit.Date = newDate;
+            await _dayExpensesService.EditDayExpenses(dayExpensesToEdit);
+            var editedDayExpenses = await _dayExpensesService.GetDayExpensesById(dayExpensesToAdd.Id);
 
-            Assert.Equal(dayExpenses, updatedDayExpenses);
+            Assert.Equal(newDate, editedDayExpenses.Date);
         }
         #endregion
 
@@ -146,7 +149,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void DeleteDayExpensesThatDoesNotExists()
         { 
-            var dayExpenses = await _dayExpensesService.DeleteDayExpenses(5);
+            var dayExpenses = await _dayExpensesService.DeleteDayExpenses(0);
 
             Assert.Null(dayExpenses);
         }
@@ -154,10 +157,14 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void DeleteDayExpensesThatExists()
         {
-            await _dayExpensesService.DeleteDayExpenses(1);
-            var dayExpenses = await _dayExpensesService.GetDayExpensesById(1);
+            var dayExpensesToAdd = _dayExpensesDefaultObject;
+            await _dayExpensesService.AddDayExpenses(dayExpensesToAdd);
+            var dayExpensesToDelete = await _dayExpensesService.GetDayExpensesById(dayExpensesToAdd.Id);
 
-            Assert.Null(dayExpenses);
+            await _dayExpensesService.DeleteDayExpenses(dayExpensesToDelete.Id);
+            var deletedDayExpenses = await _dayExpensesService.GetDayExpensesById(dayExpensesToAdd.Id);
+
+            Assert.Null(deletedDayExpenses);
         }
         #endregion
 
@@ -173,7 +180,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void ChangeDayExpensesAccessForDayExpensesThatDoesNotExists()
         {
-            var response = await _dayExpensesService.ChangeDayExpensesAccess(5, "abc");
+            var response = await _dayExpensesService.ChangeDayExpensesAccess(0, "abc");
 
             Assert.Null(response);
         }
@@ -206,7 +213,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetCalculationForDayExpensesThatDoesNotExists()
         {
-            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses(5);
+            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses(0);
 
             Assert.Null(dayExpensesCalculation.AllUsersTrasactions);
         }
