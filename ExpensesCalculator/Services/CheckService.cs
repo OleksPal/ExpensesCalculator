@@ -34,14 +34,12 @@ namespace ExpensesCalculator.Services
         public async Task<Check> GetCheckByIdWithItems(int id)
         {
             var check = await GetCheckById(id);
-            check.Items = await _itemRepository.GetAllCheckItems(id);
+            var items = await _itemRepository.GetAllCheckItems(id);
+
+            if (items.Count > 0)
+                check.Items = items;
 
             return check;
-        }
-
-        public async Task<bool> CheckExists(int id)
-        {
-            return await GetCheckById(id) is not null;
         }
 
         public async Task<SelectList> GetAllAvailableCheckPayers(int dayExpensesId)

@@ -36,7 +36,10 @@ namespace ExpensesCalculator.Services
         {
             var result = await _dayExpensesRepository.GetById(id);
 
-            return result.PeopleWithAccess.Contains(RequestorName) ? result : null;
+            if (result is null)
+                return null;
+            else
+                return result.PeopleWithAccess.Contains(RequestorName) ? result : null;
         }
 
         public async Task<DayExpenses> GetDayExpensesByIdWithChecks(int id)

@@ -23,9 +23,11 @@ namespace ExpensesCalculator
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             #endregion
 
+            #region Services
             builder.Services.AddScoped<IItemService, ItemService>();
             builder.Services.AddScoped<ICheckService, CheckService>();
             builder.Services.AddScoped<IDayExpensesService, DayExpensesService>();
+            #endregion
 
             builder.Services.AddDbContext<ExpensesContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

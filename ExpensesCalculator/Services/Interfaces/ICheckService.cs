@@ -7,7 +7,6 @@ namespace ExpensesCalculator.Services
     {
         Task<Check> GetCheckById(int id);
         Task<Check> GetCheckByIdWithItems(int id);
-        Task<bool> CheckExists(int id);
         Task<SelectList> GetAllAvailableCheckPayers(int dayExpensesId);
         Task<Check> SetDayExpenses(Check check);
         Task<DayExpenses> AddCheck(Check check);
