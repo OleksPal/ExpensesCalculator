@@ -1,5 +1,7 @@
 # ExpensesCalculator
 
+[![.NET](https://github.com/OleksPal/ExpensesCalculator/actions/workflows/dotnet.yml/badge.svg)](https://github.com/OleksPal/ExpensesCalculator/actions/workflows/dotnet.yml)
+
 ## About the project
 #### Distribute expenses among party participants based on their consumption.
 ![Screenshot of an expenses calculation.](ExpensesCalculator/wwwroot/images/9-expenses-calculation-transaction-list-tab.jpg)
