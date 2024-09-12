@@ -3,8 +3,7 @@ $(function () {
         $.ajax({
             url: `/DayExpenses/Create`,
             data: {
-                Date: $("#date").val(), ParticipantsList: $("#participants").val(),
-                PeopleWithAccessList: currentUsersName,
+                Date: $("#date").val(), ParticipantList: $("#participants").val(),
                 __RequestVerificationToken: $(token).val()
             },
             type: "Post",

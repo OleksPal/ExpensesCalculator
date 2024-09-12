@@ -1,4 +1,6 @@
-﻿using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Dtos.DayExpenses;
+using ExpensesCalculator.Mappers;
+using ExpensesCalculator.Models;
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -143,21 +145,18 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([Bind("ParticipantList,Date")] CreateDayExpensesRequestDto createDto)
         {
-            if (dayExpenses.ParticipantsList.First() is null) 
-                ModelState.AddModelError("ParticipantsList", "Add some participants");
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await _dayExpensesService.AddDayExpenses(dayExpenses);
-
-                return RedirectToAction(nameof(Index));
+                ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
+                return PartialView("_CreateDayExpenses", createDto);
             }
 
-            ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
+            var dayExpenses = createDto.ToDayExpenses(User.Identity.Name);
+            await _dayExpensesService.AddDayExpenses(dayExpenses);            
 
-            return PartialView("_CreateDayExpenses", dayExpenses);
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: DayExpenses/Edit
