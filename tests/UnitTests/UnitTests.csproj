@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ExpensesCalculator\ExpensesCalculator.csproj" />
+    <ProjectReference Include="..\..\src\ExpensesCalculator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
