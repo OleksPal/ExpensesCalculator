@@ -11,5 +11,6 @@ namespace ExpensesCalculator.Data
         public DbSet<Item> Items => Set<Item>();
         public DbSet<Check> Checks => Set<Check>();
         public DbSet<DayExpenses> Days => Set<DayExpenses>();
+        public DbSet<User> Users => Set<User>();
     }
 }

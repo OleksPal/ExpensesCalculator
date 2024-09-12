@@ -6,7 +6,8 @@ namespace ExpensesCalculator.Data
     {
         public static void Initialize(ExpensesContext context)
         {
-            if (context.Days.Any() && context.Checks.Any() && context.Items.Any())
+            if (context.Days.Any() && context.Checks.Any() && context.Items.Any()
+                && context.Users.Any())
                 return;
 
             var dayExpenses = new DayExpenses
@@ -42,6 +43,11 @@ namespace ExpensesCalculator.Data
             };
 
             context.Items.Add(item);
+            context.SaveChanges();
+
+            var user = new User();
+
+            context.Users.Add(user);
             context.SaveChanges();
         }
     }
