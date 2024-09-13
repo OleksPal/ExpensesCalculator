@@ -4,6 +4,7 @@ using ExpensesCalculator.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using ExpensesCalculator.Repositories.Interfaces;
+using ExpensesCalculator.Models;
 
 namespace ExpensesCalculator
 {
@@ -32,7 +33,15 @@ namespace ExpensesCalculator
             builder.Services.AddDbContext<ExpensesContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ExpensesContext>();
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 10;
+            })
+                .AddEntityFrameworkStores<ExpensesContext>();
 
             var app = builder.Build();
 
