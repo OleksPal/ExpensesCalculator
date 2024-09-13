@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,6 +22,7 @@ namespace ExpensesCalculator.Models
         [Required(ErrorMessage = "Please enter item price")]
         [DataType(DataType.Currency)]
         [Display(Name = "Price")]
+        [Precision(18, 2)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:n2}₴")]
         [Range(0, Double.MaxValue, ErrorMessage = "Please enter correct price")]
         public decimal Price { get; set; }

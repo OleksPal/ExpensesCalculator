@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExpensesCalculator.Models
 {
@@ -9,6 +10,7 @@ namespace ExpensesCalculator.Models
         [Required(ErrorMessage = "Please enter check sum")]
         [DataType(DataType.Currency)]
         [Display(Name = "Sum")]
+        [Precision(18, 2)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:n2}₴")]
         [Range(0, Double.MaxValue, ErrorMessage = "Please enter correct sum")]
         public decimal Sum { get; set; }
