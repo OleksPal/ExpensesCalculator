@@ -35,7 +35,7 @@ namespace ExpensesCalculator
             builder.Services.AddDbContext<ExpensesContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddIdentity<ExpensesCalculator.Models.User, IdentityRole<Guid>>(options =>
+            builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
@@ -43,6 +43,8 @@ namespace ExpensesCalculator
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequiredLength = 10;
             })
+                .AddDefaultTokenProviders()
+                .AddDefaultUI()
                 .AddEntityFrameworkStores<ExpensesContext>();
 
             var app = builder.Build();
