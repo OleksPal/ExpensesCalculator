@@ -12,6 +12,7 @@ namespace ExpensesCalculator.Data
 
             var dayExpenses = new DayExpenses
             {
+                Id = Guid.NewGuid(),
                 Date = new DateOnly(2024, 1, 1),
                 ParticipantsList = ["User1", "User2"],
                 PeopleWithAccessList = ["Guest"]
@@ -23,6 +24,7 @@ namespace ExpensesCalculator.Data
             var dayExpensesId = context.Days.First().Id;
             var check = new Check
             {
+                Id = Guid.NewGuid(),
                 Location = "Shop1",
                 Sum = 1000,
                 Payer = "User1",
@@ -35,6 +37,7 @@ namespace ExpensesCalculator.Data
             Guid checkId = context.Checks.First().Id;
             var item = new Item
             {
+                Id = Guid.NewGuid(),
                 Name = "Item1",
                 Description = "Description1",
                 Price = 1000,

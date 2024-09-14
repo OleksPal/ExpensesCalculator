@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ExpensesCalculator.Data
 {
-    public class ExpensesContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class ExpensesContext : IdentityDbContext<User, IdentityRole<Guid>, Guid,
+        IdentityUserClaim<Guid>, IdentityUserRole<Guid>, IdentityUserLogin<Guid>,
+        IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
     {
         public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options) { }
 
