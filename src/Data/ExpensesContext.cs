@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ExpensesCalculator.Data
 {
-    public class ExpensesContext : IdentityDbContext
+    public class ExpensesContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
         public ExpensesContext(DbContextOptions<ExpensesContext> options) : base(options) { }
 
@@ -18,22 +18,22 @@ namespace ExpensesCalculator.Data
         {
             base.OnModelCreating(builder);
 
-            List<IdentityRole<int>> roles = new List<IdentityRole<int>>
+            List<IdentityRole<Guid>> roles = new List<IdentityRole<Guid>>
             {
-                new IdentityRole<int>
+                new IdentityRole<Guid>
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
                     Name = "Admin",
                     NormalizedName = "ADMIN"
                 },
-                new IdentityRole<int> {
-                    Id = 2,
+                new IdentityRole<Guid> {
+                    Id = Guid.NewGuid(),
                     Name = "User",
                     NormalizedName = "USER"
                 }
             };
 
-            builder.Entity<IdentityRole<int>>().HasData(roles);
+            builder.Entity<IdentityRole<Guid>>().HasData(roles);
         }
     }
 }

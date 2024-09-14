@@ -32,7 +32,7 @@ namespace ExpensesCalculator.Services
             return result.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
         }
 
-        public async Task<DayExpenses> GetDayExpensesById(int id)
+        public async Task<DayExpenses> GetDayExpensesById(Guid id)
         {
             var result = await _dayExpensesRepository.GetById(id);
 
@@ -42,7 +42,7 @@ namespace ExpensesCalculator.Services
                 return result.PeopleWithAccess.Contains(RequestorName) ? result : null;
         }
 
-        public async Task<DayExpenses> GetDayExpensesByIdWithChecks(int id)
+        public async Task<DayExpenses> GetDayExpensesByIdWithChecks(Guid id)
         {
             var dayExpenses = await GetDayExpensesById(id);
 
@@ -55,7 +55,7 @@ namespace ExpensesCalculator.Services
             return dayExpenses;
         }
 
-        public async Task<DayExpenses> GetFullDayExpensesById(int id)
+        public async Task<DayExpenses> GetFullDayExpensesById(Guid id)
         {
             var dayExpenses = await GetDayExpensesByIdWithChecks(id);
 
@@ -94,7 +94,7 @@ namespace ExpensesCalculator.Services
             return dayExpenses;
         }
 
-        public async Task<DayExpenses> DeleteDayExpenses(int id)
+        public async Task<DayExpenses> DeleteDayExpenses(Guid id)
         {
             var dayExpensesToDelete = await GetDayExpensesById(id);
 
@@ -104,7 +104,7 @@ namespace ExpensesCalculator.Services
             return dayExpensesToDelete;
         }
 
-        public async Task<DayExpensesCalculationViewModel> GetCalculationForDayExpenses(int id)
+        public async Task<DayExpensesCalculationViewModel> GetCalculationForDayExpenses(Guid id)
         {
             var dayExpenses = await GetFullDayExpensesById(id);
             var dayExpensesCalculation = dayExpenses.GetCalculations();
@@ -117,7 +117,7 @@ namespace ExpensesCalculator.Services
             return String.Join(", ", participantList);
         }
 
-        public async Task<string?> ChangeDayExpensesAccess(int id, string newUserWithAccess)
+        public async Task<string?> ChangeDayExpensesAccess(Guid id, string newUserWithAccess)
         {
             var dayExpenses = await GetDayExpensesById(id);
 

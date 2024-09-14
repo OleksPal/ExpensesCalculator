@@ -21,13 +21,13 @@ namespace ExpensesCalculator.Services
 
         public async Task<Item> SetCheck(Item item)
         {
-            if (item.CheckId != 0)
+            if (item.CheckId != Guid.Empty)
                 item.Check = await _checkRepository.GetById(item.CheckId);
 
             return item;
         }
 
-        public async Task<Item> GetItemById(int id)
+        public async Task<Item> GetItemById(Guid id)
         {
             return await _itemRepository.GetById(id);
         }
@@ -37,7 +37,7 @@ namespace ExpensesCalculator.Services
             return String.Join(", ", userList);
         }
 
-        public async Task<MultiSelectList> GetAllAvailableItemUsers(int dayExpensesId)
+        public async Task<MultiSelectList> GetAllAvailableItemUsers(Guid dayExpensesId)
         {
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var optionList = new List<SelectListItem>();
@@ -51,7 +51,7 @@ namespace ExpensesCalculator.Services
             return new MultiSelectList(optionList, "Value", "Text");
         }
 
-        public async Task<MultiSelectList> GetCheckedItemUsers(Item item, int dayExpensesId)
+        public async Task<MultiSelectList> GetCheckedItemUsers(Item item, Guid dayExpensesId)
         {
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var optionList = new List<SelectListItem>();
@@ -105,7 +105,7 @@ namespace ExpensesCalculator.Services
             return check;
         }
 
-        public async Task<Check> DeleteItem(int id)
+        public async Task<Check> DeleteItem(Guid id)
         {
             var item = await _itemRepository.GetById(id);
             var check = await GetCheckWithItems(item.CheckId);            
@@ -121,7 +121,7 @@ namespace ExpensesCalculator.Services
             return check;
         }
 
-        private async Task<Check> GetCheckWithItems(int checkId)
+        private async Task<Check> GetCheckWithItems(Guid checkId)
         {
             var check = await _checkRepository.GetById(checkId);
             check.Items = await _itemRepository.GetAllCheckItems(checkId);

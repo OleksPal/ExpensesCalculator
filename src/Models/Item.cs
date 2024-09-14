@@ -41,7 +41,7 @@ namespace ExpensesCalculator.Models
             }
         }
 
-        public int CheckId { get; set; }
+        public Guid CheckId { get; set; }
 
         public Check Check { get; set; }
     }

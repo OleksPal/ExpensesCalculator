@@ -19,7 +19,7 @@ namespace ExpensesCalculator.Repositories
             return await _context.Set<T>().ToListAsync();
         }
 
-        public virtual async Task<T> GetById(int id)
+        public virtual async Task<T> GetById(Guid id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
@@ -40,7 +40,7 @@ namespace ExpensesCalculator.Repositories
             return obj;
         }
 
-        public virtual async Task<T> Delete(int id)
+        public virtual async Task<T> Delete(Guid id)
         {
             var obj = await GetById(id);
 

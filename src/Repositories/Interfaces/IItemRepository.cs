@@ -4,7 +4,7 @@ namespace ExpensesCalculator.Repositories.Interfaces
 {
     public interface IItemRepository : IGenericRepository<Item>
     {
-        Task<ICollection<Item>> GetAllCheckItems(int checkId);
-        Task<decimal> GetItemPriceById(int id);
+        Task<ICollection<Item>> GetAllCheckItems(Guid checkId);
+        Task<decimal> GetItemPriceById(Guid id);
     }
 }

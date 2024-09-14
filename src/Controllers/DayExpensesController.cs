@@ -40,7 +40,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: DayExpenses/EditDayExpenses/5
         [HttpGet]
-        public async Task<IActionResult> EditDayExpenses(int? id)
+        public async Task<IActionResult> EditDayExpenses(Guid? id)
         {
             if (id is null)
                 return NotFound();
@@ -48,7 +48,7 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
             
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesById((Guid)id);
 
             if (day is null)
                 return NotFound();
@@ -61,7 +61,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: DayExpenses/DeleteDayExpenses/5
         [HttpGet]
-        public async Task<IActionResult> DeleteDayExpenses(int? id)
+        public async Task<IActionResult> DeleteDayExpenses(Guid? id)
         {
             if (id is null)
                 return NotFound();
@@ -69,7 +69,7 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesById((Guid)id);
 
             if (day is null)
                 return NotFound();
@@ -81,7 +81,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: DayExpenses/ShareDayExpenses/5
         [HttpGet]
-        public async Task<IActionResult> ShareDayExpenses(int? id)
+        public async Task<IActionResult> ShareDayExpenses(Guid? id)
         {
             if (id is null)
                 return NotFound();
@@ -89,7 +89,7 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesById((Guid)id);
 
             if (day is null)
                 return NotFound();
@@ -102,7 +102,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: DayExpenses/CalculateExpenses/5
         [HttpGet]
-        public async Task<IActionResult> CalculateExpenses(int? id)
+        public async Task<IActionResult> CalculateExpenses(Guid? id)
         {
             if (id is null)
                 return NotFound();
@@ -110,7 +110,7 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses((int)id);
+            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses((Guid)id);
 
             if (dayExpensesCalculation is null)
                 return NotFound();
@@ -120,7 +120,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: DayExpenses/ShowChecks/5
         [HttpGet]
-        public async Task<IActionResult> ShowChecks(int? id)
+        public async Task<IActionResult> ShowChecks(Guid? id)
         {
             if (id is null)
             {
@@ -130,7 +130,7 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((int)id);
+            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((Guid)id);
 
             if (dayExpenses is null)
             {
@@ -189,7 +189,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
@@ -204,7 +204,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Share(int id, string newUserWithAccess)
+        public async Task<IActionResult> Share(Guid id, string newUserWithAccess)
         {
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;

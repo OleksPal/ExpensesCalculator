@@ -2,7 +2,7 @@
 {
     public class DayExpensesCalculationViewModel
     {
-        public int DayExpensesId { get; set; }
+        public Guid DayExpensesId { get; set; }
         public IEnumerable<string> Participants { get; set; }
         public IEnumerable<Check> Checks { get; set; }
         public ICollection<DayExpensesCalculation> DayExpensesCalculations { get; set; }

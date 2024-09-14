@@ -27,7 +27,7 @@ namespace ExpensesCalculator.Models
         [StringLength(50, ErrorMessage = "Payer`s name can have a max of 50 characters")]
         public string Payer { get; set; }
 
-        public int DayExpensesId { get; set; }
+        public Guid DayExpensesId { get; set; }
 
         public DayExpenses DayExpenses { get; set; }
     }

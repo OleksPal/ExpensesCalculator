@@ -9,14 +9,14 @@ namespace ExpensesCalculator.Repositories
     {
         public CheckRepository(ExpensesContext context) : base(context) { }
 
-        public async Task<ICollection<Check>> GetAllDayChecks(int dayExpensesId)
+        public async Task<ICollection<Check>> GetAllDayChecks(Guid dayExpensesId)
         {
             var checks = await _context.Checks.Where(c => c.DayExpensesId == dayExpensesId).ToListAsync();
 
             return (checks is not null) ? checks : new List<Check>();
         }
 
-        public override async Task<Check> GetById(int id)
+        public override async Task<Check> GetById(Guid id)
         {
             var check = await _context.Checks.Include(c => c.DayExpenses).FirstOrDefaultAsync(i => i.Id == id);
 

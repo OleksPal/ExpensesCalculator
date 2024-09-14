@@ -20,18 +20,18 @@ namespace ExpensesCalculator.Services
 
         public async Task<Check> SetDayExpenses(Check check)
         {
-            if (check.DayExpensesId != 0) 
+            if (check.DayExpensesId != Guid.Empty) 
                 check.DayExpenses = await _dayExpensesRepository.GetById(check.DayExpensesId);
 
             return check;
         }
 
-        public async Task<Check> GetCheckById(int id)
+        public async Task<Check> GetCheckById(Guid id)
         {
             return await _checkRepository.GetById(id);
         }
 
-        public async Task<Check> GetCheckByIdWithItems(int id)
+        public async Task<Check> GetCheckByIdWithItems(Guid id)
         {
             var check = await GetCheckById(id);
             var items = await _itemRepository.GetAllCheckItems(id);
@@ -42,7 +42,7 @@ namespace ExpensesCalculator.Services
             return check;
         }
 
-        public async Task<SelectList> GetAllAvailableCheckPayers(int dayExpensesId)
+        public async Task<SelectList> GetAllAvailableCheckPayers(Guid dayExpensesId)
         {
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var optionList = new List<SelectListItem>();
@@ -75,7 +75,7 @@ namespace ExpensesCalculator.Services
             return dayExpenses;
         }
 
-        public async Task<DayExpenses> DeleteCheck(int id)
+        public async Task<DayExpenses> DeleteCheck(Guid id)
         {          
             var check = await _checkRepository.Delete(id);
 
@@ -83,7 +83,7 @@ namespace ExpensesCalculator.Services
             return dayExpenses;
         }
 
-        private async Task<DayExpenses> GetDayExpensesWithCheck(int dayExpensesId)
+        private async Task<DayExpenses> GetDayExpensesWithCheck(Guid dayExpensesId)
         {
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var checks = await _checkRepository.GetAllDayChecks(dayExpensesId);

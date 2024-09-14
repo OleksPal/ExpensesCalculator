@@ -2,6 +2,6 @@
 {
     public abstract class DbObject
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

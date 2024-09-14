@@ -17,7 +17,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Checks/CreateCheck?dayExpensesId=1
         [HttpGet]
-        public async Task<IActionResult> CreateCheck(int dayExpensesId)
+        public async Task<IActionResult> CreateCheck(Guid dayExpensesId)
         {
             ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(dayExpensesId);
             ViewData["DayExpensesId"] = dayExpensesId;
@@ -27,12 +27,12 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Checks/EditCheck/5
         [HttpGet]
-        public async Task<IActionResult> EditCheck(int? id)
+        public async Task<IActionResult> EditCheck(Guid? id)
         {
             if (id is null)
                 return NotFound();
 
-            var check = await _checkService.GetCheckById((int)id);
+            var check = await _checkService.GetCheckById((Guid)id);
 
             if (check is null)
                 return NotFound();
@@ -44,12 +44,12 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Checks/DeleteCheck/5
         [HttpGet]
-        public async Task<IActionResult> DeleteCheck(int? id)
+        public async Task<IActionResult> DeleteCheck(Guid? id)
         {
             if (id is null)
                 return NotFound();
 
-            var check = await _checkService.GetCheckById((int)id);
+            var check = await _checkService.GetCheckById((Guid)id);
 
             if (check is null)
                 return NotFound();
@@ -59,7 +59,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Checks/GetCheckItemsManager/5
         [HttpGet]
-        public async Task<IActionResult> GetCheckItemsManager(int id)
+        public async Task<IActionResult> GetCheckItemsManager(Guid id)
         {
             var check = await _checkService.GetCheckByIdWithItems(id);
 
@@ -118,7 +118,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var model = await _checkService.DeleteCheck(id);
 

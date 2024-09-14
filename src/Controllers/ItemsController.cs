@@ -17,7 +17,7 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Items/CreateItem?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> CreateItem(int checkId, int dayExpensesId)
+        public async Task<IActionResult> CreateItem(int checkId, Guid dayExpensesId)
         {            
             ViewData["CheckId"] = checkId;
             ViewData["DayExpensesId"] = dayExpensesId;
@@ -28,12 +28,12 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Items/EditItem/5?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> EditItem(int? id, int dayExpensesId)
+        public async Task<IActionResult> EditItem(Guid? id, Guid dayExpensesId)
         {
             if (id is null)
                 return NotFound();
 
-            var item = await _itemService.GetItemById((int)id);
+            var item = await _itemService.GetItemById((Guid)id);
 
             if (item is null)
                 return NotFound();
@@ -48,12 +48,12 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Items/DeleteItem/5?dayExpensesId=2
         [HttpGet]
-        public async Task<IActionResult> DeleteItem(int? id)
+        public async Task<IActionResult> DeleteItem(Guid? id)
         {
             if (id is null)
                 return NotFound();
 
-            var item = await _itemService.GetItemById((int)id);
+            var item = await _itemService.GetItemById((Guid)id);
 
             if (item is null)
                 return NotFound();
@@ -68,7 +68,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
+        public async Task<IActionResult> Create([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, Guid dayExpensesId)
         {          
             item = await _itemService.SetCheck(item);
             ModelState.Clear();
@@ -100,7 +100,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
+        public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, Guid dayExpensesId)
         {
             item = await _itemService.SetCheck(item);
             ModelState.Clear();
@@ -131,7 +131,7 @@ namespace ExpensesCalculator.Controllers
         // POST: Items/Delete/5?dayExpensesId=2
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var model = await _itemService.DeleteItem(id);
             return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);

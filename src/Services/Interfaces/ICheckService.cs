@@ -5,12 +5,12 @@ namespace ExpensesCalculator.Services
 {
     public interface ICheckService
     {
-        Task<Check> GetCheckById(int id);
-        Task<Check> GetCheckByIdWithItems(int id);
-        Task<SelectList> GetAllAvailableCheckPayers(int dayExpensesId);
+        Task<Check> GetCheckById(Guid id);
+        Task<Check> GetCheckByIdWithItems(Guid id);
+        Task<SelectList> GetAllAvailableCheckPayers(Guid dayExpensesId);
         Task<Check> SetDayExpenses(Check check);
         Task<DayExpenses> AddCheck(Check check);
         Task<DayExpenses> EditCheck(Check check);
-        Task<DayExpenses> DeleteCheck(int id);
+        Task<DayExpenses> DeleteCheck(Guid id);
     }
 }

@@ -20,7 +20,7 @@ namespace ExpensesCalculator.Data
             context.Days.Add(dayExpenses);
             context.SaveChanges();
 
-            int dayExpensesId = context.Days.First().Id;
+            var dayExpensesId = context.Days.First().Id;
             var check = new Check
             {
                 Location = "Shop1",
@@ -32,7 +32,7 @@ namespace ExpensesCalculator.Data
             context.Checks.Add(check);
             context.SaveChanges();
 
-            int checkId = context.Checks.First().Id;
+            Guid checkId = context.Checks.First().Id;
             var item = new Item
             {
                 Name = "Item1",
