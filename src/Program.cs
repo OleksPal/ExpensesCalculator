@@ -17,6 +17,8 @@ namespace ExpensesCalculator
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddRazorPages();
+
             #region Repositories
             builder.Services.AddScoped<IItemRepository, ItemRepository>();
             builder.Services.AddScoped<ICheckRepository, CheckRepository>();
@@ -33,7 +35,7 @@ namespace ExpensesCalculator
             builder.Services.AddDbContext<ExpensesContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+            builder.Services.AddIdentity<ExpensesCalculator.Models.User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
