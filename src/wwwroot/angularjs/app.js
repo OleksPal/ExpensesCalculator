@@ -1,0 +1,1 @@
+﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', []);
