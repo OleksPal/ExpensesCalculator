@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /Expenses.db
 /Expenses.db-shm
 /Expenses.db-wal
+/src/appsettings.json
