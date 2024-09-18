@@ -7,6 +7,28 @@
 ![Screenshot of an expenses calculation.](ExpensesCalculator/wwwroot/images/9-expenses-calculation-transaction-list-tab.jpg)
 
 ## Usage
+
+### Create appsettings.json file in the ./src folder with the following content
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=Expenses;Trusted_Connection=True;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "JWT": {
+    "Issuer": "http://localhost:port",
+    "Audience": "http://localhost:port",
+    "SigninKey": "512 bit key"
+  }
+}
+```
+
 ### Select the "My expenses list" tab
 ![my-expenses-list-button](ExpensesCalculator/wwwroot/images/1-my-expenses-list-button.jpg)
 
