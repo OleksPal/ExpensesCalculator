@@ -1,4 +1,5 @@
-﻿using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Dtos.User;
+using ExpensesCalculator.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
