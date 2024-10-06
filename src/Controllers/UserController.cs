@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesCalculator.Controllers
 {
-    public class UserController : ControllerBase
+    [Route("/user")]
+    public class UserController : Controller
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -15,6 +16,12 @@ namespace ExpensesCalculator.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
+        }
+
+        [HttpGet("register")]
+        public IActionResult Register()
+        {
+            return View();
         }
 
         [HttpPost("register")]
