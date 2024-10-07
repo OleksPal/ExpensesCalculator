@@ -3,6 +3,9 @@
         <div class="mx-lg-auto col-lg-10" ng-controller="UserController">
             <h1 class="text-white">Create a new account</h1>
             <br />
+            <div ng-repeat="error in errors">
+                <small style="color:red;display:block;">{{error.description}}</small>
+            </div>
             <form name="registerForm">
                 <div class="mb-4 input-group-lg">
                     <input class="form-control" type="email" name="email" ng-model="user.email" ng-required="true" placeholder="Email" />

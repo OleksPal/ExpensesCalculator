@@ -1,8 +1,10 @@
 ﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', []);
 
-expensesCalculatorApp.controller("UserController", ["$scope", "$http", function ($scope, $http) {
+expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window", function ($scope, $http, $window) {
 
     $scope.user = {};
+    $scope.errors = {};
+
     $scope.register = function () {
         var registerUserDto = {};
         registerUserDto.email = $scope.user.email;
@@ -13,11 +15,11 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", function 
             .then(registerUserSuccessCallback, registerUserErrorCallback);
 
         function registerUserSuccessCallback() {
-
+            $window.location.href = '/user/loginWithUsername';
         }
 
-        function registerUserErrorCallback() {
-
+        function registerUserErrorCallback(response) {
+            $scope.errors = response.data;
         }      
     }
 }])
