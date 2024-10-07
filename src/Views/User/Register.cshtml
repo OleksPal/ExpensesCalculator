@@ -3,7 +3,7 @@
         <div class="mx-lg-auto col-lg-10" ng-controller="UserController">
             <h1 class="text-white">Create a new account</h1>
             <br />
-            <form name="registerForm" method="post">
+            <form name="registerForm">
                 <div class="mb-4 input-group-lg">
                     <input class="form-control" type="email" name="email" ng-model="user.email" ng-required="true" placeholder="Email" />
                     <div ng-show="registerForm.email.$touched && registerForm.email.$invalid">
@@ -25,11 +25,14 @@
                 </div>
                 <div class="mb-4 input-group-lg">
                     <input type="password" class="form-control" name="confirmPassword" ng-model="user.confirmPassword" ng-required="true" placeholder="Confirm" />
-                    <div ng-show="registerForm.confirmPassword.$touched && registerForm.confirmPassword.$invalid">
-                        <small style="color:red;display:block;">Enter a valid password</small>
+                    <div ng-show="registerForm.confirmPassword.$touched && registerForm.confirmPassword.$invalid 
+                        || (registerForm.confirmPassword.$touched && (registerForm.password.$modelValue != registerForm.confirmPassword.$modelValue))">
+                        <small style="color:red;display:block;">Password and confirm password do not mactch</small>
                     </div>
                 </div>
-                <button class="w-100 btn btn-lg btn-primary" ng-disabled="registerForm.$invalid" ng-click="register()">Register</button>
+                <button class="w-100 btn btn-lg btn-primary" ng-disabled="registerForm.$invalid 
+                    || (registerForm.password.$modelValue != registerForm.confirmPassword.$modelValue)"
+                    ng-click="register()">Register</button>
             </form>
         </div>
     </div>

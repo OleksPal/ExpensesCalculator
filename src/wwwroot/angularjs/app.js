@@ -8,7 +8,6 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", function 
         registerUserDto.email = $scope.user.email;
         registerUserDto.username = $scope.user.username;
         registerUserDto.password = $scope.user.password;
-        registerUserDto.confirmPassword = $scope.user.confirmPassword;
 
         $http.post("/user/register", registerUserDto)
             .then(registerUserSuccessCallback, registerUserErrorCallback);
@@ -19,6 +18,6 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", function 
 
         function registerUserErrorCallback() {
 
-        }
+        }      
     }
 }])
