@@ -3,6 +3,7 @@ using ExpensesCalculator.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -58,6 +59,20 @@ namespace ExpensesCalculator.Controllers
                 }
 
                 return StatusCode(500, createdUser.Errors);
+            }
+            catch (DbUpdateException)
+            {
+                var emailError = IdentityResult.Failed(
+                    new IdentityError[]
+                    {
+                        new IdentityError
+                        {
+                            Code = "DuplicateEmail",
+                            Description = $"Email '{registerDto.Email}' is already taken."
+                        }
+                    }
+                );
+                return StatusCode(500, emailError.Errors);
             }
             catch (Exception ex)
             {

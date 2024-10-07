@@ -36,6 +36,10 @@ namespace ExpensesCalculator.Data
             };
 
             builder.Entity<IdentityRole<Guid>>().HasData(roles);
+
+            builder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
     }
 }
