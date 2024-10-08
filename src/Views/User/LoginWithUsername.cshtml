@@ -1,0 +1,30 @@
+﻿<div class="px-3 px-lg-5 my-lg-3">
+    <div class="rounded p-lg-5 p-4 dark-blue-1">
+        <div class="mx-lg-auto col-lg-10" ng-controller="UserController">
+            <h1 class="text-white">Log in</h1>
+            <br />
+            <div ng-show="!isEmpty(errors)">
+                <small style="color:red;display:block;">{{errors}}</small>
+            </div>
+            <form name="loginForm">
+                <div class="mb-4 input-group-lg">
+                    <input class="form-control" name="username" ng-model="user.username"
+                           ng-required="true" placeholder="Username" />
+                    <div ng-show="loginForm.username.$touched && loginForm.username.$invalid">
+                        <small style="color:red;display:block;">Enter a valid username</small>
+                    </div>
+                </div>
+                <div class="mb-4 input-group-lg">
+                    <input type="password" class="form-control" name="password" ng-model="user.password" ng-required="true" placeholder="Password" />
+                    <div ng-show="loginForm.password.$touched && loginForm.password.$invalid">
+                        <small style="color:red;display:block;">Enter a valid password</small>
+                    </div>
+                </div>
+                <button class="w-100 btn btn-lg btn-primary" ng-disabled="loginForm.$invalid"
+                        ng-click="loginWithUsername()">
+                    Log in
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -80,6 +80,12 @@ namespace ExpensesCalculator.Controllers
             }
         }
 
+        [HttpGet("loginWithUsername")]
+        public IActionResult LoginWithUsername()
+        {
+            return View();
+        }
+
         [HttpPost("loginWithUsername")]
         public async Task<IActionResult> LoginWithUsername([FromBody] LoginWithUsernameDto loginDto)
         {
