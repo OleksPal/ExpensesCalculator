@@ -32,6 +32,7 @@ namespace ExpensesCalculator
             builder.Services.AddScoped<IItemService, ItemService>();
             builder.Services.AddScoped<ICheckService, CheckService>();
             builder.Services.AddScoped<IDayExpensesService, DayExpensesService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             #endregion
 
             builder.Services.AddDbContext<ExpensesContext>(options =>
