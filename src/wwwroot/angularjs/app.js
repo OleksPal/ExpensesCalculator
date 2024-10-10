@@ -4,6 +4,7 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window"
 
     $scope.user = {};
     $scope.errors = {};
+    $scope.token = "";
 
     $scope.isEmpty = function (obj) {
         for (var prop in obj) {
@@ -39,11 +40,15 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window"
         $http.post("/user/loginWithUsername", loginUserDto)
             .then(loginUserSuccessCallback, loginUserErrorCallback);
 
-        function loginUserSuccessCallback() {
-            $window.location.href = '/DayExpenses';
+        function loginUserSuccessCallback(response) {
+            $scope.token = response.data.token;
+            console.log(response.data.token);
+            $http.defaults.headers.common['Authorization'] = 'Bearer ' + $scope.token;
+            $http.get('/DayExpenses');
         }
 
         function loginUserErrorCallback(response) {
+            console.log(response.token);
             $scope.errors = response.data;
         }
     }
