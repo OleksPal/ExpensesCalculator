@@ -1,9 +1,9 @@
 ﻿using ExpensesCalculator.Dtos.User;
 using ExpensesCalculator.Models;
+using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -12,11 +12,14 @@ namespace ExpensesCalculator.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly ITokenService _tokenService;
 
-        public UserController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserController(UserManager<User> userManager, SignInManager<User> signInManager,
+            ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenService = tokenService;
         }
 
         [HttpGet("register")]
@@ -108,7 +111,8 @@ namespace ExpensesCalculator.Controllers
                 new NewUserDto
                 {
                     UserName = loginDto.UserName,
-                    Email = user.Email
+                    Email = user.Email,
+                    Token = _tokenService.CreateToken(user)
                 }
             );
         }
