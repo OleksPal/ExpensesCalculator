@@ -44,7 +44,18 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window"
             $scope.token = response.data.token;
             console.log(response.data.token);
             $http.defaults.headers.common['Authorization'] = 'Bearer ' + $scope.token;
-            $http.get('/DayExpenses');
+
+            $http.get('/DayExpenses')
+                .then(getDataSuccessCallback, getDataErrorCallback);            
+
+            function getDataSuccessCallback(response) {
+                myEl = angular.element(document.querySelector('#bodyContent'));
+                myEl.html(response.data);
+            }
+
+            function getDataErrorCallback(response) {
+                console.log(response);
+            }
         }
 
         function loginUserErrorCallback(response) {

@@ -26,7 +26,7 @@ namespace ExpensesCalculator.Controllers
 
             var days = await _dayExpensesService.GetAllDays();
 
-            return View(days);
+            return PartialView("Index", days);
         }
 
         // GET: DayExpenses/CreateDayExpenses
