@@ -1,6 +1,8 @@
 ﻿using ExpensesCalculator.Dtos.User;
 using ExpensesCalculator.Models;
 using ExpensesCalculator.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -87,6 +89,12 @@ namespace ExpensesCalculator.Controllers
         public IActionResult LoginWithUsername()
         {
             return View();
+        }
+
+        [HttpGet("getLoginPartialView")]
+        public IActionResult GetLoginPartialView()
+        {
+            return PartialView("_LoginPartial");
         }
 
         [HttpPost("loginWithUsername")]

@@ -45,8 +45,20 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window"
             console.log(response.data.token);
             $http.defaults.headers.common['Authorization'] = 'Bearer ' + $scope.token;
 
+            $http.get('/user/getLoginPartialView')
+                .then(getLoginPartialViewSuccessCallback, getLoginPartialViewErrorCallback);
+
+            function getLoginPartialViewSuccessCallback(response) {
+                myEl = angular.element(document.querySelector('#login'));
+                myEl.html(response.data);
+            }
+
+            function getLoginPartialViewErrorCallback(response) {
+                console.log(response);
+            }
+
             $http.get('/DayExpenses')
-                .then(getDataSuccessCallback, getDataErrorCallback);            
+                .then(getDataSuccessCallback, getDataErrorCallback);         
 
             function getDataSuccessCallback(response) {
                 myEl = angular.element(document.querySelector('#bodyContent'));

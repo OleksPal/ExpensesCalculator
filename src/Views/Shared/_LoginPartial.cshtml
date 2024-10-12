@@ -1,10 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
-
-@inject SignInManager<User> SignInManager
-@inject UserManager<User> UserManager
+@using ExpensesCalculator.Extensions;
 
 <ul class="navbar-nav align-items-center">
-    @if (SignInManager.IsSignedIn(User))
+    @if (User.Identity.IsAuthenticated)
     {
         <li class="nav-item">
             <button class="btn nav-link" style="height: 40px;">
@@ -12,15 +10,13 @@
             </button>      
         </li>
         <li class="nav-item">
-            <a id="manage" class="nav-link text-white" style="height: 40px;" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                <img class="rounded-circle" width="30" alt="avatar1" src="@Url.Content("~/images/default-profile-account-image.jpg")" />
-                @UserManager.GetUserName(User)
+            <a id="manage" class="nav-link text-white" style="height: 40px;" title="Manage">
+                <img class="rounded-circle" width="30" alt="avatar" src="@Url.Content("~/images/default-profile-account-image.jpg")" />
+                @User.GetUserName()
             </a>
         </li>
         <li class="nav-item">
-            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
-                <button type="submit" class="nav-link btn text-white" style="height: 40px;">Logout</button>
-            </form>
+            <button asp-controller="user" asp-action="Logout" class="nav-link btn text-white" style="height: 40px;">Logout</button>
         </li>
     }
     else
