@@ -9,14 +9,16 @@
                 <img src="@Url.Content("~/images/gb.svg")" alt="English - eng" width="30">
             </button>      
         </li>
-        <li class="nav-item">
-            <a id="manage" class="nav-link text-white" style="height: 40px;" title="Manage">
-                <img class="rounded-circle" width="30" alt="avatar" src="@Url.Content("~/images/default-profile-account-image.jpg")" />
+        <li class="nav-item" inert>
+            <a id="manage" class="nav-link text-white" style="height: 40px;">
+                <img class="rounded-circle" width="30" alt="avatar1" src="@Url.Content("~/images/default-profile-account-image.jpg")" />
                 @User.GetUserName()
             </a>
         </li>
         <li class="nav-item">
-            <button asp-controller="user" asp-action="Logout" class="nav-link btn text-white" style="height: 40px;">Logout</button>
+            <form asp-controller="user" asp-action="Logout" method="post">
+                <button type="submit" class="nav-link btn text-white" style="height: 40px;">Logout</button>
+            </form>
         </li>
     }
     else

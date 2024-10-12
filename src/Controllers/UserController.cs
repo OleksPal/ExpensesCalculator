@@ -125,6 +125,14 @@ namespace ExpensesCalculator.Controllers
             );
         }
 
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+
+            return RedirectToAction(nameof(Index), "Home");
+        }
+
         protected virtual async Task<User> GetUserByUsername(string userName)
         {
             return await _userManager.Users.FirstOrDefaultAsync(user => user.UserName == userName.ToLower());
