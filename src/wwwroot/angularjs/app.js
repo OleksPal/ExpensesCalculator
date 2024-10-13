@@ -1,10 +1,21 @@
-﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', []);
+﻿var expensesCalculatorInterceptor = function ($window, $q) {
+    return {
+        request: function (config) {
+            config.headers['Authorization'] = 'Bearer ' + $window.localStorage['jwtToken'];
+            return config || $q.when(config);
+        }
+    };
+};
 
-expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window", function ($scope, $http, $window) {
+var expensesCalculatorApp = angular.module('expensesCalculatorApp', []).config(function ($httpProvider) {
+    $httpProvider.interceptors.push(expensesCalculatorInterceptor);
+});
+
+expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window", "$location", function ($scope, $http, $window, $location) {
 
     $scope.user = {};
     $scope.errors = {};
-    $scope.token = "";
+    $window.localStorage['jwtToken'] = '';
 
     $scope.isEmpty = function (obj) {
         for (var prop in obj) {
@@ -41,37 +52,20 @@ expensesCalculatorApp.controller("UserController", ["$scope", "$http", "$window"
             .then(loginUserSuccessCallback, loginUserErrorCallback);
 
         function loginUserSuccessCallback(response) {
-            $scope.token = response.data.token;
-            console.log(response.data.token);
-            $http.defaults.headers.common['Authorization'] = 'Bearer ' + $scope.token;
-
-            $http.get('/user/getLoginPartialView')
-                .then(getLoginPartialViewSuccessCallback, getLoginPartialViewErrorCallback);
-
-            function getLoginPartialViewSuccessCallback(response) {
-                myEl = angular.element(document.querySelector('#login'));
-                myEl.html(response.data);
-            }
-
-            function getLoginPartialViewErrorCallback(response) {
-                console.log(response);
-            }
+            $window.localStorage['jwtToken'] = response.data.token;
+            $http.defaults.headers.common['Authorization'] = 'Bearer ' + $window.localStorage['jwtToken'];
 
             $http.get('/DayExpenses')
-                .then(getDataSuccessCallback, getDataErrorCallback);         
-
-            function getDataSuccessCallback(response) {
-                myEl = angular.element(document.querySelector('#bodyContent'));
-                myEl.html(response.data);
-            }
-
-            function getDataErrorCallback(response) {
-                console.log(response);
-            }
+                .then((response) => {
+                    document.open();
+                    console.log(response);
+                    document.write(response.data);
+                    document.close();
+                });
         }
 
         function loginUserErrorCallback(response) {
-            console.log(response.token);
+            console.log(response);
             $scope.errors = response.data;
         }
     }
