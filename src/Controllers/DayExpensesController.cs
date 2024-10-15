@@ -27,6 +27,18 @@ namespace ExpensesCalculator.Controllers
             return View(days);
         }
 
+        // GET: DayExpenses
+        [HttpGet]
+        public async Task<JsonResult> GetAllDays()
+        {
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
+            var days = await _dayExpensesService.GetAllDays();
+
+            return Json(days);
+        }
+
         // GET: DayExpenses/CreateDayExpenses
         [HttpGet]
         public IActionResult CreateDayExpenses()
