@@ -1,6 +1,8 @@
 ﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', []);
 
-expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', function ($scope) {
+expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function ($scope, $http) {
+    
+
     $http.get('/DayExpenses/GetAllDays')
         .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
 
