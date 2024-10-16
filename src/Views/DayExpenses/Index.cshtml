@@ -51,71 +51,27 @@
                     </td>
                     <td>
                         <div class="btn-group" role="group">
-                            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                    >
+                            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop" 
+                                ng-click="showModalForDayExpensesShare(day.id)">
                                 <i class="bi bi-share"></i>
                             </button>
-                            <a role="button" class="btn btn-info" asp-controller="DayExpenses" asp-action="ShowChecks" asp-route-id="{{day.id}}">
+                            <a role="button" class="btn btn-info" href="/DayExpenses/ShowChecks/{{day.id}}">
                                 <i class="bi bi-list-check"></i>
                             </a>
-                            <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="{{day.id}}">
+                            <a role="button" class="btn btn-primary" href="/DayExpenses/CalculateExpenses/{{day.id}}">
                                 <i class="bi bi-calculator"></i>
                             </a>
                             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                    >
+                                ng-click="showModalForDayExpensesEdit(day.id)">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop">
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                ng-click="showModalForDayExpensesDelete(day.id)">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
-                @* @foreach (var day in Model)
-                {
-                    <tr style="height: 80px;">
-                        <td>
-                            @Html.DisplayFor(model => day.Date)
-                        </td>
-                        <td>
-                            <div class="mytooltip">
-                                <label>@day.ParticipantsList.Count people</label>
-                                <span class="center-tooltiptext">
-                                    Participants:
-                                    <ul>
-                                        @foreach (var user in day.ParticipantsList)
-                                        {
-                                            <li>@user</li>
-                                        }
-                                    </ul>
-                                </span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        onclick="showModalForDayExpensesShare(@day.Id)">
-                                    <i class="bi bi-share"></i>
-                                </button>
-                                <a role="button" class="btn btn-info" asp-controller="DayExpenses" asp-action="ShowChecks" asp-route-id="@day.Id">
-                                    <i class="bi bi-list-check"></i>
-                                </a>
-                                <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@day.Id">
-                                    <i class="bi bi-calculator"></i>
-                                </a>
-                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        onclick="showModalForDayExpensesEdit(@day.Id)">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-danger" data-bs-toggle="modal"
-                                        data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@day.Id)">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                } *@
             </tbody>
         </table>
         <hr />
