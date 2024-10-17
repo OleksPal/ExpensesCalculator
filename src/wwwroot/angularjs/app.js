@@ -34,16 +34,43 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function
     };
 
     // Sorting days
-    $scope.order = '';
+    $scope.sort = {
+        active: '',
+        descending: undefined
+    };
+
     $scope.changeOrder = function (value) {
-        if ($scope.order === value) {
-            $scope.order = '-' + value;
-        }
-        else if ($scope.order === '-' + value) {
-            $scope.order = value;
+        var sort = $scope.sort;
+
+        if (sort.active == value) {
+            sort.descending = !sort.descending;
         }
         else {
-            $scope.order = value;
+            sort.active = value;
+            sort.descending = false;
         }
-    }
+    };
+
+    $scope.getIcon = function (value) {
+        var sort = $scope.sort;
+
+        if (sort.active == value) {
+            return sort.descending ? 'bi bi-sort-alpha-down-alt' : 'bi bi-sort-alpha-down';
+        }
+
+        return 'bi bi-arrow-down-up';
+    };
+
+    //$scope.order = '';
+    //$scope.changeOrder = function (value) {
+    //    if ($scope.order === value) {
+    //        $scope.order = '-' + value;
+    //    }
+    //    else if ($scope.order === '-' + value) {
+    //        $scope.order = value;
+    //    }
+    //    else {
+    //        $scope.order = value;
+    //    }
+    //}
 }])

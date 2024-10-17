@@ -29,6 +29,11 @@ html {
   min-height: 100%;
 }
 
+th {
+    cursor: pointer;
+    user-select: none;
+}
+
 td {
     vertical-align: middle !important;
 }
