@@ -32,4 +32,18 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function
             modalContent.html(response.data);
         });
     };
+
+    // Sorting days
+    $scope.order = '';
+    $scope.changeOrder = function (value) {
+        if ($scope.order === value) {
+            $scope.order = '-' + value;
+        }
+        else if ($scope.order === '-' + value) {
+            $scope.order = value;
+        }
+        else {
+            $scope.order = value;
+        }
+    }
 }])

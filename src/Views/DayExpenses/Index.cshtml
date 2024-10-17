@@ -25,16 +25,20 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Date)
+                        <button class="btn shadow-none fw-bold text-white ps-0" ng-click="changeOrder('date')">
+                            @Html.DisplayNameFor(model => model.Date)
+                        </button>                        
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Participants)
+                        <button class="btn shadow-none fw-bold text-white ps-0" ng-click="changeOrder('participants')">
+                            @Html.DisplayNameFor(model => model.Participants)
+                        </button>                        
                     </th>
                     <th width="250px"></th>
                 </tr>
             </thead>
-            <tbody ng-init="days" style="height: 80px;">
-                <tr ng-repeat="day in days">
+            <tbody ng-init="days">
+                <tr ng-repeat="day in days | orderBy: order" style="height: 80px;">
                     <td>
                         {{day.date}}
                     </td>
