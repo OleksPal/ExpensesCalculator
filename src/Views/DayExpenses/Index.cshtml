@@ -22,7 +22,7 @@
     </div>
     <div class="d-flex justify-content-end pb-lg-2 p-3">
         <div class="col-12 col-lg-3">
-            <input class="form-control bg-transparent text-white" type="search" placeholder="Search for..." />
+            <input ng-model="searchText" class="form-control bg-transparent text-white" type="search" placeholder="Search for..." />
         </div>
     </div>
     <div class="table-responsive">
@@ -45,7 +45,7 @@
                 </tr>
             </thead>
             <tbody ng-init="days">
-                <tr ng-repeat="day in days | orderBy: sort.active:sort.descending" style="height: 80px;">
+                <tr ng-repeat="day in days | orderBy: sort.active:sort.descending | filter:search" style="height: 80px;">
                     <td class="text-nowrap">
                         {{day.date}}
                     </td>

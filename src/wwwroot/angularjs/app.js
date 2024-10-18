@@ -61,16 +61,19 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function
         return 'bi bi-arrow-down-up';
     };
 
-    //$scope.order = '';
-    //$scope.changeOrder = function (value) {
-    //    if ($scope.order === value) {
-    //        $scope.order = '-' + value;
-    //    }
-    //    else if ($scope.order === '-' + value) {
-    //        $scope.order = value;
-    //    }
-    //    else {
-    //        $scope.order = value;
-    //    }
-    //}
+    // Filtering days
+    $scope.search = function (item) {
+        if ($scope.searchText == undefined) {
+            return true;
+        }
+        else {
+            if (item.date.indexOf($scope.searchText) != -1 ||
+                ((item.participantsList.length.toString()) + ' people').indexOf($scope.searchText) != -1)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }])
