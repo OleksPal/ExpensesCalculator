@@ -58,7 +58,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function
             return sort.descending ? 'bi bi-sort-alpha-down-alt' : 'bi bi-sort-alpha-down';
         }
 
-        return 'bi bi-arrow-down-up';
+        return 'bi bi-funnel-fill';
     };
 
     // Filtering days
