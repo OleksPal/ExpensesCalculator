@@ -69,3 +69,7 @@ td {
 .tab .tablinks.active {
     background: mediumblue !important;
 }
+
+button:focus, a:focus, input:focus {
+    box-shadow: none !important;
+}
