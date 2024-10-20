@@ -10,7 +10,7 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/modalviews/day-expenses-modal-views.js"></script>
 
-<div class="rounded m-3 m-sm-5 dark-blue-1" ng-controller="DayExpensesCtrl">
+<div class="rounded m-3 mx-sm-5 dark-blue-1" ng-controller="DayExpensesCtrl">
     <div class="container-fluid px-3 py-2 text-white"> 
         <h4>Expenses List</h4>
         <br />
@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive fix-table-height">
         <table class="table table-borderless text-white" id="daysTable">
             <thead>
                 <tr>
@@ -90,22 +90,22 @@
                     </td>
                 </tr>
             </tbody>
-        </table>      
-        <div class="mb-3">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" ng-class="{disabled: currentPage == 0}">
-                    <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Prev</a>
-                </li>
-                <li class="page-item" ng-repeat="n in range(pagedDays.length)"
-                    ng-class="{active: n == currentPage}"
-                    ng-click="setPage()">
-                    <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
-                </li>
-                <li class="page-item" ng-class="{disabled: currentPage == pagedItems.length - 1}">
-                    <a class="page-link bg-transparent border border-dark" href ng-click="nextPage()">Next »</a>
-                </li>
-            </ul>
-        </div>
+        </table>  
+    </div>
+    <div class="py-2">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" ng-class="{disabled: currentPage == 0}">
+                <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Prev</a>
+            </li>
+            <li class="page-item" ng-repeat="n in range(pagedDays.length)"
+                ng-class="{active: n == currentPage}"
+                ng-click="setPage()">
+                <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: currentPage == pagedDays.length - 1}">
+                <a class="page-link bg-transparent border border-dark" href ng-click="nextPage()">Next »</a>
+            </li>
+        </ul>
     </div>
 </div>
 
