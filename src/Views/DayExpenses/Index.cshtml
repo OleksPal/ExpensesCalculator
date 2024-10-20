@@ -53,7 +53,7 @@
             <tbody ng-init="days">
                 <tr ng-repeat="day in pagedItems[currentPage] | orderBy: sort.active:sort.descending | filter:search" style="height: 60px;">
                     <td class="text-nowrap">
-                        {{day.date}}
+                        {{day.date | date : 'mediumDate'}}
                     </td>
                     <td class="text-nowrap">
                         <div class="mytooltip">

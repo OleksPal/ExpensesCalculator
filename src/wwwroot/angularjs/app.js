@@ -62,13 +62,15 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     };
 
     // Filtering days
-    $scope.search = function (item) {
+    $scope.search = function (day) {
         if ($scope.searchText == undefined) {
             return true;            
         }
         else {
-            if (item.date.indexOf($scope.searchText) != -1 ||
-                ((item.participantsList.length.toString()) + ' people').indexOf($scope.searchText) != -1)
+            var dayDate = $filter('date')(day.date, 'mediumDate');
+            dayDate = dayDate.toLowerCase();
+            if (dayDate.indexOf($scope.searchText.toLowerCase()) != -1 ||
+                ((day.participantsList.length.toString()) + ' people').indexOf($scope.searchText) != -1)
             {
                 return true;
             }
