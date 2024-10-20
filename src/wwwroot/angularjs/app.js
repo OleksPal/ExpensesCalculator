@@ -7,6 +7,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
     function getAllDaysSuccessfulCallback(response) {
         $scope.days = response.data;
+        $scope.filterPagedDays();
     }
     function getAllDaysErrorCallback(error) {
         console.log(error);
@@ -80,27 +81,24 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     }
 
     // Pagination
-    $scope.itemsPerPage = 3;
-    $scope.filteredItems = [];
-    $scope.pagedItems = [];
+    $scope.daysPerPage = 5;
+    $scope.filteredDays = [];
+    $scope.pagedDays = [];
     $scope.currentPage = 0;
 
     $scope.filterPagedDays = function () {
-        console.log($scope.pagedItems);
-        $scope.filteredItems = $filter('filter')($scope.days, function (day) {
+        $scope.filteredDays = $filter('filter')($scope.days, function (day) {
             return $scope.search(day);
         });
         $scope.groupToPages();
-        console.log($scope.filteredItems);
-        console.log($scope.pagedItems);
     }
 
     $scope.groupToPages = function () {
-        for (var i = 0; i < $scope.filteredItems.length; i++) {
-            if (i % $scope.itemsPerPage === 0) {
-                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [$scope.filteredItems[i]];
+        for (var i = 0; i < $scope.filteredDays.length; i++) {
+            if (i % $scope.daysPerPage === 0) {
+                $scope.pagedDays[Math.floor(i / $scope.daysPerPage)] = [$scope.filteredDays[i]];
             } else {
-                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
+                $scope.pagedDays[Math.floor(i / $scope.daysPerPage)].push($scope.filteredDays[i]);
             }
         }
     };
@@ -124,7 +122,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     };
 
     $scope.nextPage = function () {
-        if ($scope.currentPage < $scope.pagedItems.length - 1) {
+        if ($scope.currentPage < $scope.pagedDays.length - 1) {
             $scope.currentPage++;
         }
     };

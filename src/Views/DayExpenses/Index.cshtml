@@ -51,7 +51,7 @@
                 </tr>
             </thead>
             <tbody ng-init="days">
-                <tr ng-repeat="day in pagedItems[currentPage] | orderBy: sort.active:sort.descending | filter:search" style="height: 60px;">
+                <tr ng-repeat="day in pagedDays[currentPage] | orderBy: sort.active:sort.descending | filter:search" style="height: 60px;">
                     <td class="text-nowrap">
                         {{day.date | date : 'mediumDate'}}
                     </td>
@@ -96,7 +96,7 @@
                 <li class="page-item" ng-class="{disabled: currentPage == 0}">
                     <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Prev</a>
                 </li>
-                <li class="page-item" ng-repeat="n in range(pagedItems.length)"
+                <li class="page-item" ng-repeat="n in range(pagedDays.length)"
                     ng-class="{active: n == currentPage}"
                     ng-click="setPage()">
                     <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
