@@ -1,7 +1,7 @@
 ﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', []);
 
-expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function ($scope, $http) {
-    
+expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', function ($scope, $http, $filter) {
+
     $http.get('/DayExpenses/GetAllDays')
         .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
 
@@ -64,7 +64,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function
     // Filtering days
     $scope.search = function (item) {
         if ($scope.searchText == undefined) {
-            return true;
+            return true;            
         }
         else {
             if (item.date.indexOf($scope.searchText) != -1 ||
@@ -76,4 +76,58 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', function
 
         return false;
     }
+
+    // Pagination
+    $scope.itemsPerPage = 3;
+    $scope.filteredItems = [];
+    $scope.pagedItems = [];
+    $scope.currentPage = 0;
+
+    $scope.filterPagedDays = function () {
+        console.log($scope.pagedItems);
+        $scope.filteredItems = $filter('filter')($scope.days, function (day) {
+            return $scope.search(day);
+        });
+        $scope.groupToPages();
+        console.log($scope.filteredItems);
+        console.log($scope.pagedItems);
+    }
+
+    $scope.groupToPages = function () {
+        for (var i = 0; i < $scope.filteredItems.length; i++) {
+            if (i % $scope.itemsPerPage === 0) {
+                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [$scope.filteredItems[i]];
+            } else {
+                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
+            }
+        }
+    };
+
+    $scope.range = function (start, end) {
+        var ret = [];
+        if (!end) {
+            end = start;
+            start = 0;
+        }
+        for (var i = start; i < end; i++) {
+            ret.push(i);
+        }
+        return ret;
+    };
+
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.currentPage--;
+        }
+    };
+
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.pagedItems.length - 1) {
+            $scope.currentPage++;
+        }
+    };
+
+    $scope.setPage = function () {
+        $scope.currentPage = this.n;
+    };
 }])

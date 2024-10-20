@@ -25,7 +25,7 @@
         <div class="col-12 col-lg-3">
             <div class="input-group">
                 <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
-                <input ng-model="searchText" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
+                <input ng-model="searchText" ng-change="filterPagedDays()" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
             </div>
         </div>
     </div>
@@ -51,7 +51,7 @@
                 </tr>
             </thead>
             <tbody ng-init="days">
-                <tr ng-repeat="day in days | orderBy: sort.active:sort.descending | filter:search" style="height: 60px;">
+                <tr ng-repeat="day in pagedItems[currentPage] | orderBy: sort.active:sort.descending | filter:search" style="height: 60px;">
                     <td class="text-nowrap">
                         {{day.date}}
                     </td>
@@ -90,8 +90,22 @@
                     </td>
                 </tr>
             </tbody>
-        </table>
-        <hr />
+        </table>      
+        <div class="mb-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" ng-class="{disabled: currentPage == 0}">
+                    <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Prev</a>
+                </li>
+                <li class="page-item" ng-repeat="n in range(pagedItems.length)"
+                    ng-class="{active: n == currentPage}"
+                    ng-click="setPage()">
+                    <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
+                </li>
+                <li class="page-item" ng-class="{disabled: currentPage == pagedItems.length - 1}">
+                    <a class="page-link bg-transparent border border-dark" href ng-click="nextPage()">Next »</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 

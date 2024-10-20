@@ -73,3 +73,7 @@ td {
 button:focus, a:focus, input:focus {
     box-shadow: none !important;
 }
+
+.pagination {
+    user-select: none;
+}
