@@ -2,20 +2,20 @@
 
 @foreach (var check in @Model.Checks)
 {
-    <tr style="height: 80px;">
+    <tr style="height: 60px;">
         <td>
             <span role="button" style="user-select: none;" id="checkDropper-@check.Id"
                   onclick="getCheckItemsManager(@check.Id, @Model.Id)">▷</span>
         </td>
-        <td>
+        <td class="text-nowrap">
             @Html.DisplayFor(modelItem => check.Location)
         </td>
-        <td>
+        <td class="text-nowrap">
             <div id="check-@check.Id-Sum">
                 @Html.DisplayFor(modelItem => check.Sum)
             </div>            
         </td>
-        <td>
+        <td class="text-nowrap">
             @Html.DisplayFor(modelItem => check.Payer)
         </td>
         <td>

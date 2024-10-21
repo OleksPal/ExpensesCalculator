@@ -19,31 +19,31 @@
         <table class="table table-borderless text-white">
             <thead>
                 <tr>
-                    <th>
+                    <th class="text-nowrap">
+                        <i class="bi bi-calendar-event pe-1"></i>
                         @Html.DisplayNameFor(model => model.Date)
                     </th>
-                    <th>
+                    <th class="text-nowrap">
+                        <i class="bi bi-people-fill pe-1"></i>
                         @Html.DisplayNameFor(model => model.Participants)
                     </th>
                     <th width="200px"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr style="height: 80px;">
-                    <td>
+                <tr style="height: 60px;">
+                    <td class="text-nowrap">
                         @Html.DisplayFor(model => model.Date)
                     </td>
-                    <td>
+                    <td class="text-nowrap">
                         <div class="mytooltip" id="Test">
                             <label>@Model.ParticipantsList.Count people</label>
                             <span class="center-tooltiptext">
-                                Participants:
-                                <ul>
-                                    @foreach (var user in Model.ParticipantsList)
-                                    {
-                                    <li>@user</li>
-                                    }
-                                </ul>
+                                <i class="bi bi-people-fill pe-1"></i>Participants:
+                                @foreach (var user in Model.ParticipantsList)
+                                {
+                                    <i class="bi bi-person-fill pe-1"></i>@user<br />
+                                }
                             </span>
                         </div>
                     </td>
@@ -88,13 +88,16 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>
+                        <th class="text-nowrap">
+                            <i class="bi bi-cart pe-1"></i>
                             @Html.DisplayNameFor(model => model.Checks.First().Location)
                         </th>
-                        <th>
+                        <th class="text-nowrap">
+                            <i class="bi bi-cash-stack pe-1"></i>
                             @Html.DisplayNameFor(model => model.Checks.First().Sum)
                         </th>
-                        <th>
+                        <th class="text-nowrap">
+                            <i class="bi bi-person-fill pe-1"></i>
                             @Html.DisplayNameFor(model => model.Checks.First().Payer)
                         </th>
                         <th width="120px"></th>

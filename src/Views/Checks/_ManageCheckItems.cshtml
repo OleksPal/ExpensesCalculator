@@ -11,16 +11,20 @@
         <table class="table table-borderless text-white item-table">
             <thead>
                 <tr>
-                    <th>
+                    <th class="text-nowrap">
+                        <i class="bi bi-box"></i>
                         @Html.DisplayNameFor(model => model.Items.First().Name)
                     </th>
-                    <th>
+                    <th class="text-nowrap">
+                        <i class="bi bi-alphabet"></i>
                         @Html.DisplayNameFor(model => model.Items.First().Description)
                     </th>
-                    <th>
+                    <th class="text-nowrap">
+                        <i class="bi bi-coin"></i>
                         @Html.DisplayNameFor(model => model.Items.First().Price)
                     </th>
-                    <th>
+                    <th class="text-nowrap">
+                        <i class="bi bi-people-fill"></i>
                         @Html.DisplayNameFor(model => model.Items.First().Users)
                     </th>
                     <th width="120px"></th>
@@ -29,17 +33,17 @@
             <tbody>
                 @foreach (var item in Model.Items)
                 {
-                    <tr style="height: 80px;">
-                        <td>
+                    <tr style="height: 60px;">
+                        <td class="text-nowrap">
                             @Html.DisplayFor(model => item.Name)
                         </td>
-                        <td>
+                        <td class="text-nowrap">
                             @Html.DisplayFor(model => item.Description)
                         </td>
-                        <td>
+                        <td class="text-nowrap">
                             @Html.DisplayFor(model => item.Price)
                         </td>
-                        <td>
+                        <td class="text-nowrap">
                             @foreach (var user in item.UsersList)
                             {
                                 <label>@user; </label>
