@@ -51,7 +51,7 @@
                 </tr>
             </thead>
             <tbody ng-init="days">
-                <tr ng-repeat="day in pagedDays[currentPage] | orderBy: sort.active:sort.descending | filter:search" style="height: 60px;">
+                <tr ng-repeat="day in pagedDays[currentPage] | filter:search" style="height: 60px;">
                     <td class="text-nowrap">
                         {{day.date | date : 'mediumDate'}}
                     </td>

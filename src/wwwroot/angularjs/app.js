@@ -50,6 +50,9 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             sort.active = value;
             sort.descending = false;
         }
+
+        $scope.days = $filter('orderBy')($scope.days, sort.active, sort.descending);
+        $scope.filterPagedDays();
     };
 
     $scope.getIcon = function (value) {
@@ -86,7 +89,8 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     $scope.pagedDays = [];
     $scope.currentPage = 0;
 
-    $scope.filterPagedDays = function () {
+    $scope.filterPagedDays = function () {      
+        $scope.pagedDays = [];
         $scope.filteredDays = $filter('filter')($scope.days, function (day) {
             return $scope.search(day);
         });
