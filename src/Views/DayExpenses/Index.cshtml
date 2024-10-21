@@ -92,21 +92,21 @@
             </tbody>
         </table>  
     </div>
-    <div class="py-2">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" ng-class="{disabled: currentPage == 0}">
-                <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Prev</a>
+    <div class="d-flex align-items-center justify-content-center py-2 pe-4">
+        <ul class="pagination overflow-auto d-flex align-items-center pb-2">
+            <li class="page-item text-nowrap" ng-class="{disabled: currentPage == 0}">
+                <a class="page-link bg-transparent border border-dark" href="#" ng-click="prevPage()">« Previous</a>
             </li>
             <li class="page-item" ng-repeat="n in range(pagedDays.length)"
                 ng-class="{active: n == currentPage}"
                 ng-click="setPage()">
-                <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
+                <a class="page-link bg-transparent border border-dark" href="#" ng-bind="n + 1">1</a>
             </li>
-            <li class="page-item" ng-class="{disabled: currentPage == pagedDays.length - 1}">
-                <a class="page-link bg-transparent border border-dark" href ng-click="nextPage()">Next »</a>
+            <li class="page-item text-nowrap" ng-class="{disabled: currentPage == pagedDays.length - 1}">
+                <a class="page-link bg-transparent border border-dark" href="#" ng-click="nextPage()">Next »</a>
             </li>
         </ul>
-    </div>
+    </div> 
 </div>
 
 <!-- Modal -->
