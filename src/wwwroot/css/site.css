@@ -82,3 +82,7 @@ button:focus, a:focus, input:focus {
     height: 360px;
     overflow-y: auto;
 }
+
+ul {
+    list-style-type: none;
+}

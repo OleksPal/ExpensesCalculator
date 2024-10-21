@@ -13,7 +13,7 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/caret-down-animation.js"></script>
 
-<div class="rounded m-3 m-sm-5 dark-blue-1">
+<div class="rounded m-3 mx-sm-5 dark-blue-1">
     <div class="container-fluid p-3 text-white">
         <h4>Expenses calculation</h4>
         <br />
@@ -28,10 +28,14 @@
 
         <div class="tab rounded-top border-primary" style="background:#0a1330">
             @foreach(var participant in Model.Participants)
-            {
-                <button class="tablinks text-white" onclick="openParticipantTab(event, '@participant')">@participant</button>
+            {                
+                <button class="tablinks text-white" onclick="openParticipantTab(event, '@participant')">
+                    <i class="bi bi-person-fill pe-1"></i>@participant
+                </button>
             }
-            <button class="tablinks text-white" onclick="openParticipantTab(event, 'transactionList')">Transaction List</button>
+            <button class="tablinks text-white" onclick="openParticipantTab(event, 'transactionList')">
+                <i class="bi bi-credit-card-fill pe-2"></i>Transaction List
+            </button>
         </div>
 
         @foreach (var dayExpensesCalculation in Model.DayExpensesCalculations)
@@ -42,10 +46,12 @@
                     if (checkCalculation.Items.Count != 0)
                     {
                         <div class="mytooltip">
-                            <label>@checkCalculation.Check.Location:</label>
+                            <label>
+                                <i class="bi bi-cart pe-1"></i>@checkCalculation.Check.Location:
+                            </label>
                             <span class="top-tooltiptext">
-                                Sum: @Html.DisplayFor(model => checkCalculation.Check.Sum)<br />
-                                Payer: @checkCalculation.Check.Payer
+                                <i class="bi bi-coin pe-1"></i>Sum: @Html.DisplayFor(model => checkCalculation.Check.Sum)<br />
+                                <i class="bi bi-person-fill pe-1"></i>Payer: @checkCalculation.Check.Payer
                             </span>
                         </div>
 
@@ -53,27 +59,27 @@
                             @foreach (var item in checkCalculation.Items)
                             {
                                 <li>
-                                    @item.Item.Name (@Html.DisplayFor(model => item.Item.Price)) /
+                                    <i class="bi bi-box pe-1"></i>@item.Item.Name: 
+                                    @Html.DisplayFor(model => item.Item.Price) /
                                     <div class="mytooltip">
-                                        @item.Item.UsersList.Count
+                                        <i class="bi bi-people-fill pe-1"></i>@item.Item.UsersList.Count
                                         <span class="center-tooltiptext">
-                                            Users:
-                                            <ul>
-                                                @foreach (var user in item.Item.UsersList)
-                                                {
-                                                    <li>@user</li>
-                                                }
-                                            </ul>
+                                            <i class="bi bi-people-fill pe-1"></i>Users:<br />
+                                            @foreach (var user in item.Item.UsersList)
+                                            {
+                                                <i class="bi bi-person-fill pe-1"></i>@user<br />
+                                            }
                                         </span>
                                     </div>
                                     = @Html.DisplayFor(model => item.PricePerUser)
                                 </li>
                             }
                         </ul>
-                        <label>Sum per participant: @Html.DisplayFor(model => checkCalculation.SumPerParticipant)</label>
-
+                        <label>
+                            <i class="bi bi-coin pe-1"></i>Sum per participant: 
+                            @Html.DisplayFor(model => checkCalculation.SumPerParticipant)
+                        </label>
                         <br />
-
                         <hr />
                     }
                 }
@@ -81,12 +87,16 @@
         }
 
         <div id="transactionList" class="tabcontent rounded-bottom border-primary">
-            <label>Transaction list:</label>
+            <label>
+                <i class="bi bi-cash-stack pe-1"></i>Transaction list:
+            </label>
             <ul>
                 @foreach (var transaction in Model.OptimizedUserTransactions)
                 {
-                    <li>
-                        @transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount)) → @transaction.Subjects.Recipient
+                    <li>                        
+                        <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Sender 
+                        (@Html.DisplayFor(model => transaction.TransferAmount)) →
+                        <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Recipient
                     </li>
                 }
             </ul>
@@ -95,15 +105,18 @@
 
             <span role="button" style="user-select: none;" data-bs-toggle="collapse"
                   id="fullTransactionListDropper" data-bs-target="#collapseFullTransactionList"
-                  aria-expanded="false" aria-controls="collapseFullTransactionList">▷</span> Full trasaction list:
+                  aria-expanded="false" aria-controls="collapseFullTransactionList">▷</span>
+            <i class="bi bi-cash-stack ps-1 pe-2"></i>Full trasaction list:
 
             <div class="collapse" id="collapseFullTransactionList">
                 <ul>
                     @foreach (var transaction in Model.AllUsersTrasactions)
                     {
                         <li>
-                            @transaction.CheckName: @transaction.Subjects.Sender (@Html.DisplayFor(model => transaction.TransferAmount))
-                            → @transaction.Subjects.Recipient
+                            <i class="bi bi-cart pe-1"></i>@transaction.CheckName:
+                            <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Sender 
+                            (@Html.DisplayFor(model => transaction.TransferAmount)) →
+                            <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Recipient
                         </li>
                     }
                 </ul>

@@ -11,7 +11,7 @@
     .mytooltip .left-tooltiptext {
         font-size: 14px;
         visibility: hidden;
-        width: 120px;
+        width: 140px;
         background-color: black;
         color: #fff;
         border-radius: 6px;
@@ -36,8 +36,8 @@
     .mytooltip .top-tooltiptext, .mytooltip .center-tooltiptext {
         font-size: 14px;
         visibility: hidden;
-        min-width: 120px;
-        max-width: 250px;
+        min-width: 150px;
+        max-width: 300px;
         width: fit-content;
         background-color: black;
         color: #fff;
