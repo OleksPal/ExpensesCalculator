@@ -2,6 +2,8 @@
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -148,6 +150,38 @@ namespace ExpensesCalculator.Controllers
             }
 
             return View("ShowChecks", dayExpenses);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetDayExpensesChecks(int? id)
+        {
+            if (id is null)
+            {
+                return new JsonResult("DayExpenses not found")
+                {
+                    StatusCode = (int)StatusCodes.Status404NotFound
+                };
+            }
+
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
+            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((int)id);
+
+            if (dayExpenses is null)
+            {
+                return new JsonResult("DayExpenses not found")
+                {
+                    StatusCode = (int)StatusCodes.Status404NotFound
+                };
+            }
+
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                WriteIndented = true
+            };
+            return Json(dayExpenses, options);
         }
 
         // POST: DayExpenses/Create

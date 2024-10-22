@@ -14,32 +14,32 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/caret-down-animation.js"></script>
 
-<div class="rounded m-3 m-sm-5 dark-blue-1">
+<div class="rounded m-3 m-sm-5 dark-blue-1" ng-controller="DayExpensesChecksCtrl">
     <div class="table-responsive">
         <table class="table table-borderless text-white">
             <thead>
                 <tr>
-                    <th class="text-nowrap">
+                    <th class="text-nowrap" width="40%">
                         <i class="bi bi-calendar-event pe-1"></i>
                         @Html.DisplayNameFor(model => model.Date)
                     </th>
-                    <th class="text-nowrap">
+                    <th class="text-nowrap" width="40%">
                         <i class="bi bi-people-fill pe-1"></i>
                         @Html.DisplayNameFor(model => model.Participants)
                     </th>
-                    <th width="200px"></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr style="height: 60px;">
                     <td class="text-nowrap">
-                        @Html.DisplayFor(model => model.Date)
+                        {{dayExpenses.Date | date : 'fullDate'}}
                     </td>
                     <td class="text-nowrap">
                         <div class="mytooltip" id="Test">
                             <label>@Model.ParticipantsList.Count people</label>
                             <span class="center-tooltiptext">
-                                <i class="bi bi-people-fill pe-1"></i>Participants:
+                                <i class="bi bi-people-fill pe-1"></i>Participants:<br />
                                 @foreach (var user in Model.ParticipantsList)
                                 {
                                     <i class="bi bi-person-fill pe-1"></i>@user<br />
@@ -48,22 +48,24 @@
                         </div>
                     </td>
                     <td>
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                    onclick="showModalForDayExpensesShare(@Model.Id)">
-                                <i class="bi bi-share"></i>
-                            </button>
-                            <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">
-                                <i class="bi bi-calculator"></i>
-                            </a>
-                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                    onclick="showModalForDayExpensesEdit(@Model.Id)">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@Model.Id)">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                        <div class="d-flex justify-content-end">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        onclick="showModalForDayExpensesShare(@Model.Id)">
+                                    <i class="bi bi-share"></i>
+                                </button>
+                                <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">
+                                    <i class="bi bi-calculator"></i>
+                                </a>
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        onclick="showModalForDayExpensesEdit(@Model.Id)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@Model.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -115,6 +117,7 @@
         <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
     </div>
 </div>
+<input type="hidden" id="dayExpensesId" value="@Model.Id"/>
 
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"

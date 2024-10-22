@@ -135,3 +135,21 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         $scope.currentPage = this.n;
     };
 }])
+
+expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', function ($scope, $http) {
+    var dayExpensesId = angular.element(document.querySelector('#dayExpensesId')).val();
+
+    $http.get('/DayExpenses/GetDayExpensesChecks/' + dayExpensesId)
+        .then(getChecksSuccessfulCallback, getChecksErrorCallback);
+
+    function getChecksSuccessfulCallback(response) {
+        $scope.dayExpenses = response.data;
+        $scope.checks = $scope.dayExpenses.Checks;
+
+        console.log($scope.dayExpenses);
+        console.log($scope.checks);
+    }
+    function getChecksErrorCallback(error) {
+        console.log(error);
+    }
+}])
