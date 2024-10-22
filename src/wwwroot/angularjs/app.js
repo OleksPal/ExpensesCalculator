@@ -152,4 +152,31 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', fu
     function getChecksErrorCallback(error) {
         console.log(error);
     }
+
+    $scope.showModalForCheckCreate = function (dayId) {
+        $http.get('/Checks/CreateCheck/?dayExpensesId=' + dayId).then(
+            function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            }
+        );
+    }
+
+    $scope.showModalForCheckEdit = function (checkId) {
+        $http.get('/Checks/EditCheck/' + checkId).then(
+            function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            }
+        );
+    }
+
+    $scope.showModalForCheckDelete = function(checkId) {
+        $http.get('/Checks/DeleteCheck/' + checkId).then(
+            function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            }
+        );
+    }
 }])

@@ -159,7 +159,7 @@ namespace ExpensesCalculator.Controllers
             {
                 return new JsonResult("DayExpenses not found")
                 {
-                    StatusCode = (int)StatusCodes.Status404NotFound
+                    StatusCode = StatusCodes.Status404NotFound
                 };
             }
 
@@ -172,7 +172,7 @@ namespace ExpensesCalculator.Controllers
             {
                 return new JsonResult("DayExpenses not found")
                 {
-                    StatusCode = (int)StatusCodes.Status404NotFound
+                    StatusCode = StatusCodes.Status404NotFound
                 };
             }
 

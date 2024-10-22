@@ -37,13 +37,12 @@
                     </td>
                     <td class="text-nowrap">
                         <div class="mytooltip" id="Test">
-                            <label>@Model.ParticipantsList.Count people</label>
+                            <label>{{dayExpenses.ParticipantsList.length}} people</label>
                             <span class="center-tooltiptext">
                                 <i class="bi bi-people-fill pe-1"></i>Participants:<br />
-                                @foreach (var user in Model.ParticipantsList)
-                                {
-                                    <i class="bi bi-person-fill pe-1"></i>@user<br />
-                                }
+                                <div ng-repeat="participant in dayExpenses.ParticipantsList">
+                                    <i class="bi bi-person-fill pe-1"></i>{{participant}} <br />
+                                </div>                                
                             </span>
                         </div>
                     </td>
@@ -83,34 +82,30 @@
         </button>
     </div>
 
-    @if (Model.Checks is not null)
-    {
-        <div class="table-responsive">
-            <table class="table table-borderless text-white check-table" id="checkTable">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th class="text-nowrap">
-                            <i class="bi bi-cart pe-1"></i>
-                            @Html.DisplayNameFor(model => model.Checks.First().Location)
-                        </th>
-                        <th class="text-nowrap">
-                            <i class="bi bi-cash-stack pe-1"></i>
-                            @Html.DisplayNameFor(model => model.Checks.First().Sum)
-                        </th>
-                        <th class="text-nowrap">
-                            <i class="bi bi-person-fill pe-1"></i>
-                            @Html.DisplayNameFor(model => model.Checks.First().Payer)
-                        </th>
-                        <th width="120px"></th>
-                    </tr>
-                </thead>
-                <tbody id="checkList">
-                    @await Html.PartialAsync("_ManageDayExpensesChecks", Model)
-                </tbody>
-            </table>
-        </div>
-    }
+    <div class="table-responsive">
+        <table class="table table-borderless text-white check-table" id="checkTable">
+            <thead>
+                <tr>
+                    <th class="text-nowrap" width="30%">
+                        <i class="bi bi-cart pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Checks.First().Location)
+                    </th>
+                    <th class="text-nowrap" width="30%">
+                        <i class="bi bi-cash-stack pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Checks.First().Sum)
+                    </th>
+                    <th class="text-nowrap" width="30%">
+                        <i class="bi bi-person-fill pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Checks.First().Payer)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="checkList">
+                @await Html.PartialAsync("_ManageDayExpensesChecks", Model)
+            </tbody>
+        </table>
+    </div>
 
     <div class="container-fluid p-3 text-white">
         <br />
