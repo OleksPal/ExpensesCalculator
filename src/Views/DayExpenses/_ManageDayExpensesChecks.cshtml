@@ -1,7 +1,7 @@
 ﻿@model DayExpenses
 
 <div>
-    <tr ng-repeat="check in checks" style="height: 60px;">
+    <tr ng-repeat="check in pagedChecks[currentPage]" style="height: 60px;">
         <td class="text-nowrap">
             {{check.Location}}
         </td>

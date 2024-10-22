@@ -136,7 +136,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     };
 }])
 
-expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', function ($scope, $http) {
+expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter', function ($scope, $http, $filter) {
     var dayExpensesId = angular.element(document.querySelector('#dayExpensesId')).val();
 
     $http.get('/DayExpenses/GetDayExpensesChecks/' + dayExpensesId)
@@ -145,6 +145,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', fu
     function getChecksSuccessfulCallback(response) {
         $scope.dayExpenses = response.data;
         $scope.checks = $scope.dayExpenses.Checks;
+        $scope.filterPagedChecks();
 
         console.log($scope.dayExpenses);
         console.log($scope.checks);
@@ -179,4 +180,73 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', fu
             }
         );
     }
+
+    // Filtering days
+    $scope.search = function (check) {
+        if ($scope.searchText == undefined) {
+            return true;
+        }
+        else {
+            var checkSum = $filter('$filter')(check.Sum, '₴');
+            if (check.Location.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1 ||
+                checkSum.indexOf($scope.searchText) != -1 ||
+                check.Payer.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Pagination
+    $scope.checksPerPage = 1;
+    $scope.filteredChecks = [];
+    $scope.pagedChecks = [];
+    $scope.currentPage = 0;
+
+    $scope.filterPagedChecks = function () {
+        $scope.pagedChecks = [];
+        $scope.filteredChecks = $filter('filter')($scope.checks, function (check) {
+            return $scope.search(check);
+        });
+        $scope.groupToPages();
+    }
+
+    $scope.groupToPages = function () {
+        for (var i = 0; i < $scope.filteredChecks.length; i++) {
+            if (i % $scope.checksPerPage === 0) {
+                $scope.pagedChecks[Math.floor(i / $scope.checksPerPage)] = [$scope.filteredChecks[i]];
+            } else {
+                $scope.pagedChecks[Math.floor(i / $scope.checksPerPage)].push($scope.filteredChecks[i]);
+            }
+        }
+    };
+
+    $scope.range = function (start, end) {
+        var ret = [];
+        if (!end) {
+            end = start;
+            start = 0;
+        }
+        for (var i = start; i < end; i++) {
+            ret.push(i);
+        }
+        return ret;
+    };
+
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.currentPage--;
+        }
+    };
+
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.pagedChecks.length - 1) {
+            $scope.currentPage++;
+        }
+    };
+
+    $scope.setPage = function () {
+        $scope.currentPage = this.n;
+    };
 }])
