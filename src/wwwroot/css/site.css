@@ -86,3 +86,11 @@ button:focus, a:focus, input:focus {
 ul {
     list-style-type: none;
 }
+
+#customProportion > .col-2 {
+    width: 14%;
+}
+
+#customProportion > .col-10 {
+    width: 86%;
+}
