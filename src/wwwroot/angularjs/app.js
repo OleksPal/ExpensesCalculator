@@ -146,9 +146,6 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         $scope.dayExpenses = response.data;
         $scope.checks = $scope.dayExpenses.Checks;
         $scope.filterPagedChecks();
-
-        console.log($scope.dayExpenses);
-        console.log($scope.checks);
     }
     function getChecksErrorCallback(error) {
         console.log(error);
@@ -181,13 +178,13 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         );
     }
 
-    // Filtering days
+    // Filtering checks
     $scope.search = function (check) {
         if ($scope.searchText == undefined) {
             return true;
         }
         else {
-            var checkSum = $filter('$filter')(check.Sum, '₴');
+            var checkSum = $filter('currency')(check.Sum, '₴');
             if (check.Location.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1 ||
                 checkSum.indexOf($scope.searchText) != -1 ||
                 check.Payer.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1) {

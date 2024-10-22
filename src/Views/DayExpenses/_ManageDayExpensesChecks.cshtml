@@ -1,29 +1,27 @@
 ﻿@model DayExpenses
 
-<div>
-    <tr ng-repeat="check in pagedChecks[currentPage]" style="height: 60px;">
-        <td class="text-nowrap">
-            {{check.Location}}
-        </td>
-        <td class="text-nowrap">
-            <div id="check-{{check.Id}}-Sum">
-                {{check.Sum | currency : '₴'}}
-            </div>
-        </td>
-        <td class="text-nowrap">
-            {{check.Payer}}
-        </td>
-        <td>
-            <div class="btn-group" role="group">
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                        ng-click="showModalForCheckEdit(check.Id)">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                        ng-click="showModalForCheckDelete(check.Id)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </td>
-    </tr>
-</div>
+<tr ng-repeat="check in pagedChecks[currentPage]" style="height: 60px;">
+    <td class="text-nowrap">
+        {{check.Location}}
+    </td>
+    <td class="text-nowrap">
+        <div id="check-{{check.Id}}-Sum">
+            {{check.Sum | currency : '₴'}}
+        </div>
+    </td>
+    <td class="text-nowrap">
+        {{check.Payer}}
+    </td>
+    <td>
+        <div class="btn-group" role="group">
+            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                    ng-click="showModalForCheckEdit(check.Id)">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                    ng-click="showModalForCheckDelete(check.Id)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </td>
+</tr>
