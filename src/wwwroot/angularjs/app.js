@@ -91,6 +91,9 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
     $scope.filterPagedDays = function () {      
         $scope.pagedDays = [];
+        this.n = 0;
+        $scope.setPage();
+
         $scope.filteredDays = $filter('filter')($scope.days, function (day) {
             return $scope.search(day);
         });
@@ -235,6 +238,9 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 
     $scope.filterPagedChecks = function () {
         $scope.pagedChecks = [];
+        this.n = 0;
+        $scope.setPage();
+
         $scope.filteredChecks = $filter('filter')($scope.checks, function (check) {
             return $scope.search(check);
         });
