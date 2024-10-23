@@ -178,6 +178,38 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         );
     }
 
+    // Sorting checks
+    $scope.sort = {
+        active: '',
+        descending: undefined
+    };
+
+    $scope.changeOrder = function (value) {
+        var sort = $scope.sort;
+
+        if (sort.active == value) {
+            sort.descending = !sort.descending;
+        }
+        else {
+            sort.active = value;
+            sort.descending = false;
+        }
+
+        $scope.checks = $filter('orderBy')($scope.checks, sort.active, sort.descending);
+        $scope.filterPagedChecks();
+    };
+
+
+    $scope.getIcon = function (value) {
+        var sort = $scope.sort;
+
+        if (sort.active == value) {
+            return sort.descending ? 'bi bi-sort-alpha-down-alt' : 'bi bi-sort-alpha-down';
+        }
+
+        return 'bi bi-funnel-fill';
+    };
+
     // Filtering checks
     $scope.search = function (check) {
         if ($scope.searchText == undefined) {

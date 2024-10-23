@@ -95,17 +95,26 @@
         <table class="table table-borderless text-white check-table" id="checkTable">
             <thead>
                 <tr>
-                    <th class="text-nowrap" width="30%">
+                    <th class="text-nowrap" ng-click="changeOrder('Location')" width="33%">
                         <i class="bi bi-cart pe-1"></i>
                         @Html.DisplayNameFor(model => model.Checks.First().Location)
+                        <i class="bi bi-funnel-fill ps-1"
+                           ng-class="getIcon('Location')">
+                        </i>
                     </th>
-                    <th class="text-nowrap" width="30%">
+                    <th class="text-nowrap" ng-click="changeOrder('Sum')" width="33%">
                         <i class="bi bi-cash-stack pe-1"></i>
                         @Html.DisplayNameFor(model => model.Checks.First().Sum)
+                        <i class="bi bi-funnel-fill ps-1"
+                           ng-class="getIcon('Sum')">
+                        </i>
                     </th>
-                    <th class="text-nowrap" width="30%">
+                    <th class="text-nowrap" ng-click="changeOrder('Payer')" width="33%">
                         <i class="bi bi-person-fill pe-1"></i>
                         @Html.DisplayNameFor(model => model.Checks.First().Payer)
+                        <i class="bi bi-funnel-fill ps-1"
+                           ng-class="getIcon('Payer')">
+                        </i>
                     </th>
                     <th></th>
                 </tr>
@@ -125,7 +134,7 @@
                 ng-click="setPage()">
                 <a class="page-link bg-transparent border border-dark" href="#" ng-bind="n + 1">1</a>
             </li>
-            <li class="page-item text-nowrap" ng-class="{disabled: currentPage == pagedDays.length - 1}">
+            <li class="page-item text-nowrap" ng-class="{disabled: currentPage == pagedChecks.length - 1}">
                 <a class="page-link bg-transparent border border-dark" href="#" ng-click="nextPage()">Next »</a>
             </li>
         </ul>
