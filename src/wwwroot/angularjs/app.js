@@ -189,6 +189,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 
     $scope.changeOrder = function (value) {
         var sort = $scope.sort;
+        $scope.currentPage = 0;
 
         if (sort.active == value) {
             sort.descending = !sort.descending;
@@ -238,8 +239,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 
     $scope.filterPagedChecks = function () {
         $scope.pagedChecks = [];
-        this.n = 0;
-        $scope.setPage();
+        $scope.currentPage = 0;
 
         $scope.filteredChecks = $filter('filter')($scope.checks, function (check) {
             return $scope.search(check);
@@ -282,6 +282,8 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
     };
 
     $scope.setPage = function () {
-        $scope.currentPage = this.n;
+        if ($scope.selectedPage != undefined) {
+            $scope.currentPage = ($scope.selectedPage - 1);
+        }
     };
 }])
