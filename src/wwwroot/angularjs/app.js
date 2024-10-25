@@ -232,7 +232,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
     }
 
     // Pagination
-    $scope.checksPerPage = 1;
+    $scope.checksPerPage = 5;
     $scope.filteredChecks = [];
     $scope.pagedChecks = [];
     $scope.currentPage = 0;

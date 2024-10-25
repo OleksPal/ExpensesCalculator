@@ -98,15 +98,15 @@
     <div class="d-flex align-items-center justify-content-center py-2 pe-4">
         <ul class="pagination overflow-auto d-flex align-items-center text-nowrap pb-2">
             <li class="page-item text-nowrap" ng-class="{disabled: currentPage == 0}">
-                <a class="page-link bg-transparent border border-dark" href="#" ng-click="prevPage()">« Previous</a>
+                <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Previous</a>
             </li>
             <li class="page-item" ng-repeat="n in range(pagedDays.length)"
                 ng-class="{active: n == currentPage}"
                 ng-click="setPage()">
-                <a class="page-link bg-transparent border border-dark" href="#" ng-bind="n + 1">1</a>
+                <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
             </li>
             <li class="page-item text-nowrap" ng-class="{disabled: currentPage == pagedDays.length - 1}">
-                <a class="page-link bg-transparent border border-dark" href="#" ng-click="nextPage()">Next »</a>
+                <a class="page-link bg-transparent border border-dark" href ng-click="nextPage()">Next »</a>
             </li>
         </ul>
     </div> 

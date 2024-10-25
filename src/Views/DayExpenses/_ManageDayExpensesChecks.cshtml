@@ -1,6 +1,11 @@
 ﻿@model DayExpenses
 
-<tr ng-repeat="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
+<tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
+    <td>
+        <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        </i>        
+    </td>
     <td class="text-nowrap">
         {{check.Location}}
     </td>
@@ -23,6 +28,72 @@
                         ng-click="showModalForCheckDelete(check.Id)">
                     <i class="bi bi-trash"></i>
                 </button>
+            </div>
+        </div>
+    </td>
+</tr>
+<tr ng-repeat-end>
+    <td colspan="5">
+        <div class="collapse" id="collapseExample">
+            <div class="card card-body dark-blue-1 border-primary">
+                <div class="container-fluid p-3 text-white">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                            @* onclick="showModalForItemCreate(@Model.Id, @Model.DayExpensesId)" *@>
+                        <i class="bi bi-plus-circle"></i> Add item
+                    </button>
+                </div>
+                <table class="table table-borderless text-white item-table">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap">
+                                <i class="bi bi-box"></i>
+                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Name)
+                            </th>
+                            <th class="text-nowrap">
+                                <i class="bi bi-alphabet"></i>
+                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Description)
+                            </th>
+                            <th class="text-nowrap">
+                                <i class="bi bi-coin"></i>
+                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Price)
+                            </th>
+                            <th class="text-nowrap">
+                                <i class="bi bi-people-fill"></i>
+                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Users)
+                            </th>
+                            <th width="120px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in check.Items" style="height: 60px;">
+                            <td class="text-nowrap">
+                                {{item.Name}}
+                            </td>
+                            <td class="text-nowrap">
+                                {{item.Description}}
+                            </td>
+                            <td class="text-nowrap">
+                                {{item.Price | currency : '₴'}}
+                            </td>
+                            <td class="text-nowrap">
+                                {{item.UsersList.length}} people
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                            @* onclick="showModalForItemEdit(@item.Id, @Model.DayExpensesId)" *@>
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#staticBackdrop"
+                                            @* onclick="showModalForItemDelete(@item.Id)" *@>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </td>
