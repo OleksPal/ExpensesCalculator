@@ -1,9 +1,10 @@
 ﻿@model DayExpenses
+@using ExpensesCalculator.Models
 
 <tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
     <td>
         <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse"
-                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                data-bs-target="#collapseExample{{check.Id}}" aria-expanded="false" aria-controls="collapseExample">
         </i>        
     </td>
     <td class="text-nowrap">
@@ -34,13 +35,21 @@
 </tr>
 <tr ng-repeat-end>
     <td colspan="5">
-        <div class="collapse" id="collapseExample">
-            <div class="card card-body dark-blue-1 border-primary">
+        <div class="collapse" id="collapseExample{{check.Id}}">
+            <div class="card card-body dark-blue-1 border-primary" ng-controller="ItemsCtrl">
                 <div class="container-fluid p-3 text-white">
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                             @* onclick="showModalForItemCreate(@Model.Id, @Model.DayExpensesId)" *@>
                         <i class="bi bi-plus-circle"></i> Add item
                     </button>
+                </div>
+                <div class="d-flex justify-content-end pb-lg-2 p-3">
+                    <div class="col-12 col-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
+                            <input ng-model="itemSearchText" ng-change="filterPagedItems()" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
+                        </div>
+                    </div>
                 </div>
                 <table class="table table-borderless text-white item-table">
                     <thead>
@@ -65,7 +74,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="item in check.Items" style="height: 60px;">
+                        <tr ng-repeat="item in check.Items | filter:search" style="height: 60px;">
                             <td class="text-nowrap">
                                 {{item.Name}}
                             </td>
