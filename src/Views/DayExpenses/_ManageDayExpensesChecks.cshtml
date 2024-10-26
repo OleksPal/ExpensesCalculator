@@ -1,9 +1,8 @@
 ﻿@model DayExpenses
-@using ExpensesCalculator.Models
 
 <tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
     <td>
-        <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse"
+        <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click=""
                 data-bs-target="#collapseExample{{check.Id}}" aria-expanded="false" aria-controls="collapseExample">
         </i>        
     </td>
@@ -54,27 +53,39 @@
                 <table class="table table-borderless text-white item-table">
                     <thead>
                         <tr>
-                            <th class="text-nowrap">
+                            <th class="text-nowrap" ng-click="changeOrder('Name', check.Id)">
                                 <i class="bi bi-box"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Name)
+                                <i class="bi bi-funnel-fill ps-1"
+                                   ng-class="getIcon('Name')">
+                                </i>
                             </th>
-                            <th class="text-nowrap">
+                            <th class="text-nowrap" ng-click="changeOrder('Description')">
                                 <i class="bi bi-alphabet"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Description)
+                                <i class="bi bi-funnel-fill ps-1"
+                                   ng-class="getIcon('Description')">
+                                </i>
                             </th>
-                            <th class="text-nowrap">
+                            <th class="text-nowrap" ng-click="changeOrder('Price')">
                                 <i class="bi bi-coin"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Price)
+                                <i class="bi bi-funnel-fill ps-1"
+                                   ng-class="getIcon('Price')">
+                                </i>
                             </th>
-                            <th class="text-nowrap">
+                            <th class="text-nowrap" ng-click="changeOrder('Users')">
                                 <i class="bi bi-people-fill"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Users)
+                                <i class="bi bi-funnel-fill ps-1"
+                                   ng-class="getIcon('Users')">
+                                </i>
                             </th>
                             <th width="120px"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="item in check.Items | filter:search" style="height: 60px;">
+                        <tr ng-repeat="item in getCheckItems(check.Id)[currentPage] | filter:search" style="height: 60px;">
                             <td class="text-nowrap">
                                 {{item.Name}}
                             </td>
@@ -103,6 +114,21 @@
                         </tr>
                     </tbody>
                 </table>
+                <div class="d-flex align-items-center justify-content-center py-2 pe-4">
+                    <ul class="pagination overflow-auto d-flex align-items-center text-nowrap pb-2">
+                        <li class="page-item text-nowrap" ng-class="{disabled: currentPage == 0}">
+                            <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Previous</a>
+                        </li>
+                        <li class="page-item" ng-repeat="n in range(pagedItems.length)"
+                            ng-class="{active: n == currentPage}"
+                            ng-click="setPage()">
+                            <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
+                        </li>
+                        <li class="page-item text-nowrap" ng-class="{disabled: currentPage == pagedItems.length - 1}">
+                            <a class="page-link bg-transparent border border-dark" href ng-click="nextPage()">Next »</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </td>
