@@ -57,35 +57,35 @@
                                 <i class="bi bi-box"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Name)
                                 <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Name')">
+                                   ng-class="getIcon('Name', check.Id)">
                                 </i>
                             </th>
-                            <th class="text-nowrap" ng-click="changeOrder('Description')">
+                            <th class="text-nowrap" ng-click="changeOrder('Description', check.Id)">
                                 <i class="bi bi-alphabet"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Description)
                                 <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Description')">
+                                   ng-class="getIcon('Description', check.Id)">
                                 </i>
                             </th>
-                            <th class="text-nowrap" ng-click="changeOrder('Price')">
+                            <th class="text-nowrap" ng-click="changeOrder('Price', check.Id)">
                                 <i class="bi bi-coin"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Price)
                                 <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Price')">
+                                   ng-class="getIcon('Price', check.Id)">
                                 </i>
                             </th>
-                            <th class="text-nowrap" ng-click="changeOrder('Users')">
+                            <th class="text-nowrap" ng-click="changeOrder('Users', check.Id)">
                                 <i class="bi bi-people-fill"></i>
                                 @Html.DisplayNameFor(model => model.Checks.First().Items.First().Users)
                                 <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Users')">
+                                   ng-class="getIcon('Users', check.Id)">
                                 </i>
                             </th>
                             <th width="120px"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="item in getCheckItems(check.Id)[currentPage] | filter:search" style="height: 60px;">
+                        <tr ng-repeat="item in getCheckItems(check.Id).items" style="height: 60px;">
                             <td class="text-nowrap">
                                 {{item.Name}}
                             </td>

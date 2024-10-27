@@ -295,23 +295,22 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
         var itemCollection = {
             checkId: value.Id,
             items: value.Items,
+            sort: {
+                active: '',
+                descending: undefined
+            }
         };
         $scope.itemCollections.push(itemCollection);
     });    
 
     $scope.getCheckItems = function (checkId) {
-        return $scope.itemCollections.find(x => x.checkId === checkId).items;
+        return $scope.itemCollections.find(x => x.checkId === checkId);
     }
 
     // Sorting items
-    $scope.sort = {
-        active: '',
-        descending: undefined
-    };
-
     $scope.changeOrder = function (value, checkId) {
-        var sort = $scope.sort;
-        $scope.currentPage = 0;
+        var itemCollection = $scope.getCheckItems(checkId);
+        var sort = itemCollection.sort;
 
         if (sort.active == value) {
             sort.descending = !sort.descending;
@@ -321,14 +320,12 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
             sort.descending = false;
         }
 
-        var items = $scope.getCheckItems(checkId);
-        $scope.items = $filter('orderBy')(items, sort.active, sort.descending);
-        $scope.filterPagedItems();
+        itemCollection.items = $filter('orderBy')(itemCollection.items, sort.active, sort.descending);
     };
 
-
-    $scope.getIcon = function (value) {
-        var sort = $scope.sort;
+    $scope.getIcon = function (value, checkId) {
+        var itemCollection = $scope.getCheckItems(checkId);
+        var sort = itemCollection.sort;
 
         if (sort.active == value) {
             return sort.descending ? 'bi bi-sort-alpha-down-alt' : 'bi bi-sort-alpha-down';
