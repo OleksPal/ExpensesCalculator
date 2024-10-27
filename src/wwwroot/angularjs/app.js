@@ -295,6 +295,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
         var itemCollection = {
             checkId: value.Id,
             items: value.Items,
+            filteredItems: value.Items,
             sort: {
                 active: '',
                 descending: undefined
@@ -320,7 +321,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
             sort.descending = false;
         }
 
-        itemCollection.items = $filter('orderBy')(itemCollection.items, sort.active, sort.descending);
+        itemCollection.filteredItems = $filter('orderBy')(itemCollection.filteredItems, sort.active, sort.descending);
     };
 
     $scope.getIcon = function (value, checkId) {
@@ -335,21 +336,24 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
     };
 
     // Filtering items
-    $scope.search = function (item) {
-        if ($scope.searchText == undefined) {
-            return true;
-        }
-        else {
-            var itemPrice = $filter('currency')(item.Price, '₴');
-            if (item.Name.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1 ||
-                item.Description.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1 ||
-                itemPrice.indexOf($scope.searchText) != -1 ||
-                ((item.UsersList.length.toString()) + ' people').indexOf($scope.searchText) != -1) {
-                return true;
-            }
-        }
+    $scope.search = function (checkId) {
+        var itemCollection = $scope.getCheckItems(checkId);
+        itemCollection.filteredItems = [];
 
-        return false;
+        angular.forEach(itemCollection.items, function (value, key) {
+            if ($scope.itemSearchText == undefined) {
+                itemCollection.filteredItems.push(value);
+            }
+            else {
+                var itemPrice = $filter('currency')(value.Price, '₴');
+                if (value.Name.toLowerCase().indexOf($scope.itemSearchText.toLowerCase()) != -1 ||
+                    (value.Description && value.Description.toLowerCase().indexOf($scope.itemSearchText.toLowerCase()) != -1) ||
+                    itemPrice.indexOf($scope.itemSearchText) != -1 ||
+                    ((value.UsersList.length.toString()) + ' people').indexOf($scope.itemSearchText) != -1) {
+                    itemCollection.filteredItems.push(value);
+                }
+            }
+        });
     }
 
     // Pagination
