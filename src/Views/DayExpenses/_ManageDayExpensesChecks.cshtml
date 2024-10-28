@@ -2,7 +2,7 @@
 
 <tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
     <td>
-        <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click=""
+        <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click="getCollapseIcon($event)"
                 data-bs-target="#collapseExample{{check.Id}}" aria-expanded="false" aria-controls="collapseExample">
         </i>        
     </td>

@@ -181,6 +181,19 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         );
     }
 
+    $scope.getCollapseIcon = function (icon) {
+        var isCollapsed = angular.element(icon.currentTarget).hasClass('collapsed');
+
+        if (isCollapsed) {
+            angular.element(icon.currentTarget).removeClass('bi-dash-square-fill');
+            angular.element(icon.currentTarget).addClass('bi-plus-square-fill');
+        }
+        else {
+            angular.element(icon.currentTarget).removeClass('bi-plus-square-fill');
+            angular.element(icon.currentTarget).addClass('bi-dash-square-fill');
+        }
+    }
+
     // Sorting checks
     $scope.sort = {
         active: '',
