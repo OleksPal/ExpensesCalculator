@@ -50,82 +50,84 @@
                         </div>
                     </div>
                 </div>
-                <table class="table table-borderless text-white item-table">
-                    <thead>
-                        <tr>
-                            <th class="text-nowrap" ng-click="changeOrder('Name', check.Id)">
-                                <i class="bi bi-box"></i>
-                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Name)
-                                <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Name', check.Id)">
-                                </i>
-                            </th>
-                            <th class="text-nowrap" ng-click="changeOrder('Description', check.Id)">
-                                <i class="bi bi-alphabet"></i>
-                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Description)
-                                <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Description', check.Id)">
-                                </i>
-                            </th>
-                            <th class="text-nowrap" ng-click="changeOrder('Price', check.Id)">
-                                <i class="bi bi-coin"></i>
-                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Price)
-                                <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Price', check.Id)">
-                                </i>
-                            </th>
-                            <th class="text-nowrap" ng-click="changeOrder('Users', check.Id)">
-                                <i class="bi bi-people-fill"></i>
-                                @Html.DisplayNameFor(model => model.Checks.First().Items.First().Users)
-                                <i class="bi bi-funnel-fill ps-1"
-                                   ng-class="getIcon('Users', check.Id)">
-                                </i>
-                            </th>
-                            <th width="120px"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="item in getCheckItems(check.Id).filteredItems" style="height: 60px;">
-                            <td class="text-nowrap">
-                                {{item.Name}}
-                            </td>
-                            <td class="text-nowrap">
-                                {{item.Description}}
-                            </td>
-                            <td class="text-nowrap">
-                                {{item.Price | currency : '₴'}}
-                            </td>
-                            <td class="text-nowrap">
-                                {{item.UsersList.length}} people
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                            @* onclick="showModalForItemEdit(@item.Id, @Model.DayExpensesId)" *@>
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-danger" data-bs-toggle="modal"
-                                            data-bs-target="#staticBackdrop"
-                                            @* onclick="showModalForItemDelete(@item.Id)" *@>
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive fix-table-height">
+                    <table class="table table-borderless text-white item-table">
+                        <thead>
+                            <tr>
+                                <th class="text-nowrap" ng-click="changeOrder('Name', check.Id)">
+                                    <i class="bi bi-box"></i>
+                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Name)
+                                    <i class="bi bi-funnel-fill ps-1"
+                                       ng-class="getIcon('Name', check.Id)">
+                                    </i>
+                                </th>
+                                <th class="text-nowrap" ng-click="changeOrder('Description', check.Id)">
+                                    <i class="bi bi-alphabet"></i>
+                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Description)
+                                    <i class="bi bi-funnel-fill ps-1"
+                                       ng-class="getIcon('Description', check.Id)">
+                                    </i>
+                                </th>
+                                <th class="text-nowrap" ng-click="changeOrder('Price', check.Id)">
+                                    <i class="bi bi-coin"></i>
+                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Price)
+                                    <i class="bi bi-funnel-fill ps-1"
+                                       ng-class="getIcon('Price', check.Id)">
+                                    </i>
+                                </th>
+                                <th class="text-nowrap" ng-click="changeOrder('Users', check.Id)">
+                                    <i class="bi bi-people-fill"></i>
+                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Users)
+                                    <i class="bi bi-funnel-fill ps-1"
+                                       ng-class="getIcon('Users', check.Id)">
+                                    </i>
+                                </th>
+                                <th width="120px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in getCheckItems(check.Id).pagedItems[getCheckItems(check.Id).currentPage]" style="height: 60px;">
+                                <td class="text-nowrap">
+                                    {{item.Name}}
+                                </td>
+                                <td class="text-nowrap">
+                                    {{item.Description}}
+                                </td>
+                                <td class="text-nowrap">
+                                    {{item.Price | currency : '₴'}}
+                                </td>
+                                <td class="text-nowrap">
+                                    {{item.UsersList.length}} people
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                                @* onclick="showModalForItemEdit(@item.Id, @Model.DayExpensesId)" *@>
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#staticBackdrop"
+                                                @* onclick="showModalForItemDelete(@item.Id)" *@>
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="d-flex align-items-center justify-content-center py-2 pe-4">
                     <ul class="pagination overflow-auto d-flex align-items-center text-nowrap pb-2">
-                        <li class="page-item text-nowrap" ng-class="{disabled: currentPage == 0}">
-                            <a class="page-link bg-transparent border border-dark" href ng-click="prevPage()">« Previous</a>
+                        <li class="page-item text-nowrap" ng-class="{disabled: getCheckItems(check.Id).currentPage == 0}">
+                            <a class="page-link bg-transparent border border-dark" href ng-click="prevPage(check.Id)">« Previous</a>
                         </li>
-                        <li class="page-item" ng-repeat="n in range(pagedItems.length)"
-                            ng-class="{active: n == currentPage}"
-                            ng-click="setPage()">
+                        <li class="page-item" ng-repeat="n in range(getCheckItems(check.Id).pagedItems.length)"
+                            ng-class="{active: n == getCheckItems(check.Id).currentPage}"
+                            ng-click="setPage(n, check.Id)">
                             <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
                         </li>
-                        <li class="page-item text-nowrap" ng-class="{disabled: currentPage == pagedItems.length - 1}">
-                            <a class="page-link bg-transparent border border-dark" href ng-click="nextPage()">Next »</a>
+                        <li class="page-item text-nowrap" ng-class="{disabled: getCheckItems(check.Id).currentPage == getCheckItems(check.Id).pagedItems.length - 1}">
+                            <a class="page-link bg-transparent border border-dark" href ng-click="nextPage(check.Id)">Next »</a>
                         </li>
                     </ul>
                 </div>

@@ -102,7 +102,7 @@
             </li>
             <li class="page-item" ng-repeat="n in range(pagedDays.length)"
                 ng-class="{active: n == currentPage}"
-                ng-click="setPage()">
+                ng-click="setPage(n, check.Id)">
                 <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
             </li>
             <li class="page-item text-nowrap" ng-class="{disabled: currentPage == pagedDays.length - 1}">

@@ -299,10 +299,12 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
             sort: {
                 active: '',
                 descending: undefined
-            }
+            },
+            pagedItems: [],
+            currentPage: 0
         };
         $scope.itemCollections.push(itemCollection);
-    });    
+    });
 
     $scope.getCheckItems = function (checkId) {
         return $scope.itemCollections.find(x => x.checkId === checkId);
@@ -322,6 +324,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
         }
 
         itemCollection.filteredItems = $filter('orderBy')(itemCollection.filteredItems, sort.active, sort.descending);
+        itemCollection.pagedItems = $scope.groupToPages(itemCollection.filteredItems);
     };
 
     $scope.getIcon = function (value, checkId) {
@@ -354,32 +357,25 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
                 }
             }
         });
+
+        itemCollection.pagedItems = $scope.groupToPages(itemCollection.filteredItems);
     }
 
     // Pagination
     $scope.itemsPerPage = 5;
-    $scope.filteredItems = [];
-    $scope.pagedItems = [];
-    $scope.currentPage = 0;
 
-    $scope.filterPagedItems = function () {
-        $scope.pagedItems = [];
-        $scope.currentPage = 0;
+    $scope.groupToPages = function (items) {
+        var pagedItems = [];
 
-        $scope.filteredItems = $filter('filter')($scope.items, function (item) {
-            return $scope.search(item);
-        });
-        $scope.groupToPages();
-    }
-
-    $scope.groupToPages = function () {
-        for (var i = 0; i < $scope.filteredItems.length; i++) {
+        for (var i = 0; i < items.length; i++) {
             if (i % $scope.itemsPerPage === 0) {
-                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [$scope.filteredItems[i]];
+                pagedItems[Math.floor(i / $scope.itemsPerPage)] = [items[i]];
             } else {
-                $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
+                pagedItems[Math.floor(i / $scope.itemsPerPage)].push(items[i]);
             }
         }
+
+        return pagedItems;
     };
 
     $scope.range = function (start, end) {
@@ -394,21 +390,27 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
         return ret;
     };
 
-    $scope.prevPage = function () {
-        if ($scope.currentPage > 0) {
-            $scope.currentPage--;
+    $scope.prevPage = function (checkId) {
+        var itemCollection = $scope.getCheckItems(checkId);
+
+        if (itemCollection.currentPage > 0) {
+            itemCollection.currentPage--;
         }
     };
 
-    $scope.nextPage = function () {
-        if ($scope.currentPage < $scope.pagedChecks.length - 1) {
-            $scope.currentPage++;
+    $scope.nextPage = function (checkId) {
+        var itemCollection = $scope.getCheckItems(checkId);
+
+        if (itemCollection.currentPage < itemCollection.pagedItems.length - 1) {
+            itemCollection.currentPage = itemCollection.currentPage+1;
         }
     };
 
-    $scope.setPage = function () {
-        if ($scope.selectedPage != undefined) {
-            $scope.currentPage = ($scope.selectedPage - 1);
+    $scope.setPage = function (selectedPage, checkId) {
+        var itemCollection = $scope.getCheckItems(checkId);
+
+        if (selectedPage != undefined) {
+            itemCollection.currentPage = selectedPage;
         }
     };
 
