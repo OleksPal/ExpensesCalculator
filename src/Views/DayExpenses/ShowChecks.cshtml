@@ -36,15 +36,7 @@
                         {{dayExpenses.Date | date : 'fullDate'}}
                     </td>
                     <td class="text-nowrap">
-                        <div class="mytooltip" id="Test">
-                            <label>{{dayExpenses.ParticipantsList.length}} people</label>
-                            <span class="center-tooltiptext">
-                                <i class="bi bi-people-fill pe-1"></i>Participants:<br />
-                                <div ng-repeat="participant in dayExpenses.ParticipantsList">
-                                    <i class="bi bi-person-fill pe-1"></i>{{participant}} <br />
-                                </div>                                
-                            </span>
-                        </div>
+                        {{dayExpenses.ParticipantsList.length}} people
                     </td>
                     <td>
                         <div class="d-flex justify-content-end">

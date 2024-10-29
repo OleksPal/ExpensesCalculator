@@ -149,6 +149,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         $scope.dayExpenses = response.data;
         $scope.checks = $scope.dayExpenses.Checks;
         $scope.filterPagedChecks();
+        console.log($scope.checks);
     }
     function getChecksErrorCallback(error) {
         console.log(error);
@@ -308,7 +309,6 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
         var itemCollection = {
             checkId: value.Id,
             items: value.Items,
-            filteredItems: value.Items,
             sort: {
                 active: '',
                 descending: undefined
@@ -316,16 +316,53 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
             pagedItems: [],
             currentPage: 0
         };
+
+        var itemsPerPage = 5;
+        for (var i = 0; i < value.Items.length; i++) {
+            if (i % itemsPerPage === 0) {
+                itemCollection.pagedItems[Math.floor(i / itemsPerPage)] = [value.Items[i]];
+            } else {
+                itemCollection.pagedItems[Math.floor(i / itemsPerPage)].push(value.Items[i]);
+            }
+        }
+
         $scope.itemCollections.push(itemCollection);
     });
+
+    $scope.showModalForItemCreate = function (checkId, dayId) {
+        console.log(dayId);
+        $http.get('/Items/CreateItem?checkId=' + checkId + '&dayExpensesId=' + dayId).then(
+            function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            }
+        );
+    }
+
+    $scope.showModalForItemEdit = function (itemId, dayId) {
+        $http.get('/Items/EditItem/' + itemId + '?dayExpensesId=' + dayId).then(
+            function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            }
+        );
+    }
+
+    $scope.showModalForItemDelete = function (itemId, dayId) {
+        $http.get('/Items/DeleteItem/' + itemId + '?dayExpensesId=' + dayId).then(
+            function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            }
+        );
+    }
 
     $scope.getCheckItems = function (checkId) {
         return $scope.itemCollections.find(x => x.checkId === checkId);
     }
 
     // Sorting items
-    $scope.changeOrder = function (value, checkId) {
-        var itemCollection = $scope.getCheckItems(checkId);
+    $scope.changeOrder = function (value, itemCollection) {
         var sort = itemCollection.sort;
 
         if (sort.active == value) {
@@ -336,12 +373,11 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
             sort.descending = false;
         }
 
-        itemCollection.filteredItems = $filter('orderBy')(itemCollection.filteredItems, sort.active, sort.descending);
-        itemCollection.pagedItems = $scope.groupToPages(itemCollection.filteredItems);
+        var filteredItems = $filter('orderBy')(itemCollection.items, sort.active, sort.descending);
+        itemCollection.pagedItems = $scope.groupToPages(filteredItems);
     };
 
-    $scope.getIcon = function (value, checkId) {
-        var itemCollection = $scope.getCheckItems(checkId);
+    $scope.getIcon = function (value, itemCollection) {
         var sort = itemCollection.sort;
 
         if (sort.active == value) {
@@ -352,13 +388,12 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
     };
 
     // Filtering items
-    $scope.search = function (checkId) {
-        var itemCollection = $scope.getCheckItems(checkId);
-        itemCollection.filteredItems = [];
+    $scope.search = function (itemCollection) {
+        var filteredItems = [];
 
         angular.forEach(itemCollection.items, function (value, key) {
             if ($scope.itemSearchText == undefined) {
-                itemCollection.filteredItems.push(value);
+                filteredItems.push(value);
             }
             else {
                 var itemPrice = $filter('currency')(value.Price, '₴');
@@ -366,12 +401,12 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
                     (value.Description && value.Description.toLowerCase().indexOf($scope.itemSearchText.toLowerCase()) != -1) ||
                     itemPrice.indexOf($scope.itemSearchText) != -1 ||
                     ((value.UsersList.length.toString()) + ' people').indexOf($scope.itemSearchText) != -1) {
-                    itemCollection.filteredItems.push(value);
+                    filteredItems.push(value);
                 }
             }
         });
 
-        itemCollection.pagedItems = $scope.groupToPages(itemCollection.filteredItems);
+        itemCollection.pagedItems = $scope.groupToPages(filteredItems);
     }
 
     // Pagination
@@ -403,25 +438,19 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
         return ret;
     };
 
-    $scope.prevPage = function (checkId) {
-        var itemCollection = $scope.getCheckItems(checkId);
-
+    $scope.prevPage = function (itemCollection) {
         if (itemCollection.currentPage > 0) {
             itemCollection.currentPage--;
         }
     };
 
-    $scope.nextPage = function (checkId) {
-        var itemCollection = $scope.getCheckItems(checkId);
-
+    $scope.nextPage = function (itemCollection) {
         if (itemCollection.currentPage < itemCollection.pagedItems.length - 1) {
             itemCollection.currentPage = itemCollection.currentPage+1;
         }
     };
 
-    $scope.setPage = function (selectedPage, checkId) {
-        var itemCollection = $scope.getCheckItems(checkId);
-
+    $scope.setPage = function (selectedPage, itemCollection) {
         if (selectedPage != undefined) {
             itemCollection.currentPage = selectedPage;
         }

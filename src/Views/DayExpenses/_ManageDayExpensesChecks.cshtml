@@ -35,10 +35,10 @@
 <tr ng-repeat-end>
     <td colspan="5">
         <div class="collapse" id="collapseExample{{check.Id}}">
-            <div class="card card-body dark-blue-1 border-primary" ng-controller="ItemsCtrl">
+            <div class="card card-body dark-blue-1 border-primary" ng-controller="ItemsCtrl" ng-init="itemCollection = getCheckItems(check.Id)">
                 <div class="container-fluid p-3 text-white">
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                            @* onclick="showModalForItemCreate(@Model.Id, @Model.DayExpensesId)" *@>
+                            ng-click="showModalForItemCreate(check.Id, check.DayExpensesId)">
                         <i class="bi bi-plus-circle"></i> Add item
                     </button>
                 </div>
@@ -50,7 +50,7 @@
                     <div class="col-12 col-lg-3">
                         <div class="input-group">
                             <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
-                            <input ng-model="$parent.itemSearchText" ng-change="search(check.Id)" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
+                            <input ng-model="$parent.itemSearchText" ng-change="search(itemCollection)" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
                         </div>
                     </div>
                 </div>
@@ -58,39 +58,39 @@
                     <table class="table table-borderless text-white item-table">
                         <thead>
                             <tr>
-                                <th class="text-nowrap" ng-click="changeOrder('Name', check.Id)">
+                                <th class="text-nowrap" ng-click="changeOrder('Name', itemCollection)">
                                     <i class="bi bi-box"></i>
                                     @Html.DisplayNameFor(model => model.Checks.First().Items.First().Name)
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Name', check.Id)">
+                                       ng-class="getIcon('Name', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Description', check.Id)">
+                                <th class="text-nowrap" ng-click="changeOrder('Description', itemCollection)">
                                     <i class="bi bi-alphabet"></i>
                                     @Html.DisplayNameFor(model => model.Checks.First().Items.First().Description)
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Description', check.Id)">
+                                       ng-class="getIcon('Description', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Price', check.Id)">
+                                <th class="text-nowrap" ng-click="changeOrder('Price', itemCollection)">
                                     <i class="bi bi-coin"></i>
                                     @Html.DisplayNameFor(model => model.Checks.First().Items.First().Price)
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Price', check.Id)">
+                                       ng-class="getIcon('Price', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Users', check.Id)">
+                                <th class="text-nowrap" ng-click="changeOrder('Users', itemCollection)">
                                     <i class="bi bi-people-fill"></i>
                                     @Html.DisplayNameFor(model => model.Checks.First().Items.First().Users)
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Users', check.Id)">
+                                       ng-class="getIcon('Users', itemCollection)">
                                     </i>
                                 </th>
                                 <th width="120px"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in getCheckItems(check.Id).pagedItems[getCheckItems(check.Id).currentPage]" style="height: 60px;">
+                            <tr ng-repeat="item in itemCollection.pagedItems[itemCollection.currentPage]" style="height: 60px;">
                                 <td class="text-nowrap">
                                     {{item.Name}}
                                 </td>
@@ -106,12 +106,12 @@
                                 <td>
                                     <div class="btn-group" role="group">
                                         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                @* onclick="showModalForItemEdit(@item.Id, @Model.DayExpensesId)" *@>
+                                                ng-click="showModalForItemEdit(item.Id, check.DayExpensesId)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-danger" data-bs-toggle="modal"
                                                 data-bs-target="#staticBackdrop"
-                                                @* onclick="showModalForItemDelete(@item.Id)" *@>
+                                                ng-click="showModalForItemDelete(item.Id, check.DayExpensesId)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -122,16 +122,16 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-center py-2 pe-4" ng-if="check.Items.length > 0">
                     <ul class="pagination overflow-auto d-flex align-items-center text-nowrap pb-2">
-                        <li class="page-item text-nowrap" ng-class="{disabled: getCheckItems(check.Id).currentPage == 0}">
-                            <a class="page-link bg-transparent border border-dark" href ng-click="prevPage(check.Id)">« Previous</a>
+                        <li class="page-item text-nowrap" ng-class="{disabled: itemCollection.currentPage == 0}">
+                            <a class="page-link bg-transparent border border-dark" href ng-click="prevPage(itemCollection)">« Previous</a>
                         </li>
-                        <li class="page-item" ng-repeat="n in range(getCheckItems(check.Id).pagedItems.length)"
-                            ng-class="{active: n == getCheckItems(check.Id).currentPage}"
-                            ng-click="setPage(n, check.Id)">
+                        <li class="page-item" ng-repeat="n in range(itemCollection.pagedItems.length)"
+                            ng-class="{active: n == itemCollection.currentPage}"
+                            ng-click="setPage(n, itemCollection)">
                             <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
                         </li>
-                        <li class="page-item text-nowrap" ng-class="{disabled: getCheckItems(check.Id).currentPage == getCheckItems(check.Id).pagedItems.length - 1}">
-                            <a class="page-link bg-transparent border border-dark" href ng-click="nextPage(check.Id)">Next »</a>
+                        <li class="page-item text-nowrap" ng-class="{disabled: itemCollection.currentPage == itemCollection.pagedItems.length - 1}">
+                            <a class="page-link bg-transparent border border-dark" href ng-click="nextPage(itemCollection)">Next »</a>
                         </li>
                     </ul>
                 </div>
