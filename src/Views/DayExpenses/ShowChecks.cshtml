@@ -94,7 +94,7 @@
         <div class="col-12 col-lg-3">
             <div class="input-group">
                 <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
-                <input ng-model="searchText" ng-change="filterPagedChecks()" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
+                <input ng-model="$parent.searchText" ng-change="filterPagedChecks()" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
             </div>
         </div>
     </div>
