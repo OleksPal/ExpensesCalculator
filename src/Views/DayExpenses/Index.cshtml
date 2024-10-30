@@ -1,6 +1,4 @@
-﻿@model IEnumerable<DayExpenses>
-
-@{
+﻿@{
     ViewData["Title"] = "Expenses List";
 }
 
@@ -42,14 +40,14 @@
                 <tr>
                     <th class="text-nowrap" ng-click="changeOrder('date')">
                         <i class="bi bi-calendar-event pe-1"></i>
-                        @Html.DisplayNameFor(model => model.Date)
+                        Date
                         <i class="bi bi-funnel-fill ps-1"
                             ng-class="getIcon('date')">
                         </i>
                     </th>
                     <th class="text-nowrap" ng-click="changeOrder('participants')">
                         <i class="bi bi-people-fill pe-1"></i>
-                        @Html.DisplayNameFor(model => model.Participants)
+                        Participants
                         <i class="bi-funnel-fill ps-1"
                            ng-class="getIcon('participants')">
                         </i>

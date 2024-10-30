@@ -21,12 +21,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            if (User.Identity.Name is not null) 
-                _dayExpensesService.RequestorName = User.Identity.Name;
-
-            var days = await _dayExpensesService.GetAllDays();
-
-            return View(days);
+            return View();
         }
 
         // GET: DayExpenses
