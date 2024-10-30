@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ExpensesCalculator</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ExpensesCalculator.styles.css" asp-append-version="true" />
+    <link href="~/css/colors.css" rel="stylesheet" />
+</head>
+<body>
+    <main ng-app="expensesCalculatorApp">
+        <div class="container-fluid">
+            <div id="customProportion" class="row flex-nowrap">
+                <div class="col-2 col-md-3 col-xl-2 px-sm-2 px-0" style="background: #0b1739">
+                    <div class="d-flex sticky-top flex-column align-items-center align-items-sm-start px-1 pt-2 text-white min-vh-100">
+                        <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-sm-start mx-0" id="menu">     
+                            <li class="nav-item fs-5">
+                                <a class="d-flex align-items-center mb-md-0 me-auto text-white text-decoration-none" style="user-select: none; font-family: Impact, cursive;">
+                                    <i class="bi-calculator"></i> <span class="d-none d-sm-inline">ExpensesCalculator</span>
+                                </a>
+                            </li>
+                            <hr class="w-100" />
+                            <li class="nav-item fs-5">
+                                <a class="nav-link text-white align-middle px-0" asp-controller="Home" asp-action="Index">
+                                    <i class="bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                                </a>
+                            </li>
+                            <li class="nav-item fs-5">
+                                <a asp-area="" asp-controller="DayExpenses" asp-action="Index" class="nav-link text-white align-middle px-0">
+                                    <i class="bi-list-nested"></i> <span class=" ms-1 d-none d-sm-inline">My expenses list</span>
+                                </a>
+                            </li>
+                            <li style="width: fit-content" class="nav-item fixed-bottom ms-3 mb-2">
+                                <a class="nav-link text-white align-middle px-0 text-decoration-none fs-4" href="https://github.com/OleksPal/ExpensesCalculator">
+                                    <i class="bi bi-github"></i> <span class="ms-1 d-none d-sm-inline">Github</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>   
+                <div class="col-10 dark-blue-0" style="padding: 0;">
+                    <nav class="navbar navbar-expand px-4 justify-content-end">
+                        <partial name="_LoginPartial" />
+                    </nav>
+                    <hr />
+                    <div>
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="~/lib/angularjs/dist/angular.min.js"></script>
+    <script src="~/angularjs/app.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

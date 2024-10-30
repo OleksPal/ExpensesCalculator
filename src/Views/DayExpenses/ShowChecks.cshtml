@@ -1,0 +1,173 @@
+﻿@model DayExpenses
+
+@{
+    ViewData["Title"] = "Check List";
+}
+
+<link href="~/css/mytooltip.css" rel="stylesheet" />
+
+<script src="~/js/modalviews/day-expenses-modal-views.js"></script>
+<script src="~/js/modalviews/checks-modal-views.js"></script>
+<script src="~/js/modalviews/items-modal-views.js"></script>
+<script src="~/js/managers/check-items-manager.js"></script>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/caret-down-animation.js"></script>
+
+<div class="rounded m-3 m-sm-5 dark-blue-1" ng-controller="DayExpensesChecksCtrl">
+    <div class="table-responsive">
+        <table class="table table-borderless text-white">
+            <thead>
+                <tr>
+                    <th class="text-nowrap" width="40%">
+                        <i class="bi bi-calendar-event pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th class="text-nowrap" width="40%">
+                        <i class="bi bi-people-fill pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Participants)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height: 60px;">
+                    <td class="text-nowrap">
+                        {{dayExpenses.Date | date : 'fullDate'}}
+                    </td>
+                    <td class="text-nowrap">
+                        {{dayExpenses.ParticipantsList.length}} people
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-end">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        onclick="showModalForDayExpensesShare(@Model.Id)">
+                                    <i class="bi bi-share"></i>
+                                </button>
+                                <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">
+                                    <i class="bi bi-calculator"></i>
+                                </a>
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        onclick="showModalForDayExpensesEdit(@Model.Id)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" onclick="showModalForDayExpensesDelete(@Model.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container-fluid p-3 text-white">
+        <h4>
+            <i class="bi bi-receipt"></i>
+            Check List
+        </h4>
+        <br />
+
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                onclick="showModalForCheckCreate(@Model.Id)">
+            <i class="bi bi-plus-circle"></i> Add check
+        </button>
+    </div>
+
+    <div class="text-white text-center pt-4" ng-if="checks.length == 0">
+        <h2>No data to display</h2>
+        <h5 class="pt-3">Try to add new checks</h5>
+    </div>
+
+    <div class="d-flex justify-content-end pb-lg-2 p-3" ng-if="checks.length > 0">
+        <div class="col-12 col-lg-3">
+            <div class="input-group">
+                <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
+                <input ng-model="$parent.searchText" ng-change="filterPagedChecks()" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive" ng-if="checks.length > 0">
+        <table class="table table-borderless text-white check-table" id="checkTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="text-nowrap" ng-click="changeOrder('Location')" width="33%">
+                        <i class="bi bi-cart pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Checks.First().Location)
+                        <i class="bi bi-funnel-fill ps-1"
+                           ng-class="getIcon('Location')">
+                        </i>
+                    </th>
+                    <th class="text-nowrap" ng-click="changeOrder('Sum')" width="33%">
+                        <i class="bi bi-cash-stack pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Checks.First().Sum)
+                        <i class="bi bi-funnel-fill ps-1"
+                           ng-class="getIcon('Sum')">
+                        </i>
+                    </th>
+                    <th class="text-nowrap" ng-click="changeOrder('Payer')" width="33%">
+                        <i class="bi bi-person-fill pe-1"></i>
+                        @Html.DisplayNameFor(model => model.Checks.First().Payer)
+                        <i class="bi bi-funnel-fill ps-1"
+                           ng-class="getIcon('Payer')">
+                        </i>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="checkList">
+                @await Html.PartialAsync("_ManageDayExpensesChecks", Model)
+            </tbody>
+        </table>
+    </div>    
+
+    <div class="d-flex align-items-center justify-content-center py-2 pe-4" ng-if="checks.length > 0">
+        <ul class="overflow-auto d-flex align-items-center text-nowrap pb-2" style="user-select: none;">
+            <li ng-class="{disabled: currentPage == 0}">
+                <a class="page-link bg-transparent border-0" href ng-click="prevPage()">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            <li class="w-25">
+                <input class="page-link bg-transparent form-control border-primary text-white text-center w-100"
+                       type="number" min="1" max="{{pagedChecks.length}}" ng-model="selectedPage"
+                       ng-keyup="$event.keyCode == 13 && setPage()" value="{{currentPage+1}}" />
+            </li>
+            <li ng-class="{disabled: currentPage == pagedChecks.length - 1}">
+                <a class="page-link bg-transparent border-0" href ng-click="nextPage()">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            <li class="text-white">
+                <i class="bi bi-receipt"></i>
+                <label>Checks {{currentPage*checksPerPage+1}} to 
+                    {{(currentPage*checksPerPage + checksPerPage > checks.length) ? checks.length : (currentPage*checksPerPage + checksPerPage)}}
+                    of {{checks.length}}</label>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container-fluid p-3 text-white">
+        <br />
+        <a asp-action="Index" class="btn btn-primary" role="button">Back to List</a>
+    </div>
+</div>
+<input type="hidden" id="dayExpensesId" value="@Model.Id"/>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+

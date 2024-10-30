@@ -3,41 +3,41 @@
 [![.NET](https://github.com/OleksPal/ExpensesCalculator/actions/workflows/dotnet.yml/badge.svg)](https://github.com/OleksPal/ExpensesCalculator/actions/workflows/dotnet.yml)
 
 ## About the project
-#### Distribute expenses among party participants based on their consumption.
-![Screenshot of an expenses calculation.](ExpensesCalculator/wwwroot/images/9-expenses-calculation-transaction-list-tab.jpg)
+Distribute expenses among party participants based on their consumption.
+![Screenshot of an expenses calculation.](src/wwwroot/images/9-expenses-calculation-transaction-list-tab.jpg)
 
 ## Usage
-### Select the "My expenses list" tab
-![my-expenses-list-button](ExpensesCalculator/wwwroot/images/1-my-expenses-list-button.jpg)
+Select the "My expenses list" tab
+![my-expenses-list-button](src/wwwroot/images/1-my-expenses-list-button.jpg)
 
-### Click the "Add expenses" button and enter the required data
-![add-expenses-button](ExpensesCalculator/wwwroot/images/2-add-expenses-button.jpg)
+Click the "Add expenses" button and enter the required data
+![add-expenses-button](src/wwwroot/images/2-add-expenses-button.jpg)
 
-### Click the button with a list image, to enter data about the items to be calculated
-![show-checks-button](ExpensesCalculator/wwwroot/images/3-show-checks-button.jpg)
+Click the button with a list image, to enter data about the items to be calculated
+![show-checks-button](src/wwwroot/images/3-show-checks-button.jpg)
 
-### On the next screen, add checks, which are used to group items by who paid for them
-![add-check-button](ExpensesCalculator/wwwroot/images/4-add-check-button.jpg)
+On the next screen, add checks, which are used to group items by who paid for them
+![add-check-button](src/wwwroot/images/4-add-check-button.jpg)
 
-### Open the appropriate check and add the items of this check
-![add-item-button](ExpensesCalculator/wwwroot/images/5-add-item-button.jpg)
+Open the appropriate check and add the items of this check
+![add-item-button](src/wwwroot/images/5-add-item-button.jpg)
 
-### Use the edit and delete buttons to change data if it was entered incorrectly
-![edit-and-delete-buttons](ExpensesCalculator/wwwroot/images/6-edit-and-delete-buttons.jpg)
+Use the edit and delete buttons to change data if it was entered incorrectly
+![edit-and-delete-buttons](src/wwwroot/images/6-edit-and-delete-buttons.jpg)
 
-### Click the button with a calculator image, to calculate the expenses between the participants
-![calculate-button](ExpensesCalculator/wwwroot/images/7-calculate-button.jpg)
+Click the button with a calculator image, to calculate the expenses between the participants
+![calculate-button](src/wwwroot/images/7-calculate-button.jpg)
 
-### Switch between tabs to see how much every participant spent on the party
-![expenses-calculation-participant-tab](ExpensesCalculator/wwwroot/images/8-expenses-calculation-participant-tab.jpg)
+Switch between tabs to see how much every participant spent on the party
+![expenses-calculation-participant-tab](src/wwwroot/images/8-expenses-calculation-participant-tab.jpg)
 
-### On the "Transaction list" tab you can see how much money each participant owes to the people who paid for the party
-![expenses-calculation-transaction-list-tab](ExpensesCalculator/wwwroot/images/9-expenses-calculation-transaction-list-tab.jpg)
+On the "Transaction list" tab you can see how much money each participant owes to the people who paid for the party
+![expenses-calculation-transaction-list-tab](src/wwwroot/images/9-expenses-calculation-transaction-list-tab.jpg)
 
 ## Mobile support
 The ExpensesCalculator is compatible with devices of all sizes and all OS's, and consistent improvements are being made.
 
-![mobile-display](ExpensesCalculator/wwwroot/images/mobile-display.jpg)
+![mobile-display](src/wwwroot/images/mobile-display.jpg)
 
 ## Demo
 * https://expensescalculator.azurewebsites.net
@@ -47,6 +47,7 @@ The ExpensesCalculator is compatible with devices of all sizes and all OS's, and
 * [![Blazor][Blazor.com]][Blazor-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 * [![JQuery][JQuery.com]][JQuery-url]
+* [![AngularJS][AngularJS.org]][AngularJS-url]
 
 ## Roadmap
 - [x] Add a manager for adding, editing, deleting items
@@ -69,3 +70,5 @@ The ExpensesCalculator is compatible with devices of all sizes and all OS's, and
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
 [JQuery-url]: https://jquery.com 
+[AngularJS.org]: https://img.shields.io/badge/angular.js-%23E23237.svg?style=for-the-badge&logo=angularjs&logoColor=white
+[AngularJS-url]: https://angularjs.org
