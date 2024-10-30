@@ -9,7 +9,8 @@ $(function () {
             },
             type: "Post",
             success: function (result) {
-                $("#checkList").html(result);
+                location.reload();
+                /*$("#checkList").html(result);*/
             },
             error: function (result) {
                 alert(result.responseText);

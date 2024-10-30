@@ -24,10 +24,11 @@ $(function () {
                     $('#modal-content').html(result);                    
                 }                    
                 else {
-                    $("#staticBackdrop").modal("hide");
-                    $(`#check-${checkId}-Items`).html(result);
-                    $(`#check-${checkId}-Sum`).text($(`#check-${checkId}-NewSum`).val());
-                    $(`#check-${checkId}`).collapse('show');
+                    location.reload();
+                    //$("#staticBackdrop").modal("hide");
+                    //$(`#check-${checkId}-Items`).html(result);
+                    //$(`#check-${checkId}-Sum`).text($(`#check-${checkId}-NewSum`).val());
+                    //$(`#check-${checkId}`).collapse('show');
                 } 
             },
             error: function (result) {

@@ -4,7 +4,7 @@
     <td>
         <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click="getCollapseIcon($event)"
                 data-bs-target="#collapseExample{{check.Id}}" aria-expanded="false" aria-controls="collapseExample">
-        </i>        
+        </i>
     </td>
     <td class="text-nowrap">
         {{check.Location}}
@@ -101,7 +101,15 @@
                                     {{item.Price | currency : '₴'}}
                                 </td>
                                 <td class="text-nowrap">
-                                    {{item.UsersList.length}} people
+                                    <div class="mytooltip">
+                                        {{item.UsersList.length}} people
+                                        <span class="center-tooltiptext">
+                                            <i class="bi bi-people-fill pe-1"></i>Users:<br />
+                                            <div ng-repeat="user in item.UsersList">
+                                                <i class="bi bi-person-fill pe-1"></i>{{user}}<br />
+                                            </div>
+                                        </span>
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">

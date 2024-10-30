@@ -149,7 +149,6 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         $scope.dayExpenses = response.data;
         $scope.checks = $scope.dayExpenses.Checks;
         $scope.filterPagedChecks();
-        console.log($scope.checks);
     }
     function getChecksErrorCallback(error) {
         console.log(error);
@@ -330,7 +329,6 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
     });
 
     $scope.showModalForItemCreate = function (checkId, dayId) {
-        console.log(dayId);
         $http.get('/Items/CreateItem?checkId=' + checkId + '&dayExpensesId=' + dayId).then(
             function (response) {
                 modalContent = angular.element(document.querySelector('#modal-content'));

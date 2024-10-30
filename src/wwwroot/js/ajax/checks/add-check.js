@@ -22,8 +22,9 @@ $(function () {
                 if (result.indexOf("<div class=\"modal-body\">") >= 0)
                     $('#modal-content').html(result);
                 else {
-                    $("#staticBackdrop").modal("hide");
-                    $("#checkList").html(result);
+                    location.reload();
+                    //$("#staticBackdrop").modal("hide");
+                    //$("#checkList").html(result);
                 }                                                
             },
             error: function (result) {
