@@ -49,7 +49,7 @@
                             <label>
                                 <i class="bi bi-cart pe-1"></i>@checkCalculation.Check.Location:
                             </label>
-                            <span class="top-tooltiptext">
+                            <span class="tooltiptext">
                                 <i class="bi bi-coin pe-1"></i>Sum: @Html.DisplayFor(model => checkCalculation.Check.Sum)<br />
                                 <i class="bi bi-person-fill pe-1"></i>Payer: @checkCalculation.Check.Payer
                             </span>
@@ -63,7 +63,7 @@
                                     @Html.DisplayFor(model => item.Item.Price) /
                                     <div class="mytooltip">
                                         <i class="bi bi-people-fill pe-1"></i>@item.Item.UsersList.Count
-                                        <span class="center-tooltiptext">
+                                        <span class="tooltiptext">
                                             <i class="bi bi-people-fill pe-1"></i>Users:<br />
                                             @foreach (var user in item.Item.UsersList)
                                             {

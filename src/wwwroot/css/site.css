@@ -79,8 +79,10 @@ button:focus, a:focus, input:focus {
 }
 
 .fix-table-height {
-    height: 360px;
+    height: 420px;
     overflow-y: auto;
+    padding-top: 4rem;
+    margin-top: -4rem;
 }
 
 ul {
