@@ -62,11 +62,14 @@
                     <td class="text-nowrap">
                         <div class="mytooltip">
                             {{day.participantsList.length}} people
-                            <span class="tooltiptext">
+                            <span class="tooltiptext text-truncate" style="height:110px;">
                                 <i class="bi bi-people-fill pe-1"></i>Participants:<br />
-                                <div ng-repeat="participant in day.participantsList">
+                                <div ng-repeat="participant in day.participantsList | limitTo:3">
                                     <i class="bi bi-person-fill pe-1"></i>{{participant}}<br />
-                                </div>                                
+                                </div>
+                                <div ng-if="day.participantsList.length > 3">
+                                    and {{day.participantsList.length - 3}} more
+                                </div>
                             </span>
                         </div>
                     </td>
