@@ -53,8 +53,14 @@
                                 <i class="bi bi-cart pe-1"></i>@checkCalculation.Check.Location:
                             </label>
                             <span class="tooltiptext" style="height:55px;">
-                                <i class="bi bi-coin pe-1"></i>Sum: @Html.DisplayFor(model => checkCalculation.Check.Sum)<br />
-                                <i class="bi bi-person-fill pe-1"></i>Payer: @checkCalculation.Check.Payer
+                                <div class="text-truncate">
+                                    <i class="bi bi-coin pe-1"></i>
+                                    Sum: @checkCalculation.Check.Sum<br />
+                                </div>
+                                <div class="text-truncate">
+                                    <i class="bi bi-person-fill pe-1"></i>
+                                    Payer: @checkCalculation.Check.Payer>
+                                </div>                              
                             </span>
                         </div>
 
@@ -70,8 +76,10 @@
                                             <i class="bi bi-people-fill pe-1"></i>Users:<br />
                                             @foreach (var user in item.Item.UsersList.Take(3))
                                             {
-                                                <i class="bi bi-person-fill pe-1"></i>
-                                                @user<br />
+                                                <div class="text-truncate">
+                                                    <i class="bi bi-person-fill pe-1"></i>
+                                                    @user<br />
+                                                </div>
                                             }
                                             @if(item.Item.UsersList.Count > 3)
                                             {
