@@ -103,10 +103,13 @@
                                 <td class="text-nowrap">
                                     <div class="mytooltip">
                                         {{item.UsersList.length}} people
-                                        <span class="center-tooltiptext">
+                                        <span class="tooltiptext" style="height:110px;">
                                             <i class="bi bi-people-fill pe-1"></i>Users:<br />
-                                            <div ng-repeat="user in item.UsersList">
+                                            <div ng-repeat="user in item.UsersList | limitTo:3" class="text-truncate">
                                                 <i class="bi bi-person-fill pe-1"></i>{{user}}<br />
+                                            </div>
+                                            <div ng-if="item.UsersList.length > 3">
+                                                and {{item.UsersList.length - 3}} more
                                             </div>
                                         </span>
                                     </div>

@@ -1,4 +1,4 @@
-﻿ul {
+﻿﻿ul {
     padding: 0px;
     margin: 0 0 0 20px;
 }
@@ -8,66 +8,34 @@
     display: inline-block;
 }
 
-    .mytooltip .left-tooltiptext {
+    .mytooltip .tooltiptext {
         font-size: 14px;
         visibility: hidden;
-        width: 140px;
+        text-align: start;
+        padding: 5px 0 0 5px;
+        width: 150px;
+        height: 100px;
         background-color: black;
         color: #fff;
         border-radius: 6px;
-        padding: 5px;
         position: absolute;
         z-index: 1;
-        top: -5px;
-        right: 110%;
+        bottom: 120%;
+        left: 100%;
+        margin-left: -60px;
     }
 
-        .mytooltip .left-tooltiptext::after {
-            content: " ";
-            position: absolute;
-            top: 12%;
-            left: 100%; /* To the right of the tooltip */
-            margin-top: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: transparent transparent transparent black;
-        }
-
-    .mytooltip .top-tooltiptext, .mytooltip .center-tooltiptext {
-        font-size: 14px;
-        visibility: hidden;
-        min-width: 150px;
-        max-width: 300px;
-        width: fit-content;
-        background-color: black;
-        color: #fff;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
-        z-index: 1;
-        bottom: 100%;
-        margin-left: -50%;
-    }
-
-        .mytooltip .top-tooltiptext::after, .mytooltip .center-tooltiptext::after {
+        .mytooltip .tooltiptext::after {
             content: "";
             position: absolute;
             top: 100%;
-            left: 10px;
+            left: 10%;
             margin-left: -5px;
             border-width: 5px;
             border-style: solid;
             border-color: black transparent transparent transparent;
         }
 
-    .mytooltip .center-tooltiptext {
-        left: 0px;
-    }
-
-        .mytooltip .center-tooltiptext::after {
-            left: 50%;
-        }    
-
-    .mytooltip:hover .left-tooltiptext, .mytooltip:hover .top-tooltiptext, .mytooltip:hover .center-tooltiptext {
+    .mytooltip:hover .tooltiptext {
         visibility: visible;
     }
