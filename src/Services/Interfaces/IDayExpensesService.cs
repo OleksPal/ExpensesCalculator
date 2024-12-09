@@ -1,4 +1,5 @@
 ﻿using ExpensesCalculator.Models;
+using ExpensesCalculator.ViewModels;
 
 namespace ExpensesCalculator.Services
 {

@@ -1,4 +1,4 @@
-using ExpensesCalculator.Models;
+using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

@@ -1,4 +1,4 @@
-namespace ExpensesCalculator.Models
+namespace ExpensesCalculator.ViewModels
 {
     public class ErrorViewModel
     {
