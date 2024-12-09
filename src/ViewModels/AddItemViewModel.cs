@@ -22,6 +22,11 @@ namespace ExpensesCalculator.ViewModels
         [Range(0, double.MaxValue, ErrorMessage = "Please enter correct price")]
         public decimal Price { get; set; }
 
+        [Required(ErrorMessage = "Please enter item amount")]
+        [Display(Name = "Amount")]
+        [Range(1, int.MaxValue, ErrorMessage = "Amount cannot be less than one")]
+        public int Amount { get; set; }
+
         [Required]
         [Display(Name = "Users")]
         public string? UserList { get; set; }
