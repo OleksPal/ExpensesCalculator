@@ -1,5 +1,7 @@
-﻿using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Mappers;
+using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
+using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
 
@@ -51,7 +53,7 @@ namespace ExpensesCalculator.Services
             return new MultiSelectList(optionList, "Value", "Text");
         }
 
-        public async Task<MultiSelectList> GetCheckedItemUsers(Item item, int dayExpensesId)
+        public async Task<MultiSelectList> GetCheckedItemUsers(ICollection<string> userList, int dayExpensesId)
         {
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var optionList = new List<SelectListItem>();
@@ -60,7 +62,7 @@ namespace ExpensesCalculator.Services
             {
                 foreach (var participant in dayExpenses.ParticipantsList)
                 {
-                    if (item.UsersList.Contains(participant))
+                    if (userList.Contains(participant))
                         optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
                     else
                         optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = false });
@@ -68,18 +70,17 @@ namespace ExpensesCalculator.Services
                     
             }
 
-            return new MultiSelectList(optionList, "Value", "Text", item.UsersList);
+            return new MultiSelectList(optionList, "Value", "Text", userList);
         }
 
-        public async Task<Check> AddItem(Item item)
+        public async Task<Check> AddItem(AddItemViewModel<int> newItemViewModel)
         {
-            string rareNameList = item.UsersList.First();
-            item.UsersList = GetUserListFromString(rareNameList);
+            var check = await GetCheckWithItems(newItemViewModel.CheckId);
 
-            var check = await GetCheckWithItems(item.CheckId);
+            var itemToAdd = newItemViewModel.ToItem();
 
-            check.Sum += item.Price;
-            await _itemRepository.Insert(item);
+            check.Sum += itemToAdd.Price;
+            await _itemRepository.Insert(itemToAdd);
             check = await _checkRepository.Update(check);            
 
             return check;
