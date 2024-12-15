@@ -29,7 +29,7 @@ namespace ExpensesCalculator.ViewModels
 
         [Required]
         [Display(Name = "Users")]
-        public string? UserList { get; set; }
+        public List<string> UserList { get; set; }
 
         [Required]
         public T CheckId { get; set; }

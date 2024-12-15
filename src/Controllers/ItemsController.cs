@@ -69,16 +69,16 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] AddItemViewModel<int> newItem, int dayExpensesId)
         {
-            if (ModelState.IsValid)
-            {
-                var model = await _itemService.AddItem(newItem);
-                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
-            }
+            //if (ModelState.IsValid)
+            //{
+            //    var model = await _itemService.AddItem(newItem);
+            //    return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
+            //}
             
-            ViewData["CheckId"] = newItem.CheckId;
-            ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(newItem, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(newItem.UserList);
+            //ViewData["CheckId"] = newItem.CheckId;
+            //ViewData["DayExpensesId"] = dayExpensesId;
+            //ViewData["Participants"] = await _itemService.GetCheckedItemUsers(newItem, dayExpensesId);
+            //ViewData["FormatUserList"] = await _itemService.GetItemUsers(newItem.UserList);
 
             return PartialView("_CreateItem", newItem);
         }
