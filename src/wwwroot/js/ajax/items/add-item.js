@@ -13,7 +13,11 @@ $(function () {
         $.ajax({
             url: `/Items/Create?dayexpensesid=${dayExpensesId}`,
             data: {
-                Name: $("#name").val(), Description: $("#description").val(), Price: price, UsersList: users,
+                Name: $("#name").val(),
+                Description: $("#description").val(),
+                Price: price,
+                Amount: $("#amount").val(),
+                UsersList: users,
                 CheckId: checkId,
                 __RequestVerificationToken: $(token).val()
             },

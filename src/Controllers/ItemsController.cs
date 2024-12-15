@@ -68,7 +68,7 @@ namespace ExpensesCalculator.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
+        public async Task<IActionResult> Create([Bind("CheckId,UsersList,Name,Description,Price,Amount,Id")] Item item, int dayExpensesId)
         {          
             item = await _itemService.SetCheck(item);
             ModelState.Clear();
