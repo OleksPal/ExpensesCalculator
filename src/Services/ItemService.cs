@@ -36,7 +36,10 @@ namespace ExpensesCalculator.Services
 
         public async Task<string> GetItemUsers(IEnumerable<string> userList)
         {
-            return String.Join(", ", userList);
+            if (userList is not null)
+                return String.Join(", ", userList);
+
+            return null;
         }
 
         public async Task<MultiSelectList> GetAllAvailableItemUsers(int dayExpensesId)
@@ -55,6 +58,9 @@ namespace ExpensesCalculator.Services
 
         public async Task<MultiSelectList> GetCheckedItemUsers(ICollection<string> userList, int dayExpensesId)
         {
+            if (userList is null)
+                return await GetAllAvailableItemUsers(dayExpensesId);
+
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var optionList = new List<SelectListItem>();
 
@@ -66,8 +72,7 @@ namespace ExpensesCalculator.Services
                         optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
                     else
                         optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = false });
-                }
-                    
+                }                    
             }
 
             return new MultiSelectList(optionList, "Value", "Text", userList);
