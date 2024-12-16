@@ -84,34 +84,20 @@ namespace ExpensesCalculator.Controllers
         }
 
         // POST: Items/Edit/5?checkId=1&dayExpensesId=2
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
+        public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Amount,Id")] EditItemViewModel<int> item, int dayExpensesId)
         {
-            item = await _itemService.SetCheck(item);
-            ModelState.Clear();
-
-            if (item.UsersList.First() is null)
-                ModelState.AddModelError("UsersList", "Choose some users");
-            if (item.Price <= 0)
-                ModelState.AddModelError("Price", "Enter correct price");
-
-            if (TryValidateModel(item))
+            if (ModelState.IsValid)
             {
                 var model = await _itemService.EditItem(item);
-
                 return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
             }
 
-            if (item.UsersList.First() is not null)
-                item.UsersList = item.UsersList.First().Split(',');
-
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UsersList, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UserList, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UserList);
 
             return PartialView("_EditItem", item);
         }
