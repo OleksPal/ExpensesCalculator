@@ -1,4 +1,6 @@
-﻿@model Item
+﻿@using ExpensesCalculator.ViewModels;
+
+@model EditItemViewModel<int>
 
 <script src="~/js/ajax/items/edit-item.js"></script>
 <script src="~/js/multiselect-dropdown.js"></script>
@@ -27,6 +29,12 @@
             <label asp-for="Price" class="control-label"></label>
             <input asp-for="Price" type="number" class="form-control" id="price"/>
             <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <i class="bi bi-grid"></i>
+            <label asp-for="Amount" class="control-label"></label>
+            <input asp-for="Amount" type="number" class="form-control" id="amount" />
+            <span asp-validation-for="Amount" class="text-danger"></span>
         </div>
         <div class="form-group mb-3 dropdown">
             <i class="bi bi-people-fill"></i>
@@ -70,8 +78,8 @@
     var itemId = $("#Id").val();
     var checkId = @ViewData["CheckId"];
     var dayExpensesId = @ViewData["DayExpensesId"];
-    var userList = @Html.Raw(Model.Users);
-    var mySelectedItems = (userList[0] === null) ? [] : @Html.Raw(Model.Users);
+    var userList = @Html.Raw(Model.UserList);
+    var mySelectedItems = (userList[0] === null) ? [] : @Html.Raw(Model.UserList);
 
     $(document).ready(function () {
         const dropdownButton = document.getElementById('multiSelectDropdown');
