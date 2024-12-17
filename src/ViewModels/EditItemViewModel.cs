@@ -8,6 +8,12 @@ namespace ExpensesCalculator.ViewModels
         [DataType(DataType.Text)]
         [Display(Name = "Name")]
         [StringLength(30, ErrorMessage = "Name can have a max of 30 characters")]
+        public T Id { get; set; }
+
+        [Required(ErrorMessage = "Please enter item name")]
+        [DataType(DataType.Text)]
+        [Display(Name = "Name")]
+        [StringLength(30, ErrorMessage = "Name can have a max of 30 characters")]
         public string? Name { get; set; }
 
         [DataType(DataType.Text)]

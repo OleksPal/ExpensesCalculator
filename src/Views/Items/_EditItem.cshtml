@@ -38,7 +38,7 @@
         </div>
         <div class="form-group mb-3 dropdown">
             <i class="bi bi-people-fill"></i>
-            <label asp-for="UsersList" class="control-label"></label>
+            <label asp-for="UserList" class="control-label"></label>
             <button class="btn btn-outline-dark dropdown-toggle w-100 text single-line" type="button" style="text-align: left;"
                     id="multiSelectDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"> Select users
             </button>
@@ -62,7 +62,7 @@
                     </li>
                 }
             </ul>
-            <span asp-validation-for="UsersList" class="text-danger"></span>
+            <span asp-validation-for="UserList" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id"/>
         <div class="form-group">
