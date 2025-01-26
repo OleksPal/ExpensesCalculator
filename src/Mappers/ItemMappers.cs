@@ -29,5 +29,19 @@ namespace ExpensesCalculator.Mappers
                 CheckId = editItemViewModel.CheckId
             };
         }
+
+        public static EditItemViewModel<int> ToEditItemViewModel(this Item item)
+        {
+            return new EditItemViewModel<int>
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Description = item.Description,
+                Price = item.Price,
+                Amount = 1,
+                UserList = item.UsersList.ToList(),
+                CheckId = item.CheckId
+            };
+        }
     }
 }

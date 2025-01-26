@@ -1,4 +1,5 @@
-﻿using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Mappers;
+using ExpensesCalculator.Models;
 using ExpensesCalculator.Services;
 using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -44,7 +45,7 @@ namespace ExpensesCalculator.Controllers
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UsersList, dayExpensesId);
             ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
-            return PartialView("_EditItem", item);
+            return PartialView("_EditItem", item.ToEditItemViewModel());
         }
 
         // GET: Items/DeleteItem/5?dayExpensesId=2
