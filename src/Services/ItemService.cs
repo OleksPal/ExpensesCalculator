@@ -91,18 +91,18 @@ namespace ExpensesCalculator.Services
             return check;
         }
 
-        public async Task<Check> EditItem(EditItemViewModel<int> item)
+        public async Task<Check> EditItem(EditItemViewModel<int> editItemViewModel)
         {
-            var check = await _checkRepository.GetById(item.CheckId);
-            var oldItemPrice = await _itemRepository.GetItemPriceById(item.Id);
+            var check = await _checkRepository.GetById(editItemViewModel.CheckId);
+            var oldItemPrice = await _itemRepository.GetItemPriceById(editItemViewModel.Id);
 
-            if (item is not null)
+            if (editItemViewModel is not null)
             {
-                await _itemRepository.Update(item);
+                await _itemRepository.Update(editItemViewModel.ToItem());
                 check.Sum -= oldItemPrice;
-                check.Sum += item.Price;                
+                check.Sum += editItemViewModel.Price;
                 await _checkRepository.Update(check);
-                check = await GetCheckWithItems(item.CheckId);
+                check = await GetCheckWithItems(editItemViewModel.CheckId);
             }
 
             return check;
