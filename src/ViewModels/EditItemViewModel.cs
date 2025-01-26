@@ -4,10 +4,7 @@ namespace ExpensesCalculator.ViewModels
 {
     public class EditItemViewModel<T>
     {
-        [Required(ErrorMessage = "Please enter item name")]
-        [DataType(DataType.Text)]
-        [Display(Name = "Name")]
-        [StringLength(30, ErrorMessage = "Name can have a max of 30 characters")]
+        [Required]
         public T Id { get; set; }
 
         [Required(ErrorMessage = "Please enter item name")]

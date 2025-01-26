@@ -91,11 +91,8 @@ namespace ExpensesCalculator.Services
             return check;
         }
 
-        public async Task<Check> EditItem(Item item)
+        public async Task<Check> EditItem(EditItemViewModel<int> item)
         {
-            string rareNameList = item.UsersList.First();
-            item.UsersList = GetUserListFromString(rareNameList);
-
             var check = await _checkRepository.GetById(item.CheckId);
             var oldItemPrice = await _itemRepository.GetItemPriceById(item.Id);
 
