@@ -1,4 +1,5 @@
 ﻿@using ExpensesCalculator.ViewModels;
+@using Newtonsoft.Json;
 
 @model EditItemViewModel<int>
 
@@ -74,15 +75,14 @@
 </div>
 
 <script>
-    var token = '@Html.AntiForgeryToken()';
-    var itemId = $("#Id").val();
-    var checkId = @ViewData["CheckId"];
-    var dayExpensesId = @ViewData["DayExpensesId"];
-    var userList = @Html.Raw(Model.UserList);
-    var mySelectedItems = (userList[0] === null) ? [] : @Html.Raw(Model.UserList);
+    var token = '@Html.AntiForgeryToken()'
+    var itemId = $("#Id").val()
+    var checkId = @ViewData["CheckId"]
+    var dayExpensesId = @ViewData["DayExpensesId"]
+    var mySelectedItems = @(Model.UserList == null ? Html.Raw("[]") : Html.Raw(JsonConvert.SerializeObject(Model.UserList)))
 
     $(document).ready(function () {
-        const dropdownButton = document.getElementById('multiSelectDropdown');
-        dropdownButton.innerText = "@Html.Raw(ViewData["FormatUserList"])";
+        const dropdownButton = document.getElementById('multiSelectDropdown')
+        dropdownButton.innerText = "@ViewData["FormatUserList"]"
     });
 </script>

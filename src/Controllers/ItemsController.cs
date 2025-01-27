@@ -43,9 +43,7 @@ namespace ExpensesCalculator.Controllers
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UsersList, dayExpensesId);
-
-            string formatedUserList = await _itemService.GetItemUsers(item.UsersList);
-            ViewData["FormatUserList"] = (formatedUserList ?? "Select users");
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             var editItemViewModel = item.ToEditItemViewModel();
             return PartialView("_EditItem", editItemViewModel);
@@ -92,7 +90,7 @@ namespace ExpensesCalculator.Controllers
         // POST: Items/Edit/5?checkId=1&dayExpensesId=2
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Amount,Id")] EditItemViewModel<int> item, int dayExpensesId)
+        public async Task<IActionResult> Edit([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] EditItemViewModel<int> item, int dayExpensesId)
         {
             if (ModelState.IsValid)
             {
@@ -103,7 +101,9 @@ namespace ExpensesCalculator.Controllers
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UserList, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UserList);
+
+            string formatedUserList = await _itemService.GetItemUsers(item.UserList);
+            ViewData["FormatUserList"] = formatedUserList ?? "Select users";
 
             return PartialView("_EditItem", item);
         }

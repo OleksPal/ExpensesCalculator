@@ -14,7 +14,7 @@ $(function () {
                 Description: $("#description").val(),
                 Price: price,
                 Amount: $("#amount").val(),
-                UsersList: mySelectedItems,
+                UserList: mySelectedItems,
                 CheckId: checkId,
                 __RequestVerificationToken: $(token).val()
             },

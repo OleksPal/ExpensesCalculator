@@ -98,11 +98,12 @@ namespace ExpensesCalculator.Services
 
             if (editItemViewModel is not null)
             {
-                await _itemRepository.Update(editItemViewModel.ToItem());
+                var editedItem = editItemViewModel.ToItem();
+                await _itemRepository.Update(editedItem);
                 check.Sum -= oldItemPrice;
-                check.Sum += editItemViewModel.Price;
+                check.Sum += editedItem.Price;
                 await _checkRepository.Update(check);
-                check = await GetCheckWithItems(editItemViewModel.CheckId);
+                check = await GetCheckWithItems(editedItem.CheckId);
             }
 
             return check;
