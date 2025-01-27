@@ -43,12 +43,15 @@ namespace ExpensesCalculator.Controllers
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UsersList, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
-            return PartialView("_EditItem", item.ToEditItemViewModel());
+            string formatedUserList = await _itemService.GetItemUsers(item.UsersList);
+            ViewData["FormatUserList"] = (formatedUserList ?? "Select users");
+
+            var editItemViewModel = item.ToEditItemViewModel();
+            return PartialView("_EditItem", editItemViewModel);
         }
 
-        // GET: Items/DeleteItem/5?dayExpensesId=2
+        // GET: Items/DeleteItem/5
         [HttpGet]
         public async Task<IActionResult> DeleteItem(int? id)
         {
@@ -79,7 +82,9 @@ namespace ExpensesCalculator.Controllers
             ViewData["CheckId"] = newItem.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(newItem.UserList, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(newItem.UserList);
+            
+            string formatedUserList = await _itemService.GetItemUsers(newItem.UserList);
+            ViewData["FormatUserList"] = formatedUserList ?? "Select users";
 
             return PartialView("_CreateItem", newItem);
         }
