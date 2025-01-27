@@ -1,5 +1,7 @@
-﻿using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Mappers;
+using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
+using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
 
@@ -34,7 +36,10 @@ namespace ExpensesCalculator.Services
 
         public async Task<string> GetItemUsers(IEnumerable<string> userList)
         {
-            return String.Join(", ", userList);
+            if (userList is not null)
+                return String.Join(", ", userList);
+
+            return null;
         }
 
         public async Task<MultiSelectList> GetAllAvailableItemUsers(int dayExpensesId)
@@ -51,8 +56,11 @@ namespace ExpensesCalculator.Services
             return new MultiSelectList(optionList, "Value", "Text");
         }
 
-        public async Task<MultiSelectList> GetCheckedItemUsers(Item item, int dayExpensesId)
+        public async Task<MultiSelectList> GetCheckedItemUsers(ICollection<string> userList, int dayExpensesId)
         {
+            if (userList is null)
+                return await GetAllAvailableItemUsers(dayExpensesId);
+
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var optionList = new List<SelectListItem>();
 
@@ -60,46 +68,42 @@ namespace ExpensesCalculator.Services
             {
                 foreach (var participant in dayExpenses.ParticipantsList)
                 {
-                    if (item.UsersList.Contains(participant))
+                    if (userList.Contains(participant))
                         optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = true });
                     else
                         optionList.Add(new SelectListItem { Text = participant, Value = participant, Selected = false });
-                }
-                    
+                }                    
             }
 
-            return new MultiSelectList(optionList, "Value", "Text", item.UsersList);
+            return new MultiSelectList(optionList, "Value", "Text", userList);
         }
 
-        public async Task<Check> AddItem(Item item)
+        public async Task<Check> AddItem(AddItemViewModel<int> newItemViewModel)
         {
-            string rareNameList = item.UsersList.First();
-            item.UsersList = GetUserListFromString(rareNameList);
+            var check = await GetCheckWithItems(newItemViewModel.CheckId);
 
-            var check = await GetCheckWithItems(item.CheckId);
+            var itemToAdd = newItemViewModel.ToItem();
 
-            check.Sum += item.Price;
-            await _itemRepository.Insert(item);
+            check.Sum += itemToAdd.Price;
+            await _itemRepository.Insert(itemToAdd);
             check = await _checkRepository.Update(check);            
 
             return check;
         }
 
-        public async Task<Check> EditItem(Item item)
+        public async Task<Check> EditItem(EditItemViewModel<int> editItemViewModel)
         {
-            string rareNameList = item.UsersList.First();
-            item.UsersList = GetUserListFromString(rareNameList);
+            var check = await _checkRepository.GetById(editItemViewModel.CheckId);
+            var oldItemPrice = await _itemRepository.GetItemPriceById(editItemViewModel.Id);
 
-            var check = await _checkRepository.GetById(item.CheckId);
-            var oldItemPrice = await _itemRepository.GetItemPriceById(item.Id);
-
-            if (item is not null)
+            if (editItemViewModel is not null)
             {
-                await _itemRepository.Update(item);
+                var editedItem = editItemViewModel.ToItem();
+                await _itemRepository.Update(editedItem);
                 check.Sum -= oldItemPrice;
-                check.Sum += item.Price;                
+                check.Sum += editedItem.Price;
                 await _checkRepository.Update(check);
-                check = await GetCheckWithItems(item.CheckId);
+                check = await GetCheckWithItems(editedItem.CheckId);
             }
 
             return check;

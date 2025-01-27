@@ -1,8 +1,5 @@
 $(function () {
     $("#editButton").on("click", function () {
-        var users = mySelectedItems.length > 0
-            ? mySelectedItems.join(',') : "";
-
         // Remove currency symbol if price value has one
         var price = $("#price").val();
         var lastSymbol = price.slice(-1);
@@ -13,7 +10,11 @@ $(function () {
         $.ajax({
             url: `/Items/Edit/${itemId}?dayexpensesid=${dayExpensesId}`,
             data: {
-                Name: $("#name").val(), Description: $("#description").val(), Price: price, UsersList: users,
+                Name: $("#name").val(),
+                Description: $("#description").val(),
+                Price: price,
+                Amount: $("#amount").val(),
+                UserList: mySelectedItems,
                 CheckId: checkId,
                 __RequestVerificationToken: $(token).val()
             },

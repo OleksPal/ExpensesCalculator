@@ -1,6 +1,7 @@
 ﻿using ExpensesCalculator.Extensions;
 using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
+using ExpensesCalculator.ViewModels;
 using NuGet.Packaging;
 using System.Text.RegularExpressions;
 

@@ -1,5 +1,7 @@
-﻿using ExpensesCalculator.Models;
+﻿using ExpensesCalculator.Mappers;
+using ExpensesCalculator.Models;
 using ExpensesCalculator.Services;
+using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,13 +42,14 @@ namespace ExpensesCalculator.Controllers
 
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UsersList, dayExpensesId);
             ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
-            return PartialView("_EditItem", item);
+            var editItemViewModel = item.ToEditItemViewModel();
+            return PartialView("_EditItem", editItemViewModel);
         }
 
-        // GET: Items/DeleteItem/5?dayExpensesId=2
+        // GET: Items/DeleteItem/5
         [HttpGet]
         public async Task<IActionResult> DeleteItem(int? id)
         {
@@ -63,67 +66,44 @@ namespace ExpensesCalculator.Controllers
             return PartialView("_DeleteItem", item);
         }
 
-        // POST: Items/Create?checkId=1&dayExpensesId=2
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Items/Create?dayExpensesId=2
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
-        {          
-            item = await _itemService.SetCheck(item);
-            ModelState.Clear();
-
-            if (item.UsersList.First() is null)
-                ModelState.AddModelError("UsersList", "Choose some users");
-            if (item.Price <= 0)
-                ModelState.AddModelError("Price", "Enter correct price");
-
-            if (TryValidateModel(item))
+        public async Task<IActionResult> Create([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] AddItemViewModel<int> newItem, int dayExpensesId)
+        {
+            if (ModelState.IsValid)
             {
-                var model = await _itemService.AddItem(item);
+                var model = await _itemService.AddItem(newItem);
                 return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
             }
 
-            if(item.UsersList.First() is not null)
-                item.UsersList = item.UsersList.First().Split(',');
-            
-            ViewData["CheckId"] = item.CheckId;
+            ViewData["CheckId"] = newItem.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(newItem.UserList, dayExpensesId);
+            
+            string formatedUserList = await _itemService.GetItemUsers(newItem.UserList);
+            ViewData["FormatUserList"] = formatedUserList ?? "Select users";
 
-            return PartialView("_CreateItem", item);
+            return PartialView("_CreateItem", newItem);
         }
 
         // POST: Items/Edit/5?checkId=1&dayExpensesId=2
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("CheckId,UsersList,Name,Description,Price,Id")] Item item, int dayExpensesId)
+        public async Task<IActionResult> Edit([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] EditItemViewModel<int> item, int dayExpensesId)
         {
-            item = await _itemService.SetCheck(item);
-            ModelState.Clear();
-
-            if (item.UsersList.First() is null)
-                ModelState.AddModelError("UsersList", "Choose some users");
-            if (item.Price <= 0)
-                ModelState.AddModelError("Price", "Enter correct price");
-
-            if (TryValidateModel(item))
+            if (ModelState.IsValid)
             {
                 var model = await _itemService.EditItem(item);
-
                 return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
             }
 
-            if (item.UsersList.First() is not null)
-                item.UsersList = item.UsersList.First().Split(',');
-
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UserList, dayExpensesId);
+
+            string formatedUserList = await _itemService.GetItemUsers(item.UserList);
+            ViewData["FormatUserList"] = formatedUserList ?? "Select users";
 
             return PartialView("_EditItem", item);
         }

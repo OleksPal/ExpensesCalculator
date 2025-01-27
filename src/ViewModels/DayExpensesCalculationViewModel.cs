@@ -1,4 +1,6 @@
-﻿namespace ExpensesCalculator.Models
+﻿using ExpensesCalculator.Models;
+
+namespace ExpensesCalculator.ViewModels
 {
     public class DayExpensesCalculationViewModel
     {

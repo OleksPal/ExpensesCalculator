@@ -1,4 +1,6 @@
-﻿@model ExpensesCalculator.Models.DayExpensesCalculationViewModel
+﻿@using ExpensesCalculator.ViewModels;
+
+@model DayExpensesCalculationViewModel
 
 @{
     ViewData["Title"] = "Expenses calculation";
@@ -55,11 +57,11 @@
                             <span class="tooltiptext" style="height:55px;">
                                 <div class="text-truncate">
                                     <i class="bi bi-coin pe-1"></i>
-                                    Sum: @checkCalculation.Check.Sum<br />
+                                    Sum: @(checkCalculation.Check.Sum)₴<br />
                                 </div>
                                 <div class="text-truncate">
                                     <i class="bi bi-person-fill pe-1"></i>
-                                    Payer: @checkCalculation.Check.Payer>
+                                    Payer: @checkCalculation.Check.Payer
                                 </div>                              
                             </span>
                         </div>
