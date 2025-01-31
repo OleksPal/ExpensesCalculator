@@ -3,7 +3,10 @@ using ExpensesCalculator.Repositories;
 using ExpensesCalculator.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using ExpensesCalculator.Repositories.Interfaces;
+using System.Globalization;
 
 namespace ExpensesCalculator
 {
@@ -14,7 +17,25 @@ namespace ExpensesCalculator
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+            builder.Services.AddLocalization(options =>
+            {
+                options.ResourcesPath = "Resources";
+            });
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("uk-UA")
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedUICultures = supportedCultures;
+            });
 
             #region Repositories
             builder.Services.AddScoped<IItemRepository, ItemRepository>();
@@ -35,6 +56,8 @@ namespace ExpensesCalculator
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ExpensesContext>();
 
             var app = builder.Build();
+
+            app.UseRequestLocalization();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
