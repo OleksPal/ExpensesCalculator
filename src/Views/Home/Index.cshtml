@@ -1,10 +1,14 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-white text-center dark-blue-0">
     <div class="container py-5">
-        <h1 class="fw-bolder">Welcome to ExpensesCalculator</h1>
+        <h1 class="fw-bolder">@Localizer["Welcome"] Welcome to ExpensesCalculator</h1>
         <p class="lead">Distribute expenses among party participants based on their consumption.</p>
     </div>
     <div class="py-5 px-3 px-lg-5 my-lg-5">
