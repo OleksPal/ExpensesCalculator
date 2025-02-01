@@ -117,6 +117,42 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Ця сторінка включає деякі інструкції, що ви можете робити на цьому веб сайті</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Про цю сторінку</value>
+  </data>
+  <data name="AddCheckButtonDescription" xml:space="preserve">
+    <value>4. На наступній сторінці додайте чеки, які використовуються для групування предметів за платником.</value>
+  </data>
+  <data name="AddExpensesDescription" xml:space="preserve">
+    <value>2. Натисніть кнопку "Додати витрати" і введіть необхідні дані.</value>
+  </data>
+  <data name="AddItemButtonDescription" xml:space="preserve">
+    <value>5. Відкрийте відповідний чек та додайте предмети цього чека.</value>
+  </data>
+  <data name="CalculateButtonDescription" xml:space="preserve">
+    <value>7. Натисніть на кнопку з калькулятором для розподілу витрат між учасниками.</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Розподіляйте витрати між учасниками свят на основі їхніх витрат</value>
+  </data>
+  <data name="EditAndDeleteButtonsDescription" xml:space="preserve">
+    <value>6. Використовуйте кнопки для редагування та видалення, якщо дані було введено неправильно.</value>
+  </data>
+  <data name="ExpensesParticipantTabDescription" xml:space="preserve">
+    <value>8. Перемикайтесь між вкладками, щоб побачити скільки витратив кожен з учасників.</value>
+  </data>
+  <data name="ExpensesTransactionListTabDescription" xml:space="preserve">
+    <value>9. На вкладці "Список транзакцій" можна побачити скільки кожен з учасників винен грошей, тим хто платив.</value>
+  </data>
+  <data name="MyExpensesTabDescription" xml:space="preserve">
+    <value>1. Оберіть вкладку "Мій список витрат".</value>
+  </data>
+  <data name="ShowChecksButtonDescription" xml:space="preserve">
+    <value>3. Натисніть кнопку із зображенням списку, для того щоб ввести дані про предмети, що будуть обраховуватися.</value>
+  </data>
   <data name="Welcome" xml:space="preserve">
     <value>Вітаємо у ExpensesCalculator</value>
   </data>
