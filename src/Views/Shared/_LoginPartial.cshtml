@@ -4,13 +4,14 @@
 @inject UserManager<IdentityUser> UserManager
 
 <ul class="navbar-nav align-items-center">
+    <li class="nav-item me-1">
+        <button class="btn text-white" style="height: 40px;">
+            <img class="me-1" src="@Url.Content("~/images/en-US-flag.svg")" alt="English - eng" width="30">
+            EN
+        </button>
+    </li>
     @if (SignInManager.IsSignedIn(User))
-    {
-        <li class="nav-item">
-            <button class="btn nav-link" style="height: 40px;">
-                <img src="@Url.Content("~/images/gb.svg")" alt="English - eng" width="30">
-            </button>      
-        </li>
+    {        
         <li class="nav-item">
             <a id="manage" class="nav-link text-white" style="height: 40px;" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                 <img class="rounded-circle" width="30" alt="avatar1" src="@Url.Content("~/images/default-profile-account-image.jpg")" />
@@ -22,7 +23,6 @@
                 <button type="submit" class="nav-link btn text-white" style="height: 40px;">Logout</button>
             </form>
         </li>
-
     }
     else
     {
