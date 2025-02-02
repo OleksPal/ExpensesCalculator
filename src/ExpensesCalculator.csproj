@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="Resources\Views\Shared\_Layout.en-US.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Resources\Views\Shared\_Layout.en-US.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="angularjs" Version="1.8.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.4" />
