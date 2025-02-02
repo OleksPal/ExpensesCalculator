@@ -14,16 +14,27 @@ namespace ExpensesCalculator.Controllers
 
             if (languageCookie != null)
             {
-                ChangeLanguage(languageCookie);
+                var languageManager = new LanguageManager();
+                languageManager.ChangeLanguageCulture(languageCookie);
+
+                Response.Cookies.Append("languageCulture", languageCookie);
+
+                TempData["languageCulture"] = languageCookie;
+            }
+            else
+            {
+                TempData["languageCulture"] = "en-US";
             }
         }
 
-        public void ChangeLanguage(string language)
+        public IActionResult ChangeLanguage(string language, string returnUrl)
         {
             var languageManager = new LanguageManager();
             languageManager.ChangeLanguageCulture(language);
 
             Response.Cookies.Append("languageCulture", language);
+
+            return Redirect(returnUrl);
         }
     }
 }

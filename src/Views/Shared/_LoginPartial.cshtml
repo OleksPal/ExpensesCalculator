@@ -5,10 +5,33 @@
 
 <ul class="navbar-nav align-items-center">
     <li class="nav-item me-1">
-        <button class="btn text-white" style="height: 40px;">
-            <img class="me-1" src="@Url.Content("~/images/en-US-flag.svg")" alt="English - eng" width="30">
-            EN
-        </button>
+        @switch (TempData["languageCulture"])
+        {
+            case "en-US":
+                {
+                    <button class="btn text-white" style="height: 40px;" onclick="location.href='@Url.Action("ChangeLanguage", "Language", new {language="uk-UA", returnUrl=ViewContext.HttpContext.Request.Path})'">
+                        <img class="me-1" src="@Url.Content("~/images/en-US-flag.svg")" alt="eng" width="30">
+                    EN
+                </button>
+                break;
+            }
+            case "uk-UA":
+            {
+                    <button class="btn text-white" style="height: 40px;" onclick="location.href='@Url.Action("ChangeLanguage", "Language", new {language="en-US", returnUrl=ViewContext.HttpContext.Request.Path} )'">
+                    <img class="me-1" src="@Url.Content("~/images/uk-UA-flag.svg")" alt="ua" width="30">
+                    UA
+                </button>
+                break;
+            }
+            default:
+            {
+                    <button class="btn text-white" style="height: 40px;" onclick="location.href='@Url.Action("ChangeLanguage", "Language", new {language="en-US", returnUrl=ViewContext.HttpContext.Request.Path} )'">
+                    <img class="me-1" src="@Url.Content("~/images/en-US-flag.svg")" alt="def" width="30">
+                    EN
+                </button>
+                break;
+            }
+        }        
     </li>
     @if (SignInManager.IsSignedIn(User))
     {        
