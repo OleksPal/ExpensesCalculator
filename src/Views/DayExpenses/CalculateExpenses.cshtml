@@ -1,4 +1,7 @@
 ﻿@using ExpensesCalculator.ViewModels;
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
 
 @model DayExpensesCalculationViewModel
 
@@ -19,7 +22,7 @@
     <div class="container-fluid px-3 py-2 text-white">
         <h4>
             <i class="bi bi-calculator"></i>
-            Expenses calculation
+            @Localizer["ExpensesCalculation"]
         </h4>
         <br />
         <div class="cn">
@@ -39,7 +42,7 @@
                 </button>
             }
             <button class="tablinks text-white" onclick="openParticipantTab(event, 'transactionList')">
-                <i class="bi bi-credit-card-fill pe-2"></i>Transaction List
+                <i class="bi bi-credit-card-fill pe-2"></i>@Localizer["TransactionList"]
             </button>
         </div>
 
@@ -57,11 +60,11 @@
                             <span class="tooltiptext" style="height:55px;">
                                 <div class="text-truncate">
                                     <i class="bi bi-coin pe-1"></i>
-                                    Sum: @(checkCalculation.Check.Sum)₴<br />
+                                    @Localizer["Sum"]: @(checkCalculation.Check.Sum)₴<br />
                                 </div>
                                 <div class="text-truncate">
                                     <i class="bi bi-person-fill pe-1"></i>
-                                    Payer: @checkCalculation.Check.Payer
+                                    @Localizer["Payer"]: @checkCalculation.Check.Payer
                                 </div>                              
                             </span>
                         </div>
@@ -75,7 +78,7 @@
                                     <div class="mytooltip">
                                         <i class="bi bi-people-fill pe-1"></i>@item.Item.UsersList.Count
                                         <span class="tooltiptext" style="height:110px; margin-left: -30px;">
-                                            <i class="bi bi-people-fill pe-1"></i>Users:<br />
+                                            <i class="bi bi-people-fill pe-1"></i>@Localizer["Users"]:<br />
                                             @foreach (var user in item.Item.UsersList.Take(3))
                                             {
                                                 <div class="text-truncate">
@@ -85,7 +88,7 @@
                                             }
                                             @if(item.Item.UsersList.Count > 3)
                                             {
-                                                <div>and @(item.Item.UsersList.Count - 3) more</div>
+                                                <div>@Localizer["And"] @(item.Item.UsersList.Count - 3) @Localizer["More"]</div>
                                             }
                                         </span>
                                     </div>
@@ -94,7 +97,7 @@
                             }
                         </ul>
                         <label>
-                            <i class="bi bi-coin pe-1"></i>Sum per participant: 
+                            <i class="bi bi-coin pe-1"></i>@Localizer["SumPerParticipant"]:
                             @Html.DisplayFor(model => checkCalculation.SumPerParticipant)
                         </label>
                         <br />
@@ -106,7 +109,7 @@
 
         <div id="transactionList" class="tabcontent rounded-bottom border-primary">
             <label>
-                <i class="bi bi-cash-stack pe-1"></i>Transaction list:
+                <i class="bi bi-cash-stack pe-1"></i>@Localizer["TransactionList"]:
             </label>
             <ul>
                 @foreach (var transaction in Model.OptimizedUserTransactions)
@@ -124,7 +127,7 @@
             <span role="button" style="user-select: none;" data-bs-toggle="collapse"
                   id="fullTransactionListDropper" data-bs-target="#collapseFullTransactionList"
                   aria-expanded="false" aria-controls="collapseFullTransactionList">▷</span>
-            <i class="bi bi-cash-stack ps-1 pe-2"></i>Full trasaction list:
+            <i class="bi bi-cash-stack ps-1 pe-2"></i>@Localizer["FullTrasactionList"]:
 
             <div class="collapse" id="collapseFullTransactionList">
                 <ul>
@@ -145,7 +148,7 @@
             <br />
             <a role="button" class="btn btn-info" href="/DayExpenses/ShowChecks/@Model.DayExpensesId">
                 <i class="bi bi-list-check"></i>
-                Back to Checks
+                @Localizer["BackToChecks"]
             </a>
         </div>
     </div>    
