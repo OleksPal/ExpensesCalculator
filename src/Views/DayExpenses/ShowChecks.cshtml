@@ -1,4 +1,8 @@
-﻿@model DayExpenses
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@model DayExpenses
 
 @{
     ViewData["Title"] = "Check List";
@@ -21,11 +25,11 @@
                 <tr>
                     <th class="text-nowrap" width="40%">
                         <i class="bi bi-calendar-event pe-1"></i>
-                        @Html.DisplayNameFor(model => model.Date)
+                        @Localizer["Date"]
                     </th>
                     <th class="text-nowrap" width="40%">
                         <i class="bi bi-people-fill pe-1"></i>
-                        @Html.DisplayNameFor(model => model.Participants)
+                        @Localizer["Participants"]
                     </th>
                     <th></th>
                 </tr>
@@ -36,7 +40,7 @@
                         {{dayExpenses.Date | date : 'fullDate'}}
                     </td>
                     <td class="text-nowrap">
-                        {{dayExpenses.ParticipantsList.length}} people
+                        {{dayExpenses.ParticipantsList.length}} @Localizer["People"]
                     </td>
                     <td>
                         <div class="d-flex justify-content-end">
@@ -67,26 +71,26 @@
     <div class="container-fluid p-3 text-white">
         <h4>
             <i class="bi bi-receipt"></i>
-            Check List
+            @Localizer["CheckList"]
         </h4>
         <br />
 
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                 onclick="showModalForCheckCreate(@Model.Id)">
-            <i class="bi bi-plus-circle"></i> Add check
+            <i class="bi bi-plus-circle me-1"></i>@Localizer["AddCheck"]
         </button>
     </div>
 
     <div class="text-white text-center p-4" ng-if="checks.length == 0">
         <h2>No data to display</h2>
-        <h5 class="pt-3">Try to add new checks</h5>
+        <h5 class="pt-3">@Localizer["TryAddChecks"]</h5>
     </div>
 
     <div class="d-flex justify-content-end pb-lg-2 p-3" ng-if="checks.length > 0">
         <div class="col-12 col-lg-3">
             <div class="input-group">
                 <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
-                <input ng-model="$parent.searchText" ng-change="filterPagedChecks()" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
+                <input ng-model="$parent.searchText" ng-change="filterPagedChecks()" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="@Localizer["Search"]" />
             </div>
         </div>
     </div>
@@ -98,21 +102,21 @@
                     <th></th>
                     <th class="text-nowrap" ng-click="changeOrder('Location')" width="33%">
                         <i class="bi bi-cart pe-1"></i>
-                        @Html.DisplayNameFor(model => model.Checks.First().Location)
+                        @Localizer["Location"]
                         <i class="bi bi-funnel-fill ps-1"
                            ng-class="getIcon('Location')">
                         </i>
                     </th>
                     <th class="text-nowrap" ng-click="changeOrder('Sum')" width="33%">
                         <i class="bi bi-cash-stack pe-1"></i>
-                        @Html.DisplayNameFor(model => model.Checks.First().Sum)
+                        @Localizer["Sum"]
                         <i class="bi bi-funnel-fill ps-1"
                            ng-class="getIcon('Sum')">
                         </i>
                     </th>
                     <th class="text-nowrap" ng-click="changeOrder('Payer')" width="33%">
                         <i class="bi bi-person-fill pe-1"></i>
-                        @Html.DisplayNameFor(model => model.Checks.First().Payer)
+                        @Localizer["Payer"]
                         <i class="bi bi-funnel-fill ps-1"
                            ng-class="getIcon('Payer')">
                         </i>
@@ -145,9 +149,11 @@
             </li>
             <li class="text-white">
                 <i class="bi bi-receipt"></i>
-                <label>Checks {{currentPage*checksPerPage+1}} to 
+                <label>
+                    @Localizer["Checks"] {{currentPage*checksPerPage+1}} @Localizer["To"]
                     {{(currentPage*checksPerPage + checksPerPage > checks.length) ? checks.length : (currentPage*checksPerPage + checksPerPage)}}
-                    of {{checks.length}}</label>
+                    @Localizer["Of"] {{checks.length}}
+                </label>
             </li>
         </ul>
     </div>
