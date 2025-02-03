@@ -1,31 +1,38 @@
-﻿@model ExpensesCalculator.Models.Check
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@model ExpensesCalculator.Models.Check
 
 <script src="~/js/ajax/checks/delete-check.js"></script>
 
 <div class="modal-header">
-    <h5 class="modal-title">Delete check</h5>
+    <h5 class="modal-title">@Localizer["DeleteCheck"]</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
     <form asp-action="Delete">
         <div class="form-group mb-3">
-            <label asp-for="Location" class="control-label"></label>
+            <i class="bi bi-cart-fill"></i>
+            <label class="control-label">@Localizer["Location"]</label>
             <input asp-for="Location" class="form-control" disabled readonly />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Sum" class="control-label"></label>
+            <i class="bi bi-cash-stack pe-1"></i>
+            <label class="control-label">@Localizer["Sum"]</label>
             <input asp-for="Sum" class="form-control" disabled readonly />
             <span asp-validation-for="Sum" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Payer" class="control-label"></label>
+            <i class="bi bi-wallet2"></i>
+            <label class="control-label">@Localizer["Payer"]</label>
             <input asp-for="Payer" class="form-control" disabled readonly />
             <span asp-validation-for="Payer" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id" />
         <button type="button" value="Delete" class="btn btn-danger" id="deleteCheckButton">
-            <i class="bi bi-trash"></i> Delete
+            <i class="bi bi-trash me-1"></i>@Localizer["DeleteCheckButton"]
         </button>
     </form>
 </div>
