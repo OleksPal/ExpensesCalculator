@@ -132,6 +132,9 @@
   <data name="Location" xml:space="preserve">
     <value>Location</value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data to display</value>
+  </data>
   <data name="Of" xml:space="preserve">
     <value>of</value>
   </data>

@@ -117,46 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddCheck" xml:space="preserve">
-    <value>Додати чек</value>
+  <data name="DeleteItem" xml:space="preserve">
+    <value>Delete item</value>
   </data>
-  <data name="CheckList" xml:space="preserve">
-    <value>Список чеків</value>
+  <data name="DeleteItemButton" xml:space="preserve">
+    <value>Delete</value>
   </data>
-  <data name="Checks" xml:space="preserve">
-    <value>Чеки від</value>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
   </data>
-  <data name="Date" xml:space="preserve">
-    <value>Дата</value>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
   </data>
-  <data name="Location" xml:space="preserve">
-    <value>Місце</value>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
   </data>
-  <data name="NoData" xml:space="preserve">
-    <value>Дані відсутні</value>
-  </data>
-  <data name="Of" xml:space="preserve">
-    <value>з</value>
-  </data>
-  <data name="Participants" xml:space="preserve">
-    <value>Учасники</value>
-  </data>
-  <data name="Payer" xml:space="preserve">
-    <value>Платник</value>
-  </data>
-  <data name="People" xml:space="preserve">
-    <value>учасники</value>
-  </data>
-  <data name="Search" xml:space="preserve">
-    <value>Шукати чеки...</value>
-  </data>
-  <data name="Sum" xml:space="preserve">
-    <value>Сума</value>
-  </data>
-  <data name="To" xml:space="preserve">
-    <value>до</value>
-  </data>
-  <data name="TryAddChecks" xml:space="preserve">
-    <value>Спробуйте додати нові чеки</value>
+  <data name="UserList" xml:space="preserve">
+    <value>Users</value>
   </data>
 </root>
