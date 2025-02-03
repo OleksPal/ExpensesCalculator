@@ -132,6 +132,9 @@
   <data name="More" xml:space="preserve">
     <value>more</value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data to display</value>
+  </data>
   <data name="Payer" xml:space="preserve">
     <value>Payer</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="TransactionList" xml:space="preserve">
     <value>Transaction List</value>
+  </data>
+  <data name="TryNewChecksAndItems" xml:space="preserve">
+    <value>Try to add new checks and items</value>
   </data>
   <data name="Users" xml:space="preserve">
     <value>Users</value>

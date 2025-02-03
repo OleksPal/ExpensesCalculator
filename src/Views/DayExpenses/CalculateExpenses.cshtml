@@ -27,9 +27,17 @@
 
         <hr />
 
+        @if (Model.AllUsersTrasactions.Count == 0)
+        {
+            <div class="text-white text-center pt-4">
+                <h2>@Localizer["NoData"]</h2>
+                <h5 class="p-3">@Localizer["TryNewChecksAndItems"]</h5>
+            </div>
+        }
+        else{
         <div class="tab rounded-top border-primary" style="background:#0a1330">
-            @foreach(var participant in Model.Participants)
-            {                
+            @foreach (var participant in Model.Participants)
+            {
                 <button class="tablinks text-white" onclick="openParticipantTab(event, '@participant')">
                     <i class="bi bi-person-fill pe-1"></i>@participant
                 </button>
@@ -58,7 +66,7 @@
                                 <div class="text-truncate">
                                     <i class="bi bi-person-fill pe-1"></i>
                                     @Localizer["Payer"]: @checkCalculation.Check.Payer
-                                </div>                              
+                                </div>
                             </span>
                         </div>
 
@@ -66,7 +74,7 @@
                             @foreach (var item in checkCalculation.Items)
                             {
                                 <li>
-                                    <i class="bi bi-box pe-1"></i>@item.Item.Name: 
+                                    <i class="bi bi-box pe-1"></i>@item.Item.Name:
                                     @Html.DisplayFor(model => item.Item.Price) /
                                     <div class="mytooltip">
                                         <i class="bi bi-people-fill pe-1"></i>@item.Item.UsersList.Count
@@ -79,7 +87,7 @@
                                                     @user<br />
                                                 </div>
                                             }
-                                            @if(item.Item.UsersList.Count > 3)
+                                            @if (item.Item.UsersList.Count > 3)
                                             {
                                                 <div>@Localizer["And"] @(item.Item.UsersList.Count - 3) @Localizer["More"]</div>
                                             }
@@ -107,8 +115,8 @@
             <ul>
                 @foreach (var transaction in Model.OptimizedUserTransactions)
                 {
-                    <li>                        
-                        <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Sender 
+                    <li>
+                        <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Sender
                         (@Html.DisplayFor(model => transaction.TransferAmount)) →
                         <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Recipient
                     </li>
@@ -128,7 +136,7 @@
                     {
                         <li>
                             <i class="bi bi-cart pe-1"></i>@transaction.CheckName:
-                            <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Sender 
+                            <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Sender
                             (@Html.DisplayFor(model => transaction.TransferAmount)) →
                             <i class="bi bi-person-fill pe-1"></i>@transaction.Subjects.Recipient
                         </li>
@@ -136,6 +144,7 @@
                 </ul>
             </div>
         </div>
+        }        
 
         <div class="pb-3 text-white">
             <br />

@@ -132,6 +132,9 @@
   <data name="More" xml:space="preserve">
     <value> </value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Дані відсутні</value>
+  </data>
   <data name="Payer" xml:space="preserve">
     <value>Платник</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="TransactionList" xml:space="preserve">
     <value>Список транзакцій</value>
+  </data>
+  <data name="TryNewChecksAndItems" xml:space="preserve">
+    <value>Спробуйте додати нові чеки та предмети</value>
   </data>
   <data name="Users" xml:space="preserve">
     <value>Користувачі</value>
