@@ -11,7 +11,7 @@ namespace ExpensesCalculator.Controllers
             base.OnActionExecuting(filterContext);
 
             string? languageCookie = Request.Cookies["languageCulture"];
-
+            // TODO: Optimize ChangeLanguageCulture calls
             if (languageCookie != null)
             {
                 var languageManager = new LanguageManager();
