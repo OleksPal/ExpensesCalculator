@@ -123,6 +123,9 @@
   <data name="AddCheckButton" xml:space="preserve">
     <value>Додати</value>
   </data>
+  <data name="ChoosePayer" xml:space="preserve">
+    <value>Оберіть платника</value>
+  </data>
   <data name="Location" xml:space="preserve">
     <value>Місце</value>
   </data>

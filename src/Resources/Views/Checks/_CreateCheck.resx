@@ -123,6 +123,9 @@
   <data name="AddCheckButton" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="ChoosePayer" xml:space="preserve">
+    <value>Choose payer</value>
+  </data>
   <data name="Location" xml:space="preserve">
     <value>Location</value>
   </data>

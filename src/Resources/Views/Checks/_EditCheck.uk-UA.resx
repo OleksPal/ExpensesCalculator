@@ -117,19 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddCheck" xml:space="preserve">
-    <value>Add check</value>
-  </data>
-  <data name="AddCheckButton" xml:space="preserve">
-    <value>Add</value>
-  </data>
   <data name="ChoosePayer" xml:space="preserve">
-    <value>Choose payer</value>
+    <value>Оберіть платника</value>
+  </data>
+  <data name="EditCheck" xml:space="preserve">
+    <value>Редагувати чек</value>
   </data>
   <data name="Location" xml:space="preserve">
-    <value>Location</value>
+    <value>Місце</value>
   </data>
-  <data name="Payer" xml:space="preserve">
-    <value>Payer</value>
+  <data name="Participants" xml:space="preserve">
+    <value>Учасники</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Зберегти</value>
   </data>
 </root>
