@@ -1,25 +1,31 @@
-﻿@model ExpensesCalculator.Models.DayExpenses
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@model ExpensesCalculator.Models.DayExpenses
 
 <div class="modal-header">
-    <h5 class="modal-title">Delete expenses</h5>
+    <h5 class="modal-title">@Localizer["DeleteExpenses"]</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
     <form asp-action="Delete">
         <div class="form-group mb-3">
-            <label asp-for="Date" class="control-label"></label>
+            <i class="bi bi-calendar-event-fill"></i>
+            <label class="control-label">@Localizer["Date"]</label>
             <input value="@Model.Date" class="form-control" disabled readonly/>
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Participants" class="control-label"></label>
+            <i class="bi bi-people-fill"></i>
+            <label class="control-label">@Localizer["Participants"]</label>
             <input asp-for="Participants" value="@ViewBag.FormatParticipantNames" class="form-control"
                 disabled readonly/>
             <span asp-validation-for="Participants" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id" />
         <button type="submit" value="Delete" class="btn btn-danger">
-            <i class="bi bi-trash"></i> Delete
+            <i class="bi bi-trash me-1"></i>@Localizer["DeleteExpensesButton"]
         </button>
     </form>
 </div>
