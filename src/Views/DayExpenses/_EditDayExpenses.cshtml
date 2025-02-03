@@ -1,21 +1,27 @@
-﻿@model ExpensesCalculator.Models.DayExpenses
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@model ExpensesCalculator.Models.DayExpenses
 
 <script src="~/js/ajax/day-expenses/edit-day-expenses.js"></script>
 
 <div class="modal-header">
-    <h5 class="modal-title">Edit expenses</h5>
+    <h5 class="modal-title">@Localizer["EditExpenses"]</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
     <form asp-action="Edit">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group mb-3">
-            <label asp-for="Date" class="control-label"></label>
+            <i class="bi bi-calendar-event-fill"></i>
+            <label class="control-label">@Localizer["Date"]</label>
             <input asp-for="Date" class="form-control" id="date"/>
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="ParticipantsList" class="control-label"></label>
+            <i class="bi bi-people-fill"></i>
+            <label class="control-label">@Localizer["Participants"]</label>
             <input asp-for="ParticipantsList" class="form-control" value="@ViewBag.FormatParticipantNames" id="participants" />
             <span asp-validation-for="ParticipantsList" class="text-danger"></span>
         </div>
@@ -23,7 +29,7 @@
         <input type="hidden" asp-for="PeopleWithAccessList" value="@ViewData["CurrentUsersName"]" />
         <div class="form-group">
             <button type="button" value="Save" class="btn btn-warning" id="editDayExpensesButton">
-                <i class="bi bi-pencil"></i> Save
+                <i class="bi bi-pencil me-1"></i>@Localizer["Save"]
             </button>
         </div>      
     </form>
