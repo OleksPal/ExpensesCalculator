@@ -1,30 +1,36 @@
-﻿@model ExpensesCalculator.Models.Check
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@model ExpensesCalculator.Models.Check
 
 <script src="~/js/ajax/checks/edit-check.js"></script>
 
 <div class="modal-header">
-    <h5 class="modal-title">Edit check</h5>
+    <h5 class="modal-title">@Localizer["EditCheck"]</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
     <form asp-action="Edit" asp-route-dayexpensesid="@ViewData["DayExpensesId"]">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group mb-3">
-            <label asp-for="Location" class="control-label"></label>
+            <i class="bi bi-cart-fill"></i>
+            <label class="control-label">@Localizer["Location"]</label>
             <input asp-for="Location" class="form-control" id="checkLocation" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Payer" class="control-label"></label><br />
+            <i class="bi bi-wallet2"></i>
+            <label class="control-label">@Localizer["Payer"]</label><br />
             @Html.DropDownListFor(m => m.Payer, ViewData["Participants"] as SelectList,
-                     "Choose payer", new { @class = "form-control", id = "payerDropdown" })
+                     Localizer["ChoosePayer"].Value, new { @class = "form-control", id = "payerDropdown" })
             <span asp-validation-for="Payer" class="text-danger"></span>
         </div>
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="Sum" />
         <div class="form-group">
             <button type="button" value="Save" class="btn btn-warning" id="editCheckButton">
-                <i class="bi bi-pencil"></i> Save
+                <i class="bi bi-pencil me-1"></i>@Localizer["Save"]
             </button>
         </div>
     </form>

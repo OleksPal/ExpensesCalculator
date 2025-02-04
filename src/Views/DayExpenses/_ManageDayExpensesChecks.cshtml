@@ -1,4 +1,8 @@
-﻿@model DayExpenses
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@model DayExpenses
 
 <tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
     <td>
@@ -39,18 +43,18 @@
                 <div class="container-fluid p-3 text-white">
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                             ng-click="showModalForItemCreate(check.Id, check.DayExpensesId)">
-                        <i class="bi bi-plus-circle"></i> Add item
+                        <i class="bi bi-plus-circle me-1"></i>@Localizer["AddItem"]
                     </button>
                 </div>
                 <div class="text-white text-center pt-4" ng-if="check.Items.length == 0">
-                    <h2>No data to display</h2>
-                    <h5 class="p-3">Try to add new items</h5>
+                    <h2>@Localizer["NoData"]</h2>
+                    <h5 class="p-3">@Localizer["TryAddItems"]</h5>
                 </div>
                 <div class="d-flex justify-content-end pb-lg-2 p-3" ng-if="check.Items.length > 0">
                     <div class="col-12 col-lg-3">
                         <div class="input-group">
                             <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
-                            <input ng-model="$parent.itemSearchText" ng-change="search(itemCollection)" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="Search for..." />
+                            <input ng-model="$parent.itemSearchText" ng-change="search(itemCollection)" class="form-control bg-transparent text-white" type="search" aria-describedby="basic-addon1" placeholder="@Localizer["Search"]" />
                         </div>
                     </div>
                 </div>
@@ -60,28 +64,28 @@
                             <tr>
                                 <th class="text-nowrap" ng-click="changeOrder('Name', itemCollection)">
                                     <i class="bi bi-box"></i>
-                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Name)
+                                    @Localizer["Name"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Name', itemCollection)">
                                     </i>
                                 </th>
                                 <th class="text-nowrap" ng-click="changeOrder('Description', itemCollection)">
                                     <i class="bi bi-alphabet"></i>
-                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Description)
+                                    @Localizer["Description"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Description', itemCollection)">
                                     </i>
                                 </th>
                                 <th class="text-nowrap" ng-click="changeOrder('Price', itemCollection)">
                                     <i class="bi bi-coin"></i>
-                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Price)
+                                    @Localizer["Price"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Price', itemCollection)">
                                     </i>
                                 </th>
                                 <th class="text-nowrap" ng-click="changeOrder('Users', itemCollection)">
                                     <i class="bi bi-people-fill"></i>
-                                    @Html.DisplayNameFor(model => model.Checks.First().Items.First().Users)
+                                    @Localizer["Users"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Users', itemCollection)">
                                     </i>
@@ -102,14 +106,14 @@
                                 </td>
                                 <td class="text-nowrap">
                                     <div class="mytooltip">
-                                        {{item.UsersList.length}} people
+                                        {{item.UsersList.length}} @Localizer["People"]
                                         <span class="tooltiptext" style="height:110px;">
-                                            <i class="bi bi-people-fill pe-1"></i>Users:<br />
+                                            <i class="bi bi-people-fill pe-1"></i>@Localizer["Users"]:<br />
                                             <div ng-repeat="user in item.UsersList | limitTo:3" class="text-truncate">
                                                 <i class="bi bi-person-fill pe-1"></i>{{user}}<br />
                                             </div>
                                             <div ng-if="item.UsersList.length > 3">
-                                                and {{item.UsersList.length - 3}} more
+                                                @Localizer["And"] {{item.UsersList.length - 3}} @Localizer["More"]
                                             </div>
                                         </span>
                                     </div>
@@ -134,7 +138,7 @@
                 <div class="d-flex align-items-center justify-content-center py-2 pe-4" ng-if="check.Items.length > 0">
                     <ul class="pagination overflow-auto d-flex align-items-center text-nowrap pb-2">
                         <li class="page-item text-nowrap" ng-class="{disabled: itemCollection.currentPage == 0}">
-                            <a class="page-link bg-transparent border border-dark" href ng-click="prevPage(itemCollection)">« Previous</a>
+                            <a class="page-link bg-transparent border border-dark" href ng-click="prevPage(itemCollection)">« @Localizer["Previous"]</a>
                         </li>
                         <li class="page-item" ng-repeat="n in range(itemCollection.pagedItems.length)"
                             ng-class="{active: n == itemCollection.currentPage}"
@@ -142,7 +146,7 @@
                             <a class="page-link bg-transparent border border-dark" href ng-bind="n + 1">1</a>
                         </li>
                         <li class="page-item text-nowrap" ng-class="{disabled: itemCollection.currentPage == itemCollection.pagedItems.length - 1}">
-                            <a class="page-link bg-transparent border border-dark" href ng-click="nextPage(itemCollection)">Next »</a>
+                            <a class="page-link bg-transparent border border-dark" href ng-click="nextPage(itemCollection)">@Localizer["Next"] »</a>
                         </li>
                     </ul>
                 </div>

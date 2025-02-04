@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace ExpensesCalculator.Controllers
 {
     [Authorize]
-    public class DayExpensesController : Controller
+    public class DayExpensesController : LanguageController
     {
         private readonly IDayExpensesService _dayExpensesService;
 

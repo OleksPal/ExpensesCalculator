@@ -1,23 +1,42 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
+<link href="~/css/to-top-button.css" rel="stylesheet" />
+
+<button type="button" class="btn btn-info btn-lg" id="myBtn" onclick="topFunction()">
+    <i class="bi-arrow-up"></i>
+</button>
 <div class="text-white text-center dark-blue-0">
     <div class="container py-5">
-        <h1 class="fw-bolder">Welcome to ExpensesCalculator</h1>
-        <p class="lead">Distribute expenses among party participants based on their consumption.</p>
+        <h1 class="fw-bolder">
+            @Localizer["Welcome"]
+        </h1>
+        <p class="lead">
+            @Localizer["Description"]
+        </p>
     </div>
     <div class="py-5 px-3 px-lg-5 my-lg-5">
         <div class="rounded p-5 dark-blue-1">
-            <h2>About this page</h2>
-            <p class="lead">This page is including some instructions what you can do on this website.</p>
+            <h2>
+                @Localizer["AboutTitle"]
+            </h2>
+            <p class="lead">
+                @Localizer["AboutDescription"]
+            </p>
         </div>
     </div>
     <div class="py-5 px-3 px-lg-5 my-lg-5 justify-content-center">
         <div class="card border-primary dark-blue-1">
             <img src="@Url.Content("~/images/1-my-expenses-list-button.jpg")" class="card-img-top">
             <div class="card-body">
-                <p class="card-text">1. Select the "My expenses list" tab.</p>
+                <p class="card-text">
+                    @Localizer["MyExpensesTabDescription"]
+                </p>
             </div>
         </div>
     </div>
@@ -25,7 +44,9 @@
         <div class="card border-primary dark-blue-1">
             <img src="@Url.Content("~/images/2-add-expenses-button.jpg")" class="card-img-top">
             <div class="card-body">
-                <p class="card-text">2. Click the "Add expenses" button and enter the required data.</p>
+                <p class="card-text">
+                    @Localizer["AddExpensesDescription"]
+                </p>
             </div>
         </div>
     </div>
@@ -33,8 +54,9 @@
         <div class="card border-primary dark-blue-1">
             <img src="@Url.Content("~/images/3-show-checks-button.jpg")" class="card-img-top">
             <div class="card-body">
-                <p class="card-text">3. Click the button with a list image, 
-                    to enter data about the items to be calculated.</p>
+                <p class="card-text">
+                    @Localizer["ShowChecksButtonDescription"]
+                </p>
             </div>
         </div>
     </div>
@@ -42,8 +64,9 @@
         <div class="card border-primary dark-blue-1">
             <img src="@Url.Content("~/images/4-add-check-button.jpg")" class="card-img-top">
             <div class="card-body">
-                <p class="card-text">4. On the next screen, add checks, which are used to group items
-                    by who paid for them.</p>
+                <p class="card-text">
+                    @Localizer["AddCheckButtonDescription"]
+                </p>
             </div>
         </div>
     </div>
@@ -51,7 +74,9 @@
         <div class="card border-primary dark-blue-1">
             <img src="@Url.Content("~/images/5-add-item-button.jpg")" class="card-img-top">
             <div class="card-body">
-                <p class="card-text">5. Open the appropriate check and add the items of this check.</p>
+                <p class="card-text">
+                    @Localizer["AddItemButtonDescription"]
+                </p>
             </div>
         </div>
     </div>
@@ -60,7 +85,7 @@
             <img src="@Url.Content("~/images/6-edit-and-delete-buttons.jpg")" class="card-img-top">
             <div class="card-body">
                 <p class="card-text">
-                    6. Use the edit and delete buttons to change data if it was entered incorrectly.
+                    @Localizer["EditAndDeleteButtonsDescription"]                    
                 </p>
             </div>
         </div>
@@ -69,7 +94,9 @@
         <div class="card border-primary dark-blue-1">
             <img src="@Url.Content("~/images/7-calculate-button.jpg")" class="card-img-top">
             <div class="card-body">
-                <p class="card-text">7. Click the button with a calculator image, to calculate the expenses between the participants.</p>
+                <p class="card-text">
+                    @Localizer["CalculateButtonDescription"]
+                </p>
             </div>
         </div>
     </div>
@@ -78,7 +105,7 @@
             <img src="@Url.Content("~/images/8-expenses-calculation-participant-tab.jpg")" class="card-img-top">
             <div class="card-body">
                 <p class="card-text">
-                    8. Switch between tabs to see how much every participant spent on the party. 
+                    @Localizer["ExpensesParticipantTabDescription"]
                 </p>
             </div>
         </div>
@@ -88,12 +115,14 @@
             <img src="@Url.Content("~/images/9-expenses-calculation-transaction-list-tab.jpg")" class="card-img-top">
             <div class="card-body">
                 <p class="card-text">
-                    9. On the "Transaction list" tab you can see how much money each participant owes to the people who paid for the party.
+                    @Localizer["ExpensesTransactionListTabDescription"]
                 </p>
             </div>
         </div>
     </div>    
 </div>
 <footer class="py-4 bg-black">
-    <div class="container px-4 text-center"><p class="m-0 text-white">Copyright © ExpensesCalculator 2024</p></div>
+    <div class="container px-4 text-center"><p class="m-0 text-white">Copyright © ExpensesCalculator 2025</p></div>
 </footer>
+
+<script src="~/js/to-top-button.js"></script>

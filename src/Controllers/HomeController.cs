@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace ExpensesCalculator.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : LanguageController
     {
         private readonly ILogger<HomeController> _logger;
 

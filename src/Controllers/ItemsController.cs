@@ -1,5 +1,4 @@
 ﻿using ExpensesCalculator.Mappers;
-using ExpensesCalculator.Models;
 using ExpensesCalculator.Services;
 using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExpensesCalculator.Controllers
 {
     [Authorize]
-    public class ItemsController : Controller
+    public class ItemsController : LanguageController
     {
         private readonly IItemService _itemService;
 

@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,12 +29,12 @@
                             <hr class="w-100" />
                             <li class="nav-item fs-5">
                                 <a class="nav-link text-white align-middle px-0" asp-controller="Home" asp-action="Index">
-                                    <i class="bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                                    <i class="bi-house"></i> <span class="ms-1 d-none d-sm-inline">@Localizer["GetStarted"]</span>
                                 </a>
                             </li>
                             <li class="nav-item fs-5">
                                 <a asp-area="" asp-controller="DayExpenses" asp-action="Index" class="nav-link text-white align-middle px-0">
-                                    <i class="bi-list-nested"></i> <span class=" ms-1 d-none d-sm-inline">My expenses list</span>
+                                    <i class="bi-list-nested"></i> <span class=" ms-1 d-none d-sm-inline">@Localizer["MyExpensesList"]</span>
                                 </a>
                             </li>
                             <li style="width: fit-content" class="nav-item fixed-bottom ms-3 mb-2">

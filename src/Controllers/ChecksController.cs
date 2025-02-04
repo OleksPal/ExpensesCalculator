@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExpensesCalculator.Controllers
 {
     [Authorize]
-    public class ChecksController : Controller
+    public class ChecksController : LanguageController
     {
         private readonly ICheckService _checkService;
 
