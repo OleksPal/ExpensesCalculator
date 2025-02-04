@@ -1,0 +1,11 @@
+﻿#myBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    padding: 0px;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    z-index: 99; /* Make sure it does not overlap */
+}

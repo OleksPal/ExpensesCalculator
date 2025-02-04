@@ -129,6 +129,9 @@
   <data name="Participants" xml:space="preserve">
     <value>Учасники</value>
   </data>
+  <data name="Payer" xml:space="preserve">
+    <value>Платник</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Зберегти</value>
   </data>

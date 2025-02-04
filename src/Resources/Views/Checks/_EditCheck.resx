@@ -129,6 +129,9 @@
   <data name="Participants" xml:space="preserve">
     <value>Participants</value>
   </data>
+  <data name="Payer" xml:space="preserve">
+    <value>Payer</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>

@@ -6,6 +6,11 @@
     ViewData["Title"] = "Home Page";
 }
 
+<link href="~/css/to-top-button.css" rel="stylesheet" />
+
+<button type="button" class="btn btn-info btn-lg" id="myBtn" onclick="topFunction()">
+    <i class="bi-arrow-up"></i>
+</button>
 <div class="text-white text-center dark-blue-0">
     <div class="container py-5">
         <h1 class="fw-bolder">
@@ -119,3 +124,5 @@
 <footer class="py-4 bg-black">
     <div class="container px-4 text-center"><p class="m-0 text-white">Copyright © ExpensesCalculator 2025</p></div>
 </footer>
+
+<script src="~/js/to-top-button.js"></script>
