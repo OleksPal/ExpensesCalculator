@@ -26,11 +26,24 @@ namespace ExpensesCalculator.Services
             _userRepository = userRepository;
         }
 
-        public async Task<ICollection<DayExpenses>> GetAllDays()
+        public async Task<ICollection<DayExpensesViewModel>> GetAllDays()
         {            
             var result = await _dayExpensesRepository.GetAll();
 
-            return result.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
+            var dayExpensesViewModels = new List<DayExpensesViewModel>();
+            foreach (var dayExpenses in result)
+            {
+                dayExpensesViewModels.Add(
+                    new DayExpensesViewModel
+                    {
+                        DayExpenses = dayExpenses,
+                        TotalSum = dayExpenses.Checks.Select(check => check.Sum).Sum()
+                    }
+                );
+            }
+
+            return dayExpensesViewModels
+                .Where(r => r.DayExpenses.PeopleWithAccessList.Contains(RequestorName)).ToList();
         }
 
         public async Task<DayExpenses> GetDayExpensesById(int id)
