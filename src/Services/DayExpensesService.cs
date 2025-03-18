@@ -28,16 +28,21 @@ namespace ExpensesCalculator.Services
 
         public async Task<ICollection<DayExpensesViewModel>> GetAllDays()
         {            
-            var result = await _dayExpensesRepository.GetAll();
+            var dayExpenses = await _dayExpensesRepository.GetAll();
+            dayExpenses = dayExpenses.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
 
             var dayExpensesViewModels = new List<DayExpensesViewModel>();
-            foreach (var dayExpenses in result)
+            foreach (var dayExpense in dayExpenses)
             {
+                var checks = await _checkRepository.GetAllDayChecks(dayExpense.Id);
+                var totalSum = checks.Select(check => check.Sum).Sum();
+                dayExpense.Checks = null;
+
                 dayExpensesViewModels.Add(
                     new DayExpensesViewModel
                     {
-                        DayExpenses = dayExpenses,
-                        TotalSum = dayExpenses.Checks.Select(check => check.Sum).Sum()
+                        DayExpenses = dayExpense,
+                        TotalSum = totalSum
                     }
                 );
             }
