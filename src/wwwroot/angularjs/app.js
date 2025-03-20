@@ -67,17 +67,24 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
     // Filtering days
     $scope.search = function (day) {
-        if ($scope.searchText == undefined) {
+        if ($scope.searchText == undefined || $scope.searchText === "") {
             return true;            
         }
-        else {
-            var dayDate = $filter('date')(day.date, 'mediumDate');
-            dayDate = dayDate.toLowerCase();
-            if (dayDate.indexOf($scope.searchText.toLowerCase()) != -1 ||
-                ((day.participantsList.length.toString()) + ' people').indexOf($scope.searchText) != -1)
-            {
-                return true;
-            }
+
+        var dayDate = $filter('date')(day.dayExpenses.date, 'mediumDate').toLowerCase();
+        var searchTextLower = $scope.searchText.toLowerCase();
+
+        if (dayDate.indexOf(searchTextLower) !== -1) {
+            return true;
+        }
+
+        var participantsText = (day.dayExpenses.participantsList.length.toString() + ' people');
+        if (participantsText.indexOf($scope.searchText) !== -1) {
+            return true;
+        }
+
+        if (day.totalSum.toFixed(2).toString().indexOf($scope.searchText) !== -1) {
+            return true;
         }
 
         return false;
