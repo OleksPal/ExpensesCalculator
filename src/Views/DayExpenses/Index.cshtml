@@ -8,9 +8,6 @@
 
 <link href="~/css/mytooltip.css" rel="stylesheet" />
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/js/modalviews/day-expenses-modal-views.js"></script>
-
 <div class="rounded m-3 mx-sm-5 dark-blue-1" ng-controller="DayExpensesCtrl">
     <div class="container-fluid px-3 py-2 text-white"> 
         <h4>
@@ -19,7 +16,7 @@
         <br />
 
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                onclick="showModalForDayExpensesCreate()">
+                ng-click="showModalForDayExpensesCreate()">
             <i class="bi bi-plus-circle me-1"></i>@Localizer["AddExpenses"]
         </button>
 

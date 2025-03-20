@@ -13,6 +13,13 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         console.log(error);
     }
 
+    $scope.showModalForDayExpensesCreate = function () {
+        $http.get('/DayExpenses/CreateDayExpenses/').then(function (response) {
+            modalContent = angular.element(document.querySelector('#modal-content'));
+            modalContent.html(response.data);
+        });
+    };
+
     $scope.showModalForDayExpensesShare = function(dayId) {
         $http.get('/DayExpenses/ShareDayExpenses/' + dayId).then(function (response) {
             modalContent = angular.element(document.querySelector('#modal-content'));
