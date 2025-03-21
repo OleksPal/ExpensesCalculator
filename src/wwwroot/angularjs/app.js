@@ -1,6 +1,7 @@
 ﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', []);
 
-expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', function ($scope, $http, $filter) {
+expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', '$window',
+    function ($scope, $http, $filter, $compile, $window) {
 
     $http.get('/DayExpenses/GetAllDays')
         .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
@@ -11,15 +12,63 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     }
     function getAllDaysErrorCallback(error) {
         console.log(error);
-    }
+        }
 
-    $scope.showModalForDayExpensesCreate = function () {
-        $http.get('/DayExpenses/CreateDayExpenses/').then(function (response) {
-            modalContent = angular.element(document.querySelector('#modal-content'));
-            modalContent.html(response.data);
-        });
-    };
+    angular.element(document).ready(function () {
+        
+        // Create DayExpenses
+        $scope.showModalForDayExpensesCreate = function () {
+            $http.get('/DayExpenses/CreateDayExpenses/').then(function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+                compiledContent = $compile(modalContent)($scope);
+            });
+        };
 
+        $scope.createDayExpenses = function () {
+            var date = $scope.day.date.getUTCFullYear() + '-' +
+                ('0' + ($scope.day.date.getUTCMonth() + 1)).slice(-2) + '-' +
+                ('0' + $scope.day.date.getUTCDate()).slice(-2);
+            var participantsList = $scope.day.participantList;
+            var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            var params = "Date=" + encodeURIComponent(date) +
+                "&ParticipantsList=" + encodeURIComponent(participantsList) +
+                "&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
+
+            $http.post(`/DayExpenses/Create`, params, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+                    'RequestVerificationToken': token  // Anti-forgery token
+                }
+            })
+                .then(function (response) {
+                    // Check if response contains div with class modal-body
+                    if (response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+                        modalContent = angular.element(document.querySelector('#modal-content'));
+                        modalContent.html(response.data);
+                    }
+                    else {
+                        $scope.days.push({
+                            totalSum: 0,
+                            dayExpenses: {
+                                date: $scope.day.date.getUTCFullYear() + '-' +
+                                ('0' + ($scope.day.date.getUTCMonth() + 1)).slice(-2) + '-' +
+                                ('0' + $scope.day.date.getUTCDate()).slice(-2),
+                                participantsList: $scope.day.participantList,
+                                peopleWithAccessList: peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value
+                            }
+                        });
+                        $('#staticBackdrop').modal('hide');
+                        console.log($scope.days);
+                    }
+            });
+        };
+    });
+
+
+    // Share DayExpenses
     $scope.showModalForDayExpensesShare = function(dayId) {
         $http.get('/DayExpenses/ShareDayExpenses/' + dayId).then(function (response) {
             modalContent = angular.element(document.querySelector('#modal-content'));
