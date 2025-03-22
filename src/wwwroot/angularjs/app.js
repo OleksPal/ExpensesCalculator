@@ -26,9 +26,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         };
 
         $scope.createDayExpenses = function () {
-            var date = $scope.day.date.getUTCFullYear() + '-' +
-                ('0' + ($scope.day.date.getUTCMonth() + 1)).slice(-2) + '-' +
-                ('0' + $scope.day.date.getUTCDate()).slice(-2);
+            var date = $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss');
             var participantsList = $scope.day.participantList;
             var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
             var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
@@ -50,18 +48,8 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                         modalContent.html(response.data);
                     }
                     else {
-                        $scope.days.push({
-                            totalSum: 0,
-                            dayExpenses: {
-                                date: $scope.day.date.getUTCFullYear() + '-' +
-                                ('0' + ($scope.day.date.getUTCMonth() + 1)).slice(-2) + '-' +
-                                ('0' + $scope.day.date.getUTCDate()).slice(-2),
-                                participantsList: $scope.day.participantList,
-                                peopleWithAccessList: peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value
-                            }
-                        });
+                        $scope.days = response.data;
                         $('#staticBackdrop').modal('hide');
-                        console.log($scope.days);
                     }
             });
         };

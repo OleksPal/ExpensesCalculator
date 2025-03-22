@@ -193,7 +193,7 @@ namespace ExpensesCalculator.Controllers
             {
                 await _dayExpensesService.AddDayExpenses(dayExpenses);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetAllDays));
             }
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
