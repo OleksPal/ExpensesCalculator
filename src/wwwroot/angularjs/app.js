@@ -12,7 +12,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     }
     function getAllDaysErrorCallback(error) {
         console.log(error);
-        }
+    }
 
     angular.element(document).ready(function () {
         
@@ -26,8 +26,12 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         };
 
         $scope.createDayExpenses = function () {
-            var date = $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss');
-            var participantsList = $scope.day.participantList;
+            var date = ($scope.day && $scope.day.date !== undefined)
+                ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
+                : "None";
+            var participantsList = ($scope.day && $scope.day.participantList !== undefined)
+                ? $scope.day.participantList
+                : "";
             var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
             var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
@@ -46,6 +50,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                     if (response.data.indexOf("<div class=\"modal-body\">") >= 0) {
                         modalContent = angular.element(document.querySelector('#modal-content'));
                         modalContent.html(response.data);
+                        compiledContent = $compile(modalContent)($scope);                       
                     }
                     else {
                         $scope.days = response.data;
