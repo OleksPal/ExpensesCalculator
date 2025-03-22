@@ -51,6 +51,22 @@ namespace ExpensesCalculator.Services
                 .Where(r => r.DayExpenses.PeopleWithAccessList.Contains(RequestorName)).ToList();
         }
 
+        public async Task<DayExpensesViewModel> GetDayExpensesViewModelById(int id)
+        {
+            var dayExpenses = await GetDayExpensesByIdWithChecks(id);
+            var totalSum = dayExpenses.Checks.Select(check => check.Sum).Sum();
+            dayExpenses.Checks = null;
+
+            var dayExpensesViewModel = new DayExpensesViewModel
+            {
+                DayExpenses = dayExpenses,
+                TotalSum = totalSum
+            };
+
+            return dayExpensesViewModel;
+
+        }
+
         public async Task<DayExpenses> GetDayExpensesById(int id)
         {
             var result = await _dayExpensesRepository.GetById(id);

@@ -99,7 +99,7 @@ ul {
 
 /* ANIMATIONS */
 #day-list tr.ng-enter {
-    transition: 0.2s linear all;
+    transition: 0.3s linear all;
     opacity: 0;
     transform: translateY(30px);
 }

@@ -54,14 +54,12 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                     }
                     else {
                         $('#staticBackdrop').modal('hide');
-                        $timeout(function () {
-                            if ($scope.pagedDays[$scope.currentPage].length < 5) {
-                                $scope.pagedDays[$scope.currentPage].push(response.data); 
-                            }                            
-                            $scope.days.push(response.data); 
-                            console.log($scope.pagedDays[0]);
-                            console.log($scope.days);
-                        }, 2000);                                               
+                        if ($scope.pagedDays[$scope.currentPage].length < 5) {
+                            $scope.pagedDays[$scope.currentPage].push(response.data);
+                        }
+                        $scope.days.push(response.data);
+                        console.log($scope.pagedDays[0]);
+                        console.log($scope.days);                                            
                     }
             });
         };

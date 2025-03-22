@@ -41,7 +41,7 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesById(id);
+            var day = await _dayExpensesService.GetDayExpensesViewModelById(id);
 
             return Json(day);
         }
