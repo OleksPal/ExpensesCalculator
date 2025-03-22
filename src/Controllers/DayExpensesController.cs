@@ -24,7 +24,6 @@ namespace ExpensesCalculator.Controllers
             return View();
         }
 
-        // GET: DayExpenses
         [HttpGet]
         public async Task<JsonResult> GetAllDays()
         {
@@ -34,6 +33,17 @@ namespace ExpensesCalculator.Controllers
             var days = await _dayExpensesService.GetAllDays();
 
             return Json(days);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetDayById(int id)
+        {
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
+            var day = await _dayExpensesService.GetDayExpensesById(id);
+
+            return Json(day);
         }
 
         // GET: DayExpenses/CreateDayExpenses
@@ -191,9 +201,9 @@ namespace ExpensesCalculator.Controllers
 
             if (ModelState.IsValid)
             {
-                await _dayExpensesService.AddDayExpenses(dayExpenses);
+                var newDayExpenses = await _dayExpensesService.AddDayExpenses(dayExpenses);
 
-                return RedirectToAction(nameof(GetAllDays));
+                return RedirectToAction(nameof(GetDayById), new { id = newDayExpenses.Id });
             }
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";

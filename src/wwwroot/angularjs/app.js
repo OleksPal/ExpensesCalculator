@@ -1,7 +1,7 @@
-﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', []);
+﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', ['ngAnimate']);
 
-expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', '$window',
-    function ($scope, $http, $filter, $compile, $window) {
+expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', '$timeout',
+    function ($scope, $http, $filter, $compile, $timeout) {
 
     $http.get('/DayExpenses/GetAllDays')
         .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
@@ -47,14 +47,21 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             })
                 .then(function (response) {
                     // Check if response contains div with class modal-body
-                    if (response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+                    if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
                         modalContent = angular.element(document.querySelector('#modal-content'));
                         modalContent.html(response.data);
                         compiledContent = $compile(modalContent)($scope);                       
                     }
                     else {
-                        $scope.days = response.data;
                         $('#staticBackdrop').modal('hide');
+                        $timeout(function () {
+                            if ($scope.pagedDays[$scope.currentPage].length < 5) {
+                                $scope.pagedDays[$scope.currentPage].push(response.data); 
+                            }                            
+                            $scope.days.push(response.data); 
+                            console.log($scope.pagedDays[0]);
+                            console.log($scope.days);
+                        }, 2000);                                               
                     }
             });
         };

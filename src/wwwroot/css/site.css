@@ -96,3 +96,15 @@ ul {
 #customProportion > .col-10 {
     width: 86%;
 }
+
+/* ANIMATIONS */
+#day-list tr.ng-enter {
+    transition: 0.2s linear all;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+#day-list tr.ng-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
