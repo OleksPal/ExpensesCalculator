@@ -11,8 +11,31 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         $scope.filterPagedDays();
     }
     function getAllDaysErrorCallback(error) {
-        console.log(error);
-    }
+        $scope.showToast('danger', 'Fail!', 'Something went wrong. Try again later.');
+        }
+
+        // Initialize toasts array
+        $scope.toasts = [];
+
+        // Function to show toast
+        $scope.showToast = function (type, title, message) {
+            var newToast = {
+                type: 'bg-' + type,
+                title: title,
+                message: message,
+                time: new Date().toLocaleTimeString(),
+                hidden: false, 
+                id: 'toast-' + $scope.toasts.length
+            };
+
+            $scope.toasts.push(newToast);
+
+            $timeout(function () {
+                var toastElement = document.getElementById(newToast.id);
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }, 100); 
+        };
 
     angular.element(document).ready(function () {
         
@@ -58,6 +81,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                             $scope.pagedDays[$scope.currentPage].push(response.data);
                         }
                         $scope.days.push(response.data);
+                        $scope.showToast('success', 'Success!', 'Day was successfully added.');
                         console.log($scope.pagedDays[0]);
                         console.log($scope.days);                                            
                     }

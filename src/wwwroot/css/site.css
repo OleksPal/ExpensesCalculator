@@ -97,6 +97,36 @@ ul {
     width: 86%;
 }
 
+.toast-container {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1050; /* Ensure it appears above other content */
+}
+
+/* Custom Dark Toast Style */
+.toast-dark {
+    background-color: #343a40; /* Dark background */
+    color: #f8f9fa; /* Light text color */
+}
+
+    .toast-dark .toast-header {
+        background-color: #495057; /* Dark header background */
+        color: #f8f9fa; /* Light text for the header */
+        display: flex;
+        justify-content: space-between; /* Title to the left, time and close button to the right */
+        align-items: center;
+    }
+
+    .toast-dark .toast-body {
+        background-color: #343a40; /* Dark body background */
+        color: #f8f9fa; /* Light text for the body */
+    }
+
+    .toast-dark .toast-header small {
+        margin-left: auto; /* Push the time to the far right */
+    }
+
 /* ANIMATIONS */
 #day-list tr.ng-enter {
     transition: 0.3s linear all;
