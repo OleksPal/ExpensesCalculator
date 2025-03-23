@@ -35,30 +35,30 @@
     </div>
     <div class="table-responsive fix-table-height">
         <table class="table table-borderless text-white" id="daysTable" ng-if="days.length > 0">
-            <thead>
+            <thead style="position: sticky;">
                 <tr>
-                    <th class="text-nowrap" ng-click="changeOrder('dayExpenses.date')">
+                    <th class="text-nowrap" width="25%" ng-click="changeOrder('dayExpenses.date')">
                         <i class="bi bi-calendar-event pe-1"></i>
                         @Localizer["Date"]
                         <i class="bi bi-funnel-fill ps-1"
                            ng-class="getIcon('dayExpenses.date')">
                         </i>
                     </th>
-                    <th class="text-nowrap" ng-click="changeOrder('dayExpenses.participants')">
+                    <th class="text-nowrap" width="25%" ng-click="changeOrder('dayExpenses.participants')">
                         <i class="bi bi-people-fill pe-1"></i>
                         @Localizer["Participants"]
                         <i class="bi-funnel-fill ps-1"
                            ng-class="getIcon('dayExpenses.participants')">
                         </i>
                     </th>
-                    <th class="text-nowrap" ng-click="changeOrder('totalSum')">
+                    <th class="text-nowrap" width="25%" ng-click="changeOrder('totalSum')">
                         <i class="bi bi-cash-stack pe-1"></i>
                         @Localizer["TotalSum"]
                         <i class="bi-funnel-fill ps-1"
                            ng-class="getIcon('totalSum')">
                         </i>
                     </th>
-                    <th width="250"></th>
+                    <th width="15%"></th>
                 </tr>
             </thead>
             <tbody ng-init="days" id="day-list">
