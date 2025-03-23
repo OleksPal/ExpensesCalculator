@@ -81,7 +81,11 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
                             // Move one page forward if added element can`t be displayed on the same page
                             var currentPage = $scope.currentPage;
-                            if ($scope.pagedDays[currentPage].length === 5)
+
+                            if ($scope.pagedDays[currentPage] === undefined)
+                                $scope.pagedDays[currentPage] = [];
+
+                            if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
                                 currentPage += 1;
                                 
                             $scope.days.push(response.data);                            

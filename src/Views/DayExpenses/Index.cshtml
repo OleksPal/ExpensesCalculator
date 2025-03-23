@@ -62,7 +62,7 @@
                 </tr>
             </thead>
             <tbody ng-init="days" id="day-list">
-                <tr ng-repeat="day in pagedDays[currentPage] | filter:search" style="height: 60px;">
+                <tr ng-repeat="day in pagedDays[currentPage] | filter:search" style="height: 60px; overflow: hidden;">
                     <td class="text-nowrap">
                         {{day.dayExpenses.date | date : 'mediumDate'}}
                     </td>
