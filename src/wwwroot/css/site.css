@@ -139,3 +139,14 @@ ul {
     opacity: 1;
     transform: translateY(0);
 }
+
+#day-list tr.ng-leave {
+    transition: 0.2s linear all;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+#day-list tr.ng-leave-active {
+    opacity: 0;
+    transform: translateX(-100%);
+}
