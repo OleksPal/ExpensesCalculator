@@ -109,6 +109,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         });
     };
 
+    // Delete DayExpenses
     $scope.showModalForDayExpensesDelete = function(dayId) {
         $http.get('/DayExpenses/DeleteDayExpenses/' + dayId).then(function (response) {
             modalContent = angular.element(document.querySelector('#modal-content'));
