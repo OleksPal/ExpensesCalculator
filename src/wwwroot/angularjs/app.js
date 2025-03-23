@@ -3,16 +3,16 @@
 expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', '$timeout',
     function ($scope, $http, $filter, $compile, $timeout) {
 
-    $http.get('/DayExpenses/GetAllDays')
-        .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
+        $http.get('/DayExpenses/GetAllDays')
+            .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
 
-    function getAllDaysSuccessfulCallback(response) {
-        $scope.days = response.data;
-        $scope.filterPagedDays();
-    }
-    function getAllDaysErrorCallback(error) {
-        $scope.showToast('danger', 'Fail!', "Error: " + error.config.url + " - " + error.statusText);
-        console.log(error);
+        function getAllDaysSuccessfulCallback(response) {
+            $scope.days = response.data;
+            $scope.filterPagedDays();
+        }
+        function getAllDaysErrorCallback(error) {
+            $scope.showToast('danger', 'Fail!', "Error: " + error.config.url + " - " + error.statusText);
+            console.log(error);
         }
 
         // Initialize toasts array
@@ -38,84 +38,120 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             }, 100); 
         };
 
-    angular.element(document).ready(function () {
+        angular.element(document).ready(function () {
         
-        // Create DayExpenses
-        $scope.showModalForDayExpensesCreate = function () {
-            $http.get('/DayExpenses/CreateDayExpenses/').then(function (response) {
+            // Create DayExpenses
+            $scope.showModalForDayExpensesCreate = function () {
+                $http.get('/DayExpenses/CreateDayExpenses/').then(function (response) {
+                    modalContent = angular.element(document.querySelector('#modal-content'));
+                    modalContent.html(response.data);
+                    compiledContent = $compile(modalContent)($scope);
+                });
+            };
+
+            $scope.createDayExpenses = function () {
+                var date = ($scope.day && $scope.day.date !== undefined)
+                    ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
+                    : "None";
+                var participantsList = ($scope.day && $scope.day.participantList !== undefined)
+                    ? $scope.day.participantList
+                    : "";
+                var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
+                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                var params = "Date=" + encodeURIComponent(date) +
+                    "&ParticipantsList=" + encodeURIComponent(participantsList) +
+                    "&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
+
+                $http.post(`/DayExpenses/Create`, params, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+                        'RequestVerificationToken': token  // Anti-forgery token
+                    }
+                })
+                    .then(function (response) {
+                        // Check if response contains div with class modal-body
+                        if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+                            modalContent = angular.element(document.querySelector('#modal-content'));
+                            modalContent.html(response.data);
+                            compiledContent = $compile(modalContent)($scope);                       
+                        }
+                        else {
+                            $('#staticBackdrop').modal('hide');
+
+                            // Move one page forward if added element can`t be displayed on the same page
+                            var currentPage = $scope.currentPage;
+                            if ($scope.pagedDays[currentPage].length === 5)
+                                currentPage += 1;
+                                
+                            $scope.days.push(response.data);                            
+
+                            $scope.filterPagedDays();
+                            $scope.currentPage = currentPage;
+
+                            $scope.showToast('success', 'Success!', 'Day was successfully added.');                                          
+                        }
+                });
+            };
+        });
+
+        // Share DayExpenses
+        $scope.showModalForDayExpensesShare = function(dayId) {
+            $http.get('/DayExpenses/ShareDayExpenses/' + dayId).then(function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            });
+        };
+
+        $scope.showModalForDayExpensesEdit = function(dayId) {
+            $http.get('/DayExpenses/EditDayExpenses/' + dayId).then(function (response) {
+                modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+            });
+        };
+
+        // Delete DayExpenses
+        $scope.showModalForDayExpensesDelete = function(dayId) {
+            $http.get('/DayExpenses/DeleteDayExpenses/' + dayId).then(function (response) {
                 modalContent = angular.element(document.querySelector('#modal-content'));
                 modalContent.html(response.data);
                 compiledContent = $compile(modalContent)($scope);
             });
         };
 
-        $scope.createDayExpenses = function () {
-            var date = ($scope.day && $scope.day.date !== undefined)
-                ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
-                : "None";
-            var participantsList = ($scope.day && $scope.day.participantList !== undefined)
-                ? $scope.day.participantList
-                : "";
-            var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
+        $scope.deleteDayExpenses = function () {
             var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            var idToRemove = document.querySelector('input[name="Id"]').value;
 
-            var params = "Date=" + encodeURIComponent(date) +
-                "&ParticipantsList=" + encodeURIComponent(participantsList) +
-                "&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
-
-            $http.post(`/DayExpenses/Create`, params, {
+            $http.post(`/DayExpenses/Delete/` + idToRemove, {}, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
                     'RequestVerificationToken': token  // Anti-forgery token
                 }
             })
                 .then(function (response) {
-                    // Check if response contains div with class modal-body
-                    if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
-                        modalContent = angular.element(document.querySelector('#modal-content'));
-                        modalContent.html(response.data);
-                        compiledContent = $compile(modalContent)($scope);                       
-                    }
-                    else {
-                        $('#staticBackdrop').modal('hide');
-                        if ($scope.pagedDays[$scope.currentPage].length < 5) {
-                            $scope.pagedDays[$scope.currentPage].push(response.data);
-                        }
-                        $scope.days.push(response.data);
+                    $('#staticBackdrop').modal('hide');
 
-                        var currentPage = $scope.currentPage;
-                        $scope.filterPagedDays();
-                        $scope.currentPage = currentPage;
+                    var dayIndex = $scope.days.findIndex(function (day) {
+                        return day.dayExpenses.id == idToRemove;
+                    });
 
-                        $scope.showToast('success', 'Success!', 'Day was successfully added.');                                          
+                    if (dayIndex > -1) {
+                        $scope.days.splice(dayIndex, 1);
                     }
-            });
+
+                    var currentPage = $scope.currentPage;
+                    $scope.filterPagedDays();
+
+                    // Move one page back if current not exists now
+                    if (currentPage > $scope.pagedDays.length - 1)
+                        currentPage -= 1;
+
+                    $scope.currentPage = currentPage;
+
+                    $scope.showToast('success', 'Success!', 'Day was successfully deleted.');
+                });
         };
-    });
-
-
-    // Share DayExpenses
-    $scope.showModalForDayExpensesShare = function(dayId) {
-        $http.get('/DayExpenses/ShareDayExpenses/' + dayId).then(function (response) {
-            modalContent = angular.element(document.querySelector('#modal-content'));
-            modalContent.html(response.data);
-        });
-    };
-
-    $scope.showModalForDayExpensesEdit = function(dayId) {
-        $http.get('/DayExpenses/EditDayExpenses/' + dayId).then(function (response) {
-            modalContent = angular.element(document.querySelector('#modal-content'));
-            modalContent.html(response.data);
-        });
-    };
-
-    // Delete DayExpenses
-    $scope.showModalForDayExpensesDelete = function(dayId) {
-        $http.get('/DayExpenses/DeleteDayExpenses/' + dayId).then(function (response) {
-            modalContent = angular.element(document.querySelector('#modal-content'));
-            modalContent.html(response.data);
-        });
-    };
 
     // Sorting days
     $scope.sort = {
