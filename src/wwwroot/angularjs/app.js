@@ -11,7 +11,8 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         $scope.filterPagedDays();
     }
     function getAllDaysErrorCallback(error) {
-        $scope.showToast('danger', 'Fail!', 'Something went wrong. Try again later.');
+        $scope.showToast('danger', 'Fail!', "Error: " + error.config.url + " - " + error.statusText);
+        console.log(error);
         }
 
         // Initialize toasts array
@@ -81,9 +82,12 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                             $scope.pagedDays[$scope.currentPage].push(response.data);
                         }
                         $scope.days.push(response.data);
-                        $scope.showToast('success', 'Success!', 'Day was successfully added.');
-                        console.log($scope.pagedDays[0]);
-                        console.log($scope.days);                                            
+
+                        var currentPage = $scope.currentPage;
+                        $scope.filterPagedDays();
+                        $scope.currentPage = currentPage;
+
+                        $scope.showToast('success', 'Success!', 'Day was successfully added.');                                          
                     }
             });
         };
