@@ -86,7 +86,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                                 $scope.pagedDays[currentPage] = [];
 
                             if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
-                                currentPage += 1;
+                                currentPage = $scope.pagedDays.length - 1;
                                 
                             $scope.days.push(response.data);                            
 
