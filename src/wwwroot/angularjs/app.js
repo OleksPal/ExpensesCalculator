@@ -93,11 +93,30 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                             $scope.filterPagedDays();
                             $scope.currentPage = currentPage;
 
-                            $scope.showToast('success', 'Success!', 'Day was successfully added.');                                          
+                            $scope.showToast('success', 'Success!', 'Day was successfully added.');
+                            $scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');                                     
                         }
                 });
             };
         });
+
+        // Variables to track which row should be animated
+        $scope.animatedRowIndex = null;
+        $scope.animationType = null;
+
+        // Trigger animation for the specific row
+        $scope.triggerAnimation = function (index, animationType) {
+            $scope.animatedRowIndex = index;
+            $scope.animationType = animationType;
+
+            // Reset the animation after the duration
+            setTimeout(function () {
+                $scope.$apply(function () {
+                    $scope.animatedRowIndex = null; 
+                    $scope.animationType = null;
+                });
+            }, 500);
+        };
 
         // Share DayExpenses
         $scope.showModalForDayExpensesShare = function(dayId) {
@@ -134,26 +153,35 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                 }
             })
                 .then(function (response) {
-                    $('#staticBackdrop').modal('hide');
+                    $('#staticBackdrop').modal('hide');                    
 
                     var dayIndex = $scope.days.findIndex(function (day) {
                         return day.dayExpenses.id == idToRemove;
                     });
 
-                    if (dayIndex > -1) {
-                        $scope.days.splice(dayIndex, 1);
-                    }
+                    $scope.triggerAnimation(dayIndex % 5, 'delete');
 
-                    var currentPage = $scope.currentPage;
-                    $scope.filterPagedDays();
+                    // Reset the animation after the duration
+                    setTimeout(function () {
+                        $scope.$apply(function () {
+                            if (dayIndex > -1) {
+                                $scope.days.splice(dayIndex, 1);
+                            }
 
-                    // Move one page back if current not exists now
-                    if (currentPage > $scope.pagedDays.length - 1)
-                        currentPage -= 1;
+                            var currentPage = $scope.currentPage;
+                            $scope.filterPagedDays();
 
-                    $scope.currentPage = currentPage;
+                            // Move one page back if current not exists now
+                            if (currentPage > $scope.pagedDays.length - 1)
+                                currentPage -= 1;
 
-                    $scope.showToast('success', 'Success!', 'Day was successfully deleted.');
+                            $scope.currentPage = currentPage;
+
+                            $scope.showToast('success', 'Success!', 'Day was successfully deleted.');
+                        });
+                    }, 300);
+
+                                        
                 });
         };
 
