@@ -84,14 +84,15 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                             var currentPage = $scope.currentPage;
 
                             if ($scope.pagedDays[currentPage] === undefined)
-                                $scope.pagedDays[currentPage] = [];
-
-                            if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
-                                currentPage = $scope.pagedDays.length - 1;
+                                $scope.pagedDays[currentPage] = [];                            
                                 
                             $scope.days.push(response.data);                            
 
                             $scope.filterPagedDays();
+
+                            if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
+                                currentPage = $scope.pagedDays.length - 1;
+
                             $scope.currentPage = currentPage;
 
                             $scope.showToast('success', 'Success!', 'Day was successfully added.');
