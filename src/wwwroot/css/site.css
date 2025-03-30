@@ -141,6 +141,24 @@ ul {
     }
 }
 
+@keyframes editAnimation {
+    0% {
+        transform: rotateY(30deg);
+    }
+
+    50% {
+        transform: rotateY(-10deg);
+    }
+
+    100% {
+        transform: rotateY(0deg);
+    }
+}
+
 .create-row {
     animation: createAnimation 0.3s linear;
+}
+
+.edit-row {
+    animation: editAnimation 0.5s linear;
 }

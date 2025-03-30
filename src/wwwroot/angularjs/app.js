@@ -180,7 +180,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                         }
 
                         $scope.showToast('success', 'Success!', 'Day was successfully edited.');
-
+                        $scope.triggerAnimation(dayIndex % 5, 'edit');   
                     }
                 });
         };
