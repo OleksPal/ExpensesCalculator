@@ -77,6 +77,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                             compiledContent = $compile(modalContent)($scope);                       
                         }
                         else {
+                            $scope.day = { date: '', participantList: '' };
                             $('#staticBackdrop').modal('hide');
 
                             // Move one page forward if added element can`t be displayed on the same page
