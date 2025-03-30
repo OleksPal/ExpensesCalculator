@@ -12,7 +12,7 @@ namespace ExpensesCalculator.Models
         [Required(ErrorMessage = "Please enter expenses date")]
         [DataType(DataType.Date)]
         [Display(Name = "Date")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateOnly Date { get; set; }
 
         [NotMapped]

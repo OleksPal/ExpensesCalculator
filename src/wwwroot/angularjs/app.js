@@ -134,11 +134,15 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                 modalContent = angular.element(document.querySelector('#modal-content'));
                 modalContent.html(response.data);
                 compiledContent = $compile(modalContent)($scope);
+                $scope.day = {
+                    date: new Date(document.querySelector('input[name="date"]').value),
+                    participantList: document.querySelector('input[name="participants"]').value
+                };
             });
         };
 
-        $scope.editDayExpenses = function () {
-
+        $scope.editDayExpenses = function () {           
+            
             var date = ($scope.day && $scope.day.date !== undefined)
                 ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
                 : "None";
