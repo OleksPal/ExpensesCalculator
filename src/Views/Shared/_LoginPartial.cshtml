@@ -39,7 +39,7 @@
     {        
         <li class="nav-item">
             <a id="manage" class="nav-link text-white" style="height: 40px;" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                Hi, <strong>@UserManager.GetUserName(User)</strong>                
+                @Localizer["Hi"], <strong>@UserManager.GetUserName(User)</strong>
             </a>
         </li>
         <li class="nav-item">
