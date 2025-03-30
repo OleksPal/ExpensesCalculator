@@ -64,14 +64,14 @@ namespace ExpensesCalculator.Controllers
 
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
-            
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+
+            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
 
             if (day is null)
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
 
             return PartialView("_EditDayExpenses", day);
         }
@@ -86,12 +86,12 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
 
             if (day is null)
                 return NotFound();
 
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
 
             return PartialView("_DeleteDayExpenses", day);
         }
@@ -106,13 +106,13 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
 
             if (day is null)
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
 
             return PartialView("_ShareDayExpenses", day);
         }

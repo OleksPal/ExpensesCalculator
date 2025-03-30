@@ -149,8 +149,8 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             var participantsList = ($scope.day && $scope.day.participantList !== undefined)
                 ? $scope.day.participantList
                 : "";
-            var idToEdit = document.querySelector('input[name="Id"]').value;
-            var peopleWithAccessList = JSON.parse(document.querySelector('input[name="PeopleWithAccess"]').value);
+            var idToEdit = document.querySelector('input[name="DayExpenses.Id"]').value;
+            var peopleWithAccessList = JSON.parse(document.querySelector('input[name="DayExpenses.PeopleWithAccess"]').value);
             var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
             var params = "Date=" + encodeURIComponent(date) +
@@ -200,7 +200,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
         $scope.deleteDayExpenses = function () {
             var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-            var idToRemove = document.querySelector('input[name="Id"]').value;
+            var idToRemove = document.querySelector('input[name="DayExpenses.Id"]').value;
 
             $http.post(`/DayExpenses/Delete/` + idToRemove, {}, {
                 headers: {
