@@ -226,9 +226,9 @@ namespace ExpensesCalculator.Controllers
 
             if (ModelState.IsValid)
             {
-                await _dayExpensesService.EditDayExpenses(dayExpenses);
+                var editedDayExpenses = await _dayExpensesService.EditDayExpenses(dayExpenses);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetDayById), new { id = editedDayExpenses.Id });
             }
 
             ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.ParticipantsList);

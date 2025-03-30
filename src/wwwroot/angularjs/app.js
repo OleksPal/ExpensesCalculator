@@ -128,11 +128,61 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             });
         };
 
+        // Edit DayExpenses
         $scope.showModalForDayExpensesEdit = function(dayId) {
             $http.get('/DayExpenses/EditDayExpenses/' + dayId).then(function (response) {
                 modalContent = angular.element(document.querySelector('#modal-content'));
                 modalContent.html(response.data);
+                compiledContent = $compile(modalContent)($scope);
             });
+        };
+
+        $scope.editDayExpenses = function () {
+
+            var date = ($scope.day && $scope.day.date !== undefined)
+                ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
+                : "None";
+            var participantsList = ($scope.day && $scope.day.participantList !== undefined)
+                ? $scope.day.participantList
+                : "";
+            var idToEdit = document.querySelector('input[name="Id"]').value;
+            var peopleWithAccessList = JSON.parse(document.querySelector('input[name="PeopleWithAccess"]').value);
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            var params = "Date=" + encodeURIComponent(date) +
+                "&ParticipantsList=" + encodeURIComponent(participantsList) +
+                "&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
+
+            $http.post(`/DayExpenses/Edit/` + idToEdit, params, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+                    'RequestVerificationToken': token  // Anti-forgery token
+                }
+            })
+                .then(function (response) {
+                    // Check if response contains div with class modal-body
+                    if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+                        modalContent = angular.element(document.querySelector('#modal-content'));
+                        modalContent.html(response.data);
+                        compiledContent = $compile(modalContent)($scope);
+                    }
+                    else {
+                        $scope.day = { date: '', participantList: '' };
+                        $('#staticBackdrop').modal('hide');
+
+                        var dayIndex = $scope.days.findIndex(function (day) {
+                            return day.dayExpenses.id == idToEdit;
+                        });
+
+                        if (dayIndex !== -1) {
+                            $scope.days.splice(dayIndex, 1, response.data);
+                            $scope.pagedDays[$scope.currentPage].splice(dayIndex % 5, 1, response.data);
+                        }
+
+                        $scope.showToast('success', 'Success!', 'Day was successfully edited.');
+
+                    }
+                });
         };
 
         // Delete DayExpenses
@@ -161,29 +211,20 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                         return day.dayExpenses.id == idToRemove;
                     });
 
-                    $scope.triggerAnimation(dayIndex % 5, 'delete');
+                    if (dayIndex > -1) {
+                        $scope.days.splice(dayIndex, 1);
+                    }
 
-                    // Reset the animation after the duration
-                    setTimeout(function () {
-                        $scope.$apply(function () {
-                            if (dayIndex > -1) {
-                                $scope.days.splice(dayIndex, 1);
-                            }
+                    var currentPage = $scope.currentPage;
+                    $scope.filterPagedDays();
 
-                            var currentPage = $scope.currentPage;
-                            $scope.filterPagedDays();
+                    // Move one page back if current not exists now
+                    if (currentPage > $scope.pagedDays.length - 1)
+                        currentPage -= 1;
 
-                            // Move one page back if current not exists now
-                            if (currentPage > $scope.pagedDays.length - 1)
-                                currentPage -= 1;
+                    $scope.currentPage = currentPage;
 
-                            $scope.currentPage = currentPage;
-
-                            $scope.showToast('success', 'Success!', 'Day was successfully deleted.');
-                        });
-                    }, 300);
-
-                                        
+                    $scope.showToast('success', 'Success!', 'Day was successfully deleted.');                                        
                 });
         };
 
