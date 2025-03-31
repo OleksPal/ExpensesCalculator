@@ -129,4 +129,7 @@
   <data name="Participants" xml:space="preserve">
     <value>Учасники</value>
   </data>
+  <data name="TotalSum" xml:space="preserve">
+    <value>Загальна сума</value>
+  </data>
 </root>

@@ -132,4 +132,7 @@
   <data name="ShareExpenses" xml:space="preserve">
     <value>Share access to expenses</value>
   </data>
+  <data name="TotalSum" xml:space="preserve">
+    <value>Total Sum</value>
+  </data>
 </root>

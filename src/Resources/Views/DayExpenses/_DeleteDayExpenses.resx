@@ -129,4 +129,7 @@
   <data name="Participants" xml:space="preserve">
     <value>Participants</value>
   </data>
+  <data name="TotalSum" xml:space="preserve">
+    <value>Total Sum</value>
+  </data>
 </root>
