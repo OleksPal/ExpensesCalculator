@@ -125,7 +125,46 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             $http.get('/DayExpenses/ShareDayExpenses/' + dayId).then(function (response) {
                 modalContent = angular.element(document.querySelector('#modal-content'));
                 modalContent.html(response.data);
+                compiledContent = $compile(modalContent)($scope);
             });
+        };
+
+        $scope.shareDayExpenses = function () {
+            
+            var currentUsersName = document.querySelector('input[name="currentUsersName"]').value;
+            var newUserWithAccess = document.querySelector('input[name="newUserWithAccess"]').value;
+            if (currentUsersName === newUserWithAccess) {
+                $scope.statusString = "This user already has access!";
+            }                
+            else {
+                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                var idToShare = document.querySelector('input[name="DayExpenses.Id"]').value;
+                var params = "NewUserWithAccess=" + encodeURIComponent(newUserWithAccess);
+
+                $http.post(`/DayExpenses/Share/` + idToShare, params, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+                        'RequestVerificationToken': token  // Anti-forgery token
+                    }
+                })
+                    .then(function (response) {
+
+                        if (response.data === "Done!") {
+                            $scope.statusString = response.data;
+                            $('#staticBackdrop').modal('hide');
+
+                            var dayIndex = $scope.days.findIndex(function (day) {
+                                return day.dayExpenses.id == idToShare;
+                            });
+
+                            $scope.showToast('success', 'Success!', 'Access for this day was successfully shared.');
+                            $scope.triggerAnimation(dayIndex % 5, 'edit');
+                        }
+                        else
+                            $scope.statusString = response.data;
+                    });
+            }  
         };
 
         // Edit DayExpenses
