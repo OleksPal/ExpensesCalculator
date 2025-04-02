@@ -181,13 +181,28 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         };
 
         $scope.editDayExpenses = function () {           
-            
+
             var date = ($scope.day && $scope.day.date !== undefined)
                 ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
                 : "None";
             var participantsList = ($scope.day && $scope.day.participantList !== undefined)
                 ? $scope.day.participantList
                 : "";
+
+            if ($scope.day.date === undefined || $scope.day.participantList === undefined) {
+                if ($scope.day.date === undefined)
+                    $scope.dateError = "The value 'None' is not valid for Date";
+                else
+                    $scope.dateError = undefined;
+
+                if ($scope.day.participantList === undefined)
+                    $scope.participantsError = "Add some participants";
+                else
+                    $scope.participantsError = undefined;
+
+                return;
+            }
+
             var idToEdit = document.querySelector('input[name="DayExpenses.Id"]').value;
             var peopleWithAccessList = JSON.parse(document.querySelector('input[name="DayExpenses.PeopleWithAccess"]').value);
             var token = document.querySelector('input[name="__RequestVerificationToken"]').value;

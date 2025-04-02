@@ -13,7 +13,7 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form asp-action="Share">
+    <form name="shareForm" novalidate>
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="DayExpenses.Id" />
         <input type="hidden" name="currentUsersName" value="@ViewData["CurrentUsersName"]" />
@@ -36,9 +36,9 @@
         <div class="form-group">
             <i class="bi bi-person-fill"></i>
             <label class="control-label">@Localizer["AddAccessForUser"]</label>
-            <input class="form-control" name="newUserWithAccess"/>
+            <input class="form-control" name="newUserWithAccess" required/>
         </div>
-        <div class="form-group mb-3">{{ statusString }}</div>
+        <div class="form-group mb-3 text-danger">{{ statusString }}</div>
         <div class="form-group">
             <button type="button" class="btn btn-dark" ng-click="shareDayExpenses()">
                 <i class="bi bi-share me-1"></i>@Localizer["Share"]
