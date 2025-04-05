@@ -1,7 +1,7 @@
 ﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', ['ngAnimate']);
 
 expensesCalculatorApp.service('toastService', ['$timeout', function ($timeout) {
-    // Initialize toasts array
+    // Initialize toasts array in the service
     this.toasts = [];
 
     // Function to show toast
@@ -15,18 +15,31 @@ expensesCalculatorApp.service('toastService', ['$timeout', function ($timeout) {
             id: 'toast-' + this.toasts.length
         };
 
+        // Add the toast to the toasts array
         this.toasts.push(newToast);
 
+        // Use $timeout to ensure DOM is ready
         $timeout(function () {
             var toastElement = document.getElementById(newToast.id);
-            var toast = new bootstrap.Toast(toastElement);
-            toast.show();
+            if (toastElement) {
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }
         }, 100);
     };
 }]);
 
+
 expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', 'toastService',
     function ($scope, $http, $filter, $compile, toastService) {
+
+        // Expose the toastService's toasts array to the scope (if you need to access it in the view)
+        $scope.toasts = toastService.toasts;
+
+        // Use the showToast method from the toastService
+        $scope.showToast = function (type, title, message) {
+            toastService.showToast(type, title, message);
+        };
 
         $http.get('/DayExpenses/GetAllDays')
             .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
@@ -36,7 +49,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             $scope.filterPagedDays();
         }
         function getAllDaysErrorCallback(error) {
-            toastService.showToast('danger', 'Fail!', "Error: " + error.config.url + " - " + error.statusText);
+            $scope.showToast('danger', 'Fail!', "Error: " + error.config.url + " - " + error.statusText);
             console.log(error);
         }
 
@@ -97,7 +110,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
                             $scope.currentPage = currentPage;
 
-                            toastService.showToast('success', 'Success!', 'Day was successfully added.');
+                            $scope.showToast('success', 'Success!', 'Day was successfully added.');
                             $scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');                                     
                         }
                 });
@@ -160,7 +173,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                                 return day.dayExpenses.id == idToShare;
                             });
 
-                            toastService.showToast('success', 'Success!', 'Access for this day was successfully shared.');
+                            $scope.showToast('success', 'Success!', 'Access for this day was successfully shared.');
                             $scope.triggerAnimation(dayIndex % 5, 'edit');
                         }
                         else
@@ -239,7 +252,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                             $scope.pagedDays[$scope.currentPage].splice(dayIndex % 5, 1, response.data);
                         }
 
-                        toastService.showToast('success', 'Success!', 'Day was successfully edited.');
+                        $scope.showToast('success', 'Success!', 'Day was successfully edited.');
                         $scope.triggerAnimation(dayIndex % 5, 'edit');   
                     }
                 });
@@ -284,7 +297,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
                     $scope.currentPage = currentPage;
 
-                    toastService.showToast('success', 'Success!', 'Day was successfully deleted.');                                        
+                    $scope.showToast('success', 'Success!', 'Day was successfully deleted.');                                        
                 });
         };
 
