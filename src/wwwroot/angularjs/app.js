@@ -1,7 +1,32 @@
 ﻿var expensesCalculatorApp = angular.module('expensesCalculatorApp', ['ngAnimate']);
 
-expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', '$timeout',
-    function ($scope, $http, $filter, $compile, $timeout) {
+expensesCalculatorApp.service('toastService', ['$timeout', function ($timeout) {
+    // Initialize toasts array
+    this.toasts = [];
+
+    // Function to show toast
+    this.showToast = function (type, title, message) {
+        var newToast = {
+            type: 'bg-' + type,
+            title: title,
+            message: message,
+            time: new Date().toLocaleTimeString(),
+            hidden: false,
+            id: 'toast-' + this.toasts.length
+        };
+
+        this.toasts.push(newToast);
+
+        $timeout(function () {
+            var toastElement = document.getElementById(newToast.id);
+            var toast = new bootstrap.Toast(toastElement);
+            toast.show();
+        }, 100);
+    };
+}]);
+
+expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', 'toastService',
+    function ($scope, $http, $filter, $compile, toastService) {
 
         $http.get('/DayExpenses/GetAllDays')
             .then(getAllDaysSuccessfulCallback, getAllDaysErrorCallback);
@@ -11,32 +36,9 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             $scope.filterPagedDays();
         }
         function getAllDaysErrorCallback(error) {
-            $scope.showToast('danger', 'Fail!', "Error: " + error.config.url + " - " + error.statusText);
+            toastService.showToast('danger', 'Fail!', "Error: " + error.config.url + " - " + error.statusText);
             console.log(error);
         }
-
-        // Initialize toasts array
-        $scope.toasts = [];
-
-        // Function to show toast
-        $scope.showToast = function (type, title, message) {
-            var newToast = {
-                type: 'bg-' + type,
-                title: title,
-                message: message,
-                time: new Date().toLocaleTimeString(),
-                hidden: false, 
-                id: 'toast-' + $scope.toasts.length
-            };
-
-            $scope.toasts.push(newToast);
-
-            $timeout(function () {
-                var toastElement = document.getElementById(newToast.id);
-                var toast = new bootstrap.Toast(toastElement);
-                toast.show();
-            }, 100); 
-        };
 
         angular.element(document).ready(function () {
         
@@ -95,7 +97,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
                             $scope.currentPage = currentPage;
 
-                            $scope.showToast('success', 'Success!', 'Day was successfully added.');
+                            toastService.showToast('success', 'Success!', 'Day was successfully added.');
                             $scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');                                     
                         }
                 });
@@ -158,7 +160,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                                 return day.dayExpenses.id == idToShare;
                             });
 
-                            $scope.showToast('success', 'Success!', 'Access for this day was successfully shared.');
+                            toastService.showToast('success', 'Success!', 'Access for this day was successfully shared.');
                             $scope.triggerAnimation(dayIndex % 5, 'edit');
                         }
                         else
@@ -237,7 +239,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                             $scope.pagedDays[$scope.currentPage].splice(dayIndex % 5, 1, response.data);
                         }
 
-                        $scope.showToast('success', 'Success!', 'Day was successfully edited.');
+                        toastService.showToast('success', 'Success!', 'Day was successfully edited.');
                         $scope.triggerAnimation(dayIndex % 5, 'edit');   
                     }
                 });
@@ -282,7 +284,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
                     $scope.currentPage = currentPage;
 
-                    $scope.showToast('success', 'Success!', 'Day was successfully deleted.');                                        
+                    toastService.showToast('success', 'Success!', 'Day was successfully deleted.');                                        
                 });
         };
 
