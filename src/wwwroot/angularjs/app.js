@@ -224,7 +224,7 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 
             var params = "Date=" + encodeURIComponent(date) +
                 "&ParticipantsList=" + encodeURIComponent(participantsList) +
-                "&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
+                "&PeopleWithAccessList=" + encodeURIComponent(JSON.stringify(peopleWithAccessList));
 
             $http.post(`/DayExpenses/Edit/` + idToEdit, params, {
                 headers: {

@@ -226,6 +226,7 @@ namespace ExpensesCalculator.Controllers
 
             if (ModelState.IsValid)
             {
+                dayExpenses.PeopleWithAccessList = JsonSerializer.Deserialize<List<string>>(dayExpenses.PeopleWithAccessList.ToList()[0]);
                 var editedDayExpenses = await _dayExpensesService.EditDayExpenses(dayExpenses);
 
                 return RedirectToAction(nameof(GetDayById), new { id = editedDayExpenses.Id });
