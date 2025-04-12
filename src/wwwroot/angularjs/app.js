@@ -29,9 +29,31 @@ expensesCalculatorApp.service('toastService', ['$timeout', function ($timeout) {
     };
 }]);
 
+expensesCalculatorApp.service('rowAnimationService', ['$timeout', function ($timeout) {
+    var animatedRowIndex = null;
+    var animationType = null;
 
-expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', 'toastService',
-    function ($scope, $http, $filter, $compile, toastService) {
+    return {
+        triggerAnimation: function (index, type) {
+            animatedRowIndex = index;
+            animationType = type;
+
+            $timeout(function () {
+                animatedRowIndex = null;
+                animationType = null;
+            }, 500);
+        },
+        getAnimatedRowIndex: function () {
+            return animatedRowIndex;
+        },
+        getAnimationType: function () {
+            return animationType;
+        }
+    };
+}]);
+
+expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', 'toastService', 'rowAnimationService',
+    function ($scope, $http, $filter, $compile, toastService, rowAnimationService) {
 
         // Expose the toastService's toasts array to the scope (if you need to access it in the view)
         $scope.toasts = toastService.toasts;
@@ -39,6 +61,19 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
         // Use the showToast method from the toastService
         $scope.showToast = function (type, title, message) {
             toastService.showToast(type, title, message);
+        };
+
+        // Animations
+        $scope.triggerAnimation = function (index, type) {
+            rowAnimationService.triggerAnimation(index, type);
+        };
+
+        $scope.getAnimatedRowIndex = function () {
+            return rowAnimationService.getAnimatedRowIndex();
+        };
+
+        $scope.getAnimationType = function () {
+            return rowAnimationService.getAnimationType();
         };
 
         $http.get('/DayExpenses/GetAllDays')
@@ -116,24 +151,6 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
                 });
             };
         });
-
-        // Variables to track which row should be animated
-        $scope.animatedRowIndex = null;
-        $scope.animationType = null;
-
-        // Trigger animation for the specific row
-        $scope.triggerAnimation = function (index, animationType) {
-            $scope.animatedRowIndex = index;
-            $scope.animationType = animationType;
-
-            // Reset the animation after the duration
-            setTimeout(function () {
-                $scope.$apply(function () {
-                    $scope.animatedRowIndex = null; 
-                    $scope.animationType = null;
-                });
-            }, 500);
-        };
 
         // Share DayExpenses
         $scope.showModalForDayExpensesShare = function(dayId) {

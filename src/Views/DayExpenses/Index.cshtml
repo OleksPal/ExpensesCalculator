@@ -64,8 +64,8 @@
             <tbody ng-init="days" id="day-list">
                 <tr ng-repeat="day in pagedDays[currentPage] | filter:search" style="height: 60px; overflow: hidden;" 
                     ng-class="{
-                        'create-row': ($index === animatedRowIndex && animationType === 'create'),
-                        'edit-row': ($index === animatedRowIndex && animationType === 'edit')
+                        'create-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'create'),
+                        'edit-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'edit')
                     }">
                     <td class="text-nowrap">
                         {{day.dayExpenses.date | date : 'mediumDate'}}
