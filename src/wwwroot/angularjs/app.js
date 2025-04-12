@@ -52,8 +52,57 @@ expensesCalculatorApp.service('rowAnimationService', ['$timeout', function ($tim
     };
 }]);
 
-expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile', 'toastService', 'rowAnimationService',
-    function ($scope, $http, $filter, $compile, toastService, rowAnimationService) {
+expensesCalculatorApp.service('shareDayExpensesService', ['$http', '$compile', '$q', function ($http, $compile, $q) {
+
+    // Method to fetch and display the modal content for sharing day expenses
+    this.showModalForDayExpensesShare = function (dayId, $scope) {
+        var deferred = $q.defer();  // Use $q to handle asynchronous behavior
+
+        $http.get('/DayExpenses/ShareDayExpenses/' + dayId).then(function (response) {
+            var modalContent = angular.element(document.querySelector('#modal-content'));
+            modalContent.html(response.data);
+
+            // Compile the new content and link it to the scope
+            var compiledContent = $compile(modalContent)($scope);
+            deferred.resolve(response.data);
+        });
+
+        return deferred.promise;  // Return promise for chaining
+    };
+
+    // Method to handle sharing of day expenses
+    this.shareDayExpenses = function (currentUsersName, newUserWithAccess, dayId, token) {
+        var deferred = $q.defer();
+
+        // Check if the user already has access
+        if (currentUsersName === newUserWithAccess) {
+            deferred.reject("This user already has access!");
+        } else {
+            var params = "NewUserWithAccess=" + encodeURIComponent(newUserWithAccess);
+
+            // Make the POST request to share day expenses
+            $http.post('/DayExpenses/Share/' + dayId, params, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': token
+                }
+            }).then(function (response) {
+                if (response.data === "Done!") {
+                    deferred.resolve(response.data);
+                } else {
+                    deferred.reject(response.data);
+                }
+            });
+        }
+
+        return deferred.promise;  // Return promise for chaining
+    };
+
+}]);
+
+expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile',
+    'toastService', 'rowAnimationService', 'shareDayExpensesService',
+    function ($scope, $http, $filter, $compile, toastService, rowAnimationService, shareDayExpensesService) {
 
         // Expose the toastService's toasts array to the scope (if you need to access it in the view)
         $scope.toasts = toastService.toasts;
@@ -88,115 +137,97 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             console.log(error);
         }
 
-        angular.element(document).ready(function () {
-        
-            // Create DayExpenses
-            $scope.showModalForDayExpensesCreate = function () {
-                $http.get('/DayExpenses/CreateDayExpenses/').then(function (response) {
-                    modalContent = angular.element(document.querySelector('#modal-content'));
-                    modalContent.html(response.data);
-                    compiledContent = $compile(modalContent)($scope);
-                });
-            };
-
-            $scope.createDayExpenses = function () {
-                var date = ($scope.day && $scope.day.date !== undefined)
-                    ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
-                    : "None";
-                var participantsList = ($scope.day && $scope.day.participantList !== undefined)
-                    ? $scope.day.participantList
-                    : "";
-                var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
-                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-
-                var params = "Date=" + encodeURIComponent(date) +
-                    "&ParticipantsList=" + encodeURIComponent(participantsList) +
-                    "&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
-
-                $http.post(`/DayExpenses/Create`, params, {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
-                        'RequestVerificationToken': token  // Anti-forgery token
-                    }
-                })
-                    .then(function (response) {
-                        // Check if response contains div with class modal-body
-                        if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
-                            modalContent = angular.element(document.querySelector('#modal-content'));
-                            modalContent.html(response.data);
-                            compiledContent = $compile(modalContent)($scope);                       
-                        }
-                        else {
-                            $scope.day = { date: '', participantList: '' };
-                            $('#staticBackdrop').modal('hide');
-
-                            // Move one page forward if added element can`t be displayed on the same page
-                            var currentPage = $scope.currentPage;
-
-                            if ($scope.pagedDays[currentPage] === undefined)
-                                $scope.pagedDays[currentPage] = [];                            
-                                
-                            $scope.days.push(response.data);                            
-
-                            $scope.filterPagedDays();
-
-                            if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
-                                currentPage = $scope.pagedDays.length - 1;
-
-                            $scope.currentPage = currentPage;
-
-                            $scope.showToast('success', 'Success!', 'Day was successfully added.');
-                            $scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');                                     
-                        }
-                });
-            };
-        });
-
-        // Share DayExpenses
-        $scope.showModalForDayExpensesShare = function(dayId) {
-            $http.get('/DayExpenses/ShareDayExpenses/' + dayId).then(function (response) {
+        // Create DayExpenses
+        $scope.showModalForDayExpensesCreate = function () {
+            $http.get('/DayExpenses/CreateDayExpenses/').then(function (response) {
                 modalContent = angular.element(document.querySelector('#modal-content'));
                 modalContent.html(response.data);
                 compiledContent = $compile(modalContent)($scope);
             });
         };
 
+        $scope.createDayExpenses = function () {
+            var date = ($scope.day && $scope.day.date !== undefined)
+                ? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
+                : "None";
+            var participantsList = ($scope.day && $scope.day.participantList !== undefined)
+                ? $scope.day.participantList
+                : "";
+            var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            var params = "Date=" + encodeURIComponent(date) +
+                "&ParticipantsList=" + encodeURIComponent(participantsList) +
+                "&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
+
+            $http.post(`/DayExpenses/Create`, params, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+                    'RequestVerificationToken': token  // Anti-forgery token
+                }
+            })
+                .then(function (response) {
+                    // Check if response contains div with class modal-body
+                    if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+                        modalContent = angular.element(document.querySelector('#modal-content'));
+                        modalContent.html(response.data);
+                        compiledContent = $compile(modalContent)($scope);
+                    }
+                    else {
+                        $scope.day = { date: '', participantList: '' };
+                        $('#staticBackdrop').modal('hide');
+
+                        // Move one page forward if added element can`t be displayed on the same page
+                        var currentPage = $scope.currentPage;
+
+                        if ($scope.pagedDays[currentPage] === undefined)
+                            $scope.pagedDays[currentPage] = [];
+
+                        $scope.days.push(response.data);
+
+                        $scope.filterPagedDays();
+
+                        if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
+                            currentPage = $scope.pagedDays.length - 1;
+
+                        $scope.currentPage = currentPage;
+
+                        $scope.showToast('success', 'Success!', 'Day was successfully added.');
+                        $scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');
+                    }
+                });
+        };
+
+        // Share DayExpenses
+        $scope.showModalForDayExpensesShare = function (dayId) {
+            shareDayExpensesService.showModalForDayExpensesShare(dayId, $scope).then(function (data) {
+                // Success - you can handle any post-modal logic here
+            }, function (error) {
+                console.error(error);
+            });
+        };
+
+        // Method to share day expenses
         $scope.shareDayExpenses = function () {
-            
             var currentUsersName = document.querySelector('input[name="currentUsersName"]').value;
             var newUserWithAccess = document.querySelector('input[name="newUserWithAccess"]').value;
-            if (currentUsersName === newUserWithAccess) {
-                $scope.statusString = "This user already has access!";
-            }                
-            else {
-                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            var idToShare = document.querySelector('input[name="DayExpenses.Id"]').value;
 
-                var idToShare = document.querySelector('input[name="DayExpenses.Id"]').value;
-                var params = "NewUserWithAccess=" + encodeURIComponent(newUserWithAccess);
+            shareDayExpensesService.shareDayExpenses(currentUsersName, newUserWithAccess, idToShare, token).then(function (response) {
+                // Success: Update status message, close modal, etc.
+                $scope.statusString = response;
+                $('#staticBackdrop').modal('hide');
 
-                $http.post(`/DayExpenses/Share/` + idToShare, params, {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
-                        'RequestVerificationToken': token  // Anti-forgery token
-                    }
-                })
-                    .then(function (response) {
+                var dayIndex = $scope.days.findIndex(function (day) {
+                    return day.dayExpenses.id == idToShare;
+                });
 
-                        if (response.data === "Done!") {
-                            $scope.statusString = response.data;
-                            $('#staticBackdrop').modal('hide');
-
-                            var dayIndex = $scope.days.findIndex(function (day) {
-                                return day.dayExpenses.id == idToShare;
-                            });
-
-                            $scope.showToast('success', 'Success!', 'Access for this day was successfully shared.');
-                            $scope.triggerAnimation(dayIndex % 5, 'edit');
-                        }
-                        else
-                            $scope.statusString = response.data;
-                    });
-            }  
+                $scope.showToast('success', 'Success!', 'Access for this day was successfully shared.');
+                $scope.triggerAnimation(dayIndex % 5, 'edit');
+            }, function (error) {
+                $scope.statusString = error;
+            });
         };
 
         // Edit DayExpenses
