@@ -10,14 +10,6 @@
 
 <link href="~/css/mytooltip.css" rel="stylesheet" />
 
-<script src="~/js/modalviews/day-expenses-modal-views.js"></script>
-<script src="~/js/modalviews/checks-modal-views.js"></script>
-<script src="~/js/modalviews/items-modal-views.js"></script>
-<script src="~/js/managers/check-items-manager.js"></script>
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/js/caret-down-animation.js"></script>
-
 <div class="rounded m-3 m-sm-5 dark-blue-1" ng-controller="DayExpensesChecksCtrl">
     <div class="table-responsive">
         <table class="table table-borderless text-white">
@@ -35,7 +27,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr style="height: 60px;">
+                <tr style="height: 60px; overflow: hidden;" ng-class="{
+                        'edit-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'edit')
+                    }">
                     <td class="text-nowrap">
                         {{dayExpenses.Date | date : 'fullDate'}}
                     </td>
@@ -46,7 +40,7 @@
                         <div class="d-flex justify-content-end">
                             <div class="btn-group" role="group">
                                 <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        onclick="showModalForDayExpensesShare(@Model.Id)">
+                                        ng-click="showModalForDayExpensesShare(dayExpenses.Id)">
                                     <i class="bi bi-share"></i>
                                 </button>
                                 <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">
@@ -157,18 +151,34 @@
             </li>
         </ul>
     </div>
-</div>
-<input type="hidden" id="dayExpensesId" value="@Model.Id"/>
 
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content" id="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 px-3 pb-1">
+        <div ng-repeat="toast in toasts">
+            <div class="toast toast-dark rounded-bottom" role="alert" aria-live="assertive" aria-atomic="true" id="toast-{{ $index }}">
+                <div class="toast-header" ng-class="toast.type">
+                    <strong class="mr-auto">{{ toast.title }}</strong>
+                    <small class="text-white">{{ toast.time }}</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {{ toast.message }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<input type="hidden" id="dayExpensesId" value="@Model.Id"/>
 

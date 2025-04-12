@@ -461,7 +461,9 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
     };
 }])
 
-expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter', function ($scope, $http, $filter) {
+expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter',
+    'toastService', 'rowAnimationService', 'shareDayExpensesService',
+    function ($scope, $http, $filter, toastService, rowAnimationService, shareDayExpensesService) {
     var dayExpensesId = angular.element(document.querySelector('#dayExpensesId')).val();
 
     $http.get('/DayExpenses/GetDayExpensesChecks/' + dayExpensesId)
@@ -475,6 +477,55 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
     function getChecksErrorCallback(error) {
         console.log(error);
     }
+
+    // Expose the toastService's toasts array to the scope (if you need to access it in the view)
+    $scope.toasts = toastService.toasts;
+    
+    // Use the showToast method from the toastService
+    $scope.showToast = function (type, title, message) {
+        toastService.showToast(type, title, message);
+    };
+    
+    // Animations
+    $scope.triggerAnimation = function (index, type) {
+        rowAnimationService.triggerAnimation(index, type);
+    };
+    
+    $scope.getAnimatedRowIndex = function () {
+        return rowAnimationService.getAnimatedRowIndex();
+    };
+    
+    $scope.getAnimationType = function () {
+        return rowAnimationService.getAnimationType();
+    };
+
+    // Share DayExpenses
+    $scope.showModalForDayExpensesShare = function (dayId) {
+        shareDayExpensesService.showModalForDayExpensesShare(dayId, $scope).then(function (data) {
+            // Success - you can handle any post-modal logic here
+        }, function (error) {
+            console.error(error);
+        });
+    };
+    
+    // Method to share day expenses
+    $scope.shareDayExpenses = function () {
+        var currentUsersName = document.querySelector('input[name="currentUsersName"]').value;
+        var newUserWithAccess = document.querySelector('input[name="newUserWithAccess"]').value;
+        var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        var idToShare = document.querySelector('input[name="DayExpenses.Id"]').value;
+    
+        shareDayExpensesService.shareDayExpenses(currentUsersName, newUserWithAccess, idToShare, token).then(function (response) {
+            // Success: Update status message, close modal, etc.
+            $scope.statusString = response;
+            $('#staticBackdrop').modal('hide');
+    
+            $scope.showToast('success', 'Success!', 'Access for this day was successfully shared.');
+            $scope.triggerAnimation(undefined, 'edit');
+        }, function (error) {
+            $scope.statusString = error;
+        });
+    };
 
     $scope.showModalForCheckCreate = function (dayId) {
         $http.get('/Checks/CreateCheck/?dayExpensesId=' + dayId).then(
