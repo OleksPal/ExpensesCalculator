@@ -174,9 +174,57 @@ expensesCalculatorApp.service('editDayExpensesService', function ($http, $compil
     };
 });
 
+expensesCalculatorApp.service('deleteDayExpensesService', function ($http, $compile) {
+
+    this.showDeleteModal = function (dayId, $scope) {
+        $http.get('/DayExpenses/DeleteDayExpenses/' + dayId)
+            .then(function (response) {
+                var modalContent = angular.element(document.querySelector('#modal-content'));
+                modalContent.html(response.data);
+                $compile(modalContent)($scope);
+            });
+    };
+
+    this.deleteDay = function ($scope) {
+        var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        var idToRemove = document.querySelector('input[name="DayExpenses.Id"]').value;
+
+        $http.post(`/DayExpenses/Delete/` + idToRemove, {}, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': token
+            }
+        })
+            .then(function (response) {
+                $('#staticBackdrop').modal('hide');
+
+                var dayIndex = $scope.days.findIndex(function (day) {
+                    return day.dayExpenses.id == idToRemove;
+                });
+
+                if (dayIndex > -1) {
+                    $scope.days.splice(dayIndex, 1);
+                }
+
+                var currentPage = $scope.currentPage;
+                $scope.filterPagedDays();
+
+                if (currentPage > $scope.pagedDays.length - 1) {
+                    currentPage -= 1;
+                }
+
+                $scope.currentPage = currentPage;
+
+                $scope.showToast('success', 'Success!', 'Day was successfully deleted.');
+            });
+    };
+
+});
+
 expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter', '$compile',
-    'toastService', 'rowAnimationService', 'shareDayExpensesService', 'editDayExpensesService',
-    function ($scope, $http, $filter, $compile, toastService, rowAnimationService, shareDayExpensesService, editDayExpensesService) {
+    'toastService', 'rowAnimationService', 'shareDayExpensesService', 'editDayExpensesService', 'deleteDayExpensesService',
+    function ($scope, $http, $filter, $compile,
+        toastService, rowAnimationService, shareDayExpensesService, editDayExpensesService, deleteDayExpensesService) {
 
         // Expose the toastService's toasts array to the scope (if you need to access it in the view)
         $scope.toasts = toastService.toasts;
@@ -313,47 +361,13 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
             editDayExpensesService.editDay($scope);
         };
 
-        // Delete DayExpenses
-        $scope.showModalForDayExpensesDelete = function(dayId) {
-            $http.get('/DayExpenses/DeleteDayExpenses/' + dayId).then(function (response) {
-                modalContent = angular.element(document.querySelector('#modal-content'));
-                modalContent.html(response.data);
-                compiledContent = $compile(modalContent)($scope);
-            });
+        // Delete DayExpenses        
+        $scope.showModalForDayExpensesDelete = function (dayId) {
+            deleteDayExpensesService.showDeleteModal(dayId, $scope);
         };
 
         $scope.deleteDayExpenses = function () {
-            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-            var idToRemove = document.querySelector('input[name="DayExpenses.Id"]').value;
-
-            $http.post(`/DayExpenses/Delete/` + idToRemove, {}, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
-                    'RequestVerificationToken': token  // Anti-forgery token
-                }
-            })
-                .then(function (response) {
-                    $('#staticBackdrop').modal('hide');                    
-
-                    var dayIndex = $scope.days.findIndex(function (day) {
-                        return day.dayExpenses.id == idToRemove;
-                    });
-
-                    if (dayIndex > -1) {
-                        $scope.days.splice(dayIndex, 1);
-                    }
-
-                    var currentPage = $scope.currentPage;
-                    $scope.filterPagedDays();
-
-                    // Move one page back if current not exists now
-                    if (currentPage > $scope.pagedDays.length - 1)
-                        currentPage -= 1;
-
-                    $scope.currentPage = currentPage;
-
-                    $scope.showToast('success', 'Success!', 'Day was successfully deleted.');                                        
-                });
+            deleteDayExpensesService.deleteDay($scope);
         };
 
     // Sorting days
