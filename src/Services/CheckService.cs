@@ -58,6 +58,13 @@ namespace ExpensesCalculator.Services
             return new SelectList(optionList, "Value", "Text");
         }
 
+        public async Task<Check> AddCheckRCheck(Check check)
+        {
+            var dayExpenses = await GetDayExpensesWithCheck(check.DayExpensesId);
+
+            return await _checkRepository.Insert(check);
+        }
+
         public async Task<DayExpenses> AddCheck(Check check)
         {
             var dayExpenses = await GetDayExpensesWithCheck(check.DayExpensesId);

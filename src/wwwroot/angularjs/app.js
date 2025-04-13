@@ -615,7 +615,6 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 					$scope.pagedChecks[currentPage] = [];
 
 				$scope.checks.push(response.data);
-				console.log(response.data);
 
 				$scope.filterPagedChecks();
 
