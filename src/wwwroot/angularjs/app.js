@@ -154,15 +154,21 @@ expensesCalculatorApp.service('editDayExpensesService', function ($http, $compil
                 const bsModal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
                 bsModal && bsModal.hide();
 
-                const dayIndex = $scope.days.findIndex(day => day.dayExpenses.id == idToEdit);
+                const dayIndex = $scope.days ? $scope.days.findIndex(day => day.dayExpenses.id == idToEdit) : 0;
 
-                if (dayIndex !== -1) {
+                if ($scope.days && dayIndex !== -1) {
                     $scope.days.splice(dayIndex, 1, response.data);
                     $scope.pagedDays[$scope.currentPage].splice(dayIndex % 5, 1, response.data);
+                    $scope.triggerAnimation(dayIndex % 5, 'edit');
+                }
+
+                else if ($scope.dayExpenses) {
+                    $scope.dayExpenses = response.data;
+                    $scope.triggerAnimation(undefined, 'edit');
                 }
 
                 $scope.showToast('success', 'Success!', 'Day was successfully edited.');
-                $scope.triggerAnimation(dayIndex % 5, 'edit');
+                
             }
         });
     };
@@ -463,17 +469,17 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 }])
 
 expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter',
-    'toastService', 'rowAnimationService', 'shareDayExpensesService',
-    function ($scope, $http, $filter, toastService, rowAnimationService, shareDayExpensesService) {
+    'toastService', 'rowAnimationService', 'shareDayExpensesService', 'editDayExpensesService',
+    function ($scope, $http, $filter, toastService, rowAnimationService, shareDayExpensesService, editDayExpensesService) {
     var dayExpensesId = angular.element(document.querySelector('#dayExpensesId')).val();
 
-    $http.get('/DayExpenses/GetDayExpensesChecks/' + dayExpensesId)
+        $http.get('/DayExpenses/GetDayById/' + dayExpensesId)
         .then(getChecksSuccessfulCallback, getChecksErrorCallback);
 
     function getChecksSuccessfulCallback(response) {
         $scope.dayExpenses = response.data;
-        $scope.checks = $scope.dayExpenses.Checks;
-        $scope.filterPagedChecks();
+        $scope.checks = response.data.dayExpenses.checks;
+        $scope.filterPagedChecks();        
     }
     function getChecksErrorCallback(error) {
         console.log(error);
@@ -509,7 +515,6 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         });
     };
     
-    // Method to share day expenses
     $scope.shareDayExpenses = function () {
         var currentUsersName = document.querySelector('input[name="currentUsersName"]').value;
         var newUserWithAccess = document.querySelector('input[name="newUserWithAccess"]').value;
@@ -526,6 +531,15 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
         }, function (error) {
             $scope.statusString = error;
         });
+    };
+
+    // Edit DayExpenses
+    $scope.showModalForDayExpensesEdit = function (dayId) {
+        editDayExpensesService.showEditModal(dayId, $scope);
+    };
+    
+    $scope.editDayExpenses = function () {
+        editDayExpensesService.editDay($scope);
     };
 
     $scope.showModalForCheckCreate = function (dayId) {

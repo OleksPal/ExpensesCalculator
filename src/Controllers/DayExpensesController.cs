@@ -43,7 +43,14 @@ namespace ExpensesCalculator.Controllers
 
             var day = await _dayExpensesService.GetDayExpensesViewModelById(id);
 
-            return Json(day);
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
+
+            return Json(day, options);
         }
 
         // GET: DayExpenses/CreateDayExpenses

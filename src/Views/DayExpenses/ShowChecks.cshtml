@@ -15,15 +15,19 @@
         <table class="table table-borderless text-white">
             <thead>
                 <tr>
-                    <th class="text-nowrap" width="40%">
+                    <th class="text-nowrap" width="25%">
                         <i class="bi bi-calendar-event pe-1"></i>
                         @Localizer["Date"]
                     </th>
-                    <th class="text-nowrap" width="40%">
+                    <th class="text-nowrap" width="25%">
                         <i class="bi bi-people-fill pe-1"></i>
                         @Localizer["Participants"]
                     </th>
-                    <th></th>
+                    <th class="text-nowrap" width="25%">
+                        <i class="bi bi-cash-stack pe-1"></i>
+                        @Localizer["TotalSum"]
+                    </th>
+                    <th width="15%"></th>
                 </tr>
             </thead>
             <tbody>
@@ -31,23 +35,26 @@
                         'edit-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'edit')
                     }">
                     <td class="text-nowrap">
-                        {{dayExpenses.Date | date : 'fullDate'}}
+                        {{dayExpenses.dayExpenses.date | date : 'fullDate'}}
                     </td>
                     <td class="text-nowrap">
-                        {{dayExpenses.ParticipantsList.length}} @Localizer["People"]
+                        {{dayExpenses.dayExpenses.participantsList.length}} @Localizer["People"]
+                    </td>
+                    <td class="text-nowrap">
+                        {{dayExpenses.totalSum | currency : '₴'}}
                     </td>
                     <td>
                         <div class="d-flex justify-content-end">
                             <div class="btn-group" role="group">
                                 <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        ng-click="showModalForDayExpensesShare(dayExpenses.Id)">
+                                        ng-click="showModalForDayExpensesShare(dayExpenses.dayExpenses.id)">
                                     <i class="bi bi-share"></i>
                                 </button>
                                 <a role="button" class="btn btn-primary" asp-controller="DayExpenses" asp-action="CalculateExpenses" asp-route-id="@Model.Id">
                                     <i class="bi bi-calculator"></i>
                                 </a>
                                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        onclick="showModalForDayExpensesEdit(@Model.Id)">
+                                        ng-click="showModalForDayExpensesEdit(dayExpenses.dayExpenses.id)">
                                     <i class="bi bi-pencil"></i>
                                 </button>
                                 <button class="btn btn-danger" data-bs-toggle="modal"

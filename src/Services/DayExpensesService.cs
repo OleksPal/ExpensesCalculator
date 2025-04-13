@@ -55,7 +55,6 @@ namespace ExpensesCalculator.Services
         {
             var dayExpenses = await GetDayExpensesByIdWithChecks(id);
             var totalSum = dayExpenses.Checks.Select(check => check.Sum).Sum();
-            dayExpenses.Checks = null;
 
             var dayExpensesViewModel = new DayExpensesViewModel
             {
@@ -64,7 +63,6 @@ namespace ExpensesCalculator.Services
             };
 
             return dayExpensesViewModel;
-
         }
 
         public async Task<DayExpenses> GetDayExpensesById(int id)
