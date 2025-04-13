@@ -485,9 +485,9 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 	};
 }])
 
-expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter',
+expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter', '$compile',
 	'toastService', 'rowAnimationService', 'shareDayExpensesService', 'editDayExpensesService', 'deleteDayExpensesService',
-	function ($scope, $http, $filter,
+	function ($scope, $http, $filter, $compile,
 		toastService, rowAnimationService, shareDayExpensesService, editDayExpensesService, deleteDayExpensesService) {
 	var dayExpensesId = angular.element(document.querySelector('#dayExpensesId')).val();
 
@@ -569,15 +569,119 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 		deleteDayExpensesService.deleteDay($scope);
 	};
 
+	// Add check
 	$scope.showModalForCheckCreate = function (dayId) {
 		$http.get('/Checks/CreateCheck/?dayExpensesId=' + dayId).then(
 			function (response) {
 				modalContent = angular.element(document.querySelector('#modal-content'));
 				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
 			}
 		);
 	}
 
+	$scope.createCheck = function (dayId) {
+		var location = ($scope.check.location && $scope.check.location !== undefined)
+			? $scope.check.location
+			: "";
+		var payer = ($scope.check.selectedPayer && $scope.check.selectedPayer !== undefined)
+			? $scope.check.selectedPayer
+			: "";
+		var dayExpensesId = document.querySelector('input[name="DayExpensesId"]').value;
+		var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+		var params = "Location=" + encodeURIComponent(location) +
+			"&Payer=" + encodeURIComponent(payer) +
+			"&DayExpensesId=" + encodeURIComponent(dayExpensesId);
+
+		$http.post(`/Checks/Create`, params, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+				'RequestVerificationToken': token  // Anti-forgery token
+			}
+		}).then(function (response) {
+			// Check if response contains div with class modal-body
+			if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+				modalContent = angular.element(document.querySelector('#modal-content'));
+				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
+			}
+			else {
+				$scope.check = { location: '', selectedPayer: '' };
+				$('#staticBackdrop').modal('hide');
+
+				// Move one page forward if added element can`t be displayed on the same page
+				var currentPage = $scope.currentPage;
+
+				if ($scope.pagedChecks[currentPage] === undefined)
+					$scope.pagedChecks[currentPage] = [];
+
+				$scope.checks.push(response.data);
+
+				$scope.filterPagedChecks();
+
+				if (currentPage === -1 || $scope.pagedChecks[currentPage].length === 5)
+					currentPage = $scope.pagedChecks.length - 1;
+
+				$scope.currentPage = currentPage;
+
+				$scope.showToast('success', 'Success!', 'Check was successfully added.');
+				$scope.triggerAnimation($scope.pagedChecks[currentPage].length - 1, 'create');
+			}
+		});
+	}
+		$scope.createDayExpenses = function () {
+			var date = ($scope.day && $scope.day.date !== undefined)
+				? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
+				: "None";
+			var participantsList = ($scope.day && $scope.day.participantList !== undefined)
+				? $scope.day.participantList
+				: "";
+			var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
+			
+
+			var params = "Date=" + encodeURIComponent(date) +
+				"&ParticipantsList=" + encodeURIComponent(participantsList) +
+				"&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
+
+			$http.post(`/DayExpenses/Create`, params, {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+					'RequestVerificationToken': token  // Anti-forgery token
+				}
+			})
+				.then(function (response) {
+					// Check if response contains div with class modal-body
+					if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+						modalContent = angular.element(document.querySelector('#modal-content'));
+						modalContent.html(response.data);
+						compiledContent = $compile(modalContent)($scope);
+					}
+					else {
+						$scope.day = { date: '', participantList: '' };
+						$('#staticBackdrop').modal('hide');
+
+						// Move one page forward if added element can`t be displayed on the same page
+						var currentPage = $scope.currentPage;
+
+						if ($scope.pagedDays[currentPage] === undefined)
+							$scope.pagedDays[currentPage] = [];
+
+						$scope.days.push(response.data);
+
+						$scope.filterPagedDays();
+
+						if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
+							currentPage = $scope.pagedDays.length - 1;
+
+						$scope.currentPage = currentPage;
+
+						$scope.showToast('success', 'Success!', 'Day was successfully added.');
+						$scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');
+					}
+				});
+		};
+	// Edit check
 	$scope.showModalForCheckEdit = function (checkId) {
 		$http.get('/Checks/EditCheck/' + checkId).then(
 			function (response) {
@@ -721,8 +825,8 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
 
 	angular.forEach($scope.checks, function (value, key) {
 		var itemCollection = {
-			checkId: value.Id,
-			items: value.Items,
+			checkId: value.id,
+			items: value.items,
 			sort: {
 				active: '',
 				descending: undefined
@@ -732,7 +836,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
 		};
 
 		var itemsPerPage = 5;
-		for (var i = 0; i < value.Items.length; i++) {
+		for (var i = 0; i < value.items.length; i++) {
 			if (i % itemsPerPage === 0) {
 				itemCollection.pagedItems[Math.floor(i / itemsPerPage)] = [value.Items[i]];
 			} else {

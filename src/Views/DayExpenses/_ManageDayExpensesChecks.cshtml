@@ -7,29 +7,29 @@
 <tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
     <td>
         <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click="getCollapseIcon($event)"
-                data-bs-target="#collapseExample{{check.Id}}" aria-expanded="false" aria-controls="collapseExample">
+                data-bs-target="#collapseExample{{check.id}}" aria-expanded="false" aria-controls="collapseExample">
         </i>
     </td>
     <td class="text-nowrap">
-        {{check.Location}}
+        {{check.location}}
     </td>
     <td class="text-nowrap">
         <div id="check-{{check.Id}}-Sum">
-            {{check.Sum | currency : '₴'}}
+            {{check.sum | currency : '₴'}}
         </div>
     </td>
     <td class="text-nowrap">
-        {{check.Payer}}
+        {{check.payer}}
     </td>
     <td>
         <div class="d-flex justify-content-end">
             <div class="btn-group" role="group">
                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                        ng-click="showModalForCheckEdit(check.Id)">
+                        ng-click="showModalForCheckEdit(check.id)">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                        ng-click="showModalForCheckDelete(check.Id)">
+                        ng-click="showModalForCheckDelete(check.id)">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
@@ -38,7 +38,7 @@
 </tr>
 <tr ng-repeat-end>
     <td colspan="5">
-        <div class="collapse" id="collapseExample{{check.Id}}">
+        <div class="collapse" id="collapseExample{{check.id}}">
             <div class="card card-body dark-blue-1 border-primary" ng-controller="ItemsCtrl" ng-init="itemCollection = getCheckItems(check.Id)">
                 <div class="container-fluid p-3 text-white">
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
