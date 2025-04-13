@@ -194,33 +194,32 @@ expensesCalculatorApp.service('deleteDayExpensesService', ['$http', '$compile', 
 				'Content-Type': 'application/x-www-form-urlencoded',
 				'RequestVerificationToken': token
 			}
-		})
-			.then(function (response) {
-				$('#staticBackdrop').modal('hide');
-
-				var dayIndex = $scope.days ? $scope.days.findIndex(function (day) {
-					return day.dayExpenses.id == idToRemove;
-				}) : 0;
-
-				if ($scope.days && dayIndex > -1) {
-					$scope.days.splice(dayIndex, 1);
-
-					var currentPage = $scope.currentPage;
-					$scope.filterPagedDays();
-
-					if (currentPage > $scope.pagedDays.length - 1) {
-						currentPage -= 1;
-					}
-
-					$scope.currentPage = currentPage;
+		}).then(function (response) {
+			$('#staticBackdrop').modal('hide');
+		
+			var dayIndex = $scope.days ? $scope.days.findIndex(function (day) {
+				return day.dayExpenses.id == idToRemove;
+			}) : 0;
+		
+			if ($scope.days && dayIndex > -1) {
+				$scope.days.splice(dayIndex, 1);
+		
+				var currentPage = $scope.currentPage;
+				$scope.filterPagedDays();
+		
+				if (currentPage > $scope.pagedDays.length - 1) {
+					currentPage -= 1;
 				}
-
-				else if ($scope.dayExpenses) {
-					$window.location.href = '/DayExpenses';
-				}
-
-				$scope.showToast('success', 'Success!', 'Day was successfully deleted.');			
-			});
+		
+				$scope.currentPage = currentPage;
+			}
+		
+			else if ($scope.dayExpenses) {
+				$window.location.href = '/DayExpenses';
+			}
+		
+			$scope.showToast('success', 'Success!', 'Day was successfully deleted.');			
+		});
 	};
 
 }]);
@@ -496,13 +495,12 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 
 	function getChecksSuccessfulCallback(response) {
 		$scope.dayExpenses = response.data;
-		$scope.checks = response.data.dayExpenses.checks;
+		$scope.checks = response.data.dayExpenses.checks;		
 		$scope.filterPagedChecks();        
 	}
 	function getChecksErrorCallback(error) {
 		console.log(error);
 	}
-
 	// Expose the toastService's toasts array to the scope (if you need to access it in the view)
 	$scope.toasts = toastService.toasts;
 	
@@ -617,6 +615,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 					$scope.pagedChecks[currentPage] = [];
 
 				$scope.checks.push(response.data);
+				console.log(response.data);
 
 				$scope.filterPagedChecks();
 
@@ -630,57 +629,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 			}
 		});
 	}
-		$scope.createDayExpenses = function () {
-			var date = ($scope.day && $scope.day.date !== undefined)
-				? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
-				: "None";
-			var participantsList = ($scope.day && $scope.day.participantList !== undefined)
-				? $scope.day.participantList
-				: "";
-			var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
-			
 
-			var params = "Date=" + encodeURIComponent(date) +
-				"&ParticipantsList=" + encodeURIComponent(participantsList) +
-				"&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
-
-			$http.post(`/DayExpenses/Create`, params, {
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
-					'RequestVerificationToken': token  // Anti-forgery token
-				}
-			})
-				.then(function (response) {
-					// Check if response contains div with class modal-body
-					if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
-						modalContent = angular.element(document.querySelector('#modal-content'));
-						modalContent.html(response.data);
-						compiledContent = $compile(modalContent)($scope);
-					}
-					else {
-						$scope.day = { date: '', participantList: '' };
-						$('#staticBackdrop').modal('hide');
-
-						// Move one page forward if added element can`t be displayed on the same page
-						var currentPage = $scope.currentPage;
-
-						if ($scope.pagedDays[currentPage] === undefined)
-							$scope.pagedDays[currentPage] = [];
-
-						$scope.days.push(response.data);
-
-						$scope.filterPagedDays();
-
-						if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
-							currentPage = $scope.pagedDays.length - 1;
-
-						$scope.currentPage = currentPage;
-
-						$scope.showToast('success', 'Success!', 'Day was successfully added.');
-						$scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');
-					}
-				});
-		};
 	// Edit check
 	$scope.showModalForCheckEdit = function (checkId) {
 		$http.get('/Checks/EditCheck/' + checkId).then(
@@ -691,14 +640,50 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 		);
 	}
 
+	// Delete check
 	$scope.showModalForCheckDelete = function(checkId) {
 		$http.get('/Checks/DeleteCheck/' + checkId).then(
 			function (response) {
 				modalContent = angular.element(document.querySelector('#modal-content'));
 				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
 			}
 		);
 	}
+
+	$scope.deleteCheck = function () {
+		var idToRemove = document.querySelector('input[name="Id"]').value;
+		var dayExpensesId = document.querySelector('input[name="DayExpensesId"]').value;
+		var token = document.querySelector('input[name="__RequestVerificationToken"]').value;		
+
+		$http.post(`/Checks/Delete/` + idToRemove + "?dayexpensesid=" + dayExpensesId, {}, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'RequestVerificationToken': token
+			}
+		}).then(function (response) {
+			$('#staticBackdrop').modal('hide');
+
+			var checkIndex = $scope.checks.findIndex(function (check) {
+				return check.id == idToRemove;
+			});
+
+			if (checkIndex > -1) {
+				$scope.checks.splice(checkIndex, 1);
+	
+				var currentPage = $scope.currentPage;
+				$scope.filterPagedChecks();
+
+				if (currentPage > $scope.pagedChecks.length - 1) {
+					currentPage -= 1;
+				}
+	
+				$scope.currentPage = currentPage;
+			}
+	
+			$scope.showToast('success', 'Success!', 'Check was successfully deleted.');
+		});
+	};
 
 	$scope.getCollapseIcon = function (icon) {
 		var isCollapsed = angular.element(icon.currentTarget).hasClass('collapsed');
