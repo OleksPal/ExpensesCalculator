@@ -568,7 +568,9 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 	};
 
 	// Add check
-	$scope.showModalForCheckCreate = function (dayId) {
+		$scope.showModalForCheckCreate = function (dayId) {
+		$scope.check = { location: '', selectedPayer: '' };
+
 		$http.get('/Checks/CreateCheck/?dayExpensesId=' + dayId).then(
 			function (response) {
 				modalContent = angular.element(document.querySelector('#modal-content'));
@@ -578,7 +580,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 		);
 	}
 
-	$scope.createCheck = function (dayId) {
+	$scope.createCheck = function () {
 		var location = ($scope.check.location && $scope.check.location !== undefined)
 			? $scope.check.location
 			: "";
