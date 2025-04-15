@@ -484,9 +484,9 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 	};
 }])
 
-expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter', '$compile',
+expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$filter', '$compile', '$timeout',
 	'toastService', 'rowAnimationService', 'shareDayExpensesService', 'editDayExpensesService', 'deleteDayExpensesService',
-	function ($scope, $http, $filter, $compile,
+	function ($scope, $http, $filter, $compile, $timeout,
 		toastService, rowAnimationService, shareDayExpensesService, editDayExpensesService, deleteDayExpensesService) {
 	var dayExpensesId = angular.element(document.querySelector('#dayExpensesId')).val();
 
@@ -635,9 +635,76 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 			function (response) {
 				modalContent = angular.element(document.querySelector('#modal-content'));
 				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
+
+				const locationInput = document.querySelector('input[name="Location"]').value;
+				const sumInput = document.querySelector('input[name="Sum"]');
+
+				$scope.check = {
+					location: locationInput,
+					sum: sumInput ? sumInput.value : '',
+				};
+
+				$timeout(function () {
+					const payerInput = document.querySelector('input[name="Payer"]');
+					$scope.check.selectedPayer = payerInput ? payerInput.value : '';
+				});
 			}
 		);
 	}
+
+	$scope.editCheck = function () {
+		var location = ($scope.check.location && $scope.check.location !== undefined)
+			? $scope.check.location
+			: "";
+		var payer = ($scope.check.selectedPayer && $scope.check.selectedPayer !== undefined)
+			? $scope.check.selectedPayer
+			: "";
+		var sum = ($scope.check.sum && $scope.check.sum !== undefined)
+			? $scope.check.sum
+			: "";
+		const idToEdit = document.querySelector('input[name="Id"]').value;
+		const dayExpensesId = document.querySelector('input[name="DayExpensesId"]').value;
+		const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+		const params = "Location=" + encodeURIComponent(location) +
+			"&Payer=" + encodeURIComponent(payer) +
+			"&Sum=" + encodeURIComponent(sum) +
+			"&DayExpensesId=" + encodeURIComponent(dayExpensesId);
+
+		$http.post(`/Checks/Edit/` + idToEdit, params, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'RequestVerificationToken': token
+			}
+		}).then(function (response) {
+			if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+				const modalContent = angular.element(document.querySelector('#modal-content'));
+				modalContent.html(response.data);
+				$compile(modalContent)($scope);
+			} else {
+				// Modal closing and data updating
+				const bsModal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+				bsModal && bsModal.hide();
+
+				$scope.check = {
+					location: '',
+					sum: '',
+					selectedPayer: ''
+				};
+
+				const checkIndex = $scope.checks ? $scope.checks.findIndex(check => check.id == idToEdit) : 0;
+
+				if (checkIndex !== -1) {
+					$scope.checks.splice(checkIndex, 1, response.data);
+					$scope.pagedChecks[$scope.currentPage].splice(checkIndex % 5, 1, response.data);
+					$scope.triggerAnimation(checkIndex % 5, 'edit');
+				}
+
+				$scope.showToast('success', 'Success!', 'Check was successfully edited.');
+			}
+		});
+	};
 
 	// Delete check
 	$scope.showModalForCheckDelete = function(checkId) {

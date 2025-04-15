@@ -120,9 +120,8 @@ namespace ExpensesCalculator.Controllers
 
             if (TryValidateModel(check))
             {
-                var model = await _checkService.EditCheck(check);
-
-                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
+                var editedCheck = await _checkService.EditCheckRCheck(check);
+                return RedirectToAction(nameof(GetCheckById), new { id = editedCheck.Id });
             }
 
             ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);

@@ -11,6 +11,7 @@ namespace ExpensesCalculator.Services
         Task<Check> SetDayExpenses(Check check);
         Task<Check> AddCheckRCheck(Check check);
         Task<DayExpenses> AddCheck(Check check);
+        Task<Check> EditCheckRCheck(Check check);
         Task<DayExpenses> EditCheck(Check check);
         Task<DayExpenses> DeleteCheck(int id);
     }

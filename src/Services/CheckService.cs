@@ -74,6 +74,11 @@ namespace ExpensesCalculator.Services
             return dayExpenses;
         }
 
+        public async Task<Check> EditCheckRCheck(Check check)
+        {
+            return await _checkRepository.Update(check);
+        }
+
         public async Task<DayExpenses> EditCheck(Check check)
         {
             await _checkRepository.Update(check);
