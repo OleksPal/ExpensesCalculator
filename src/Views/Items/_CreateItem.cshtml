@@ -6,47 +6,66 @@
 
 @model AddItemViewModel<int>
 
-<link href="~/css/single-line-text.css" rel="stylesheet" />
-
-<script src="~/js/ajax/items/add-item.js"></script>
-<script src="~/js/multiselect-dropdown.js"></script>
-
 <div class="modal-header">
     <h5 class="modal-title">@Localizer["AddItem"]</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
     <form asp-action="Create">
+        @Html.AntiForgeryToken()
+        <input asp-for="CheckId" type="hidden"/>
+        <input type="hidden" name="DayExpensesId" value="@ViewData["DayExpensesId"]"/>
+        <input type="hidden" name="Participants"
+               value="@(ViewData["Participants"] == null
+           ? "[]"
+           : JsonConvert.SerializeObject(ViewData["Participants"]))" />
+
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group mb-3">        
             <i class="bi bi-box"></i>
             <label class="control-label">@Localizer["Name"]</label>
-            <input asp-for="Name" class="form-control" id="name"/>
+            <input asp-for="Name" class="form-control" ng-model="item.name"/>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-alphabet"></i>
             <labelclass ="control-label">
                 @Localizer["Description"]</label>
-            <input asp-for="Description" class="form-control" id="description"/>
+            <input asp-for="Description" class="form-control" ng-model="item.description"/>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-coin"></i>
             <label class="control-label">@Localizer["Price"]</label>
-            <input asp-for="Price" class="form-control" id="price"/>
+            <input asp-for="Price" class="form-control" ng-model="item.price"/>
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-grid"></i>
             <label class="control-label">@Localizer["Amount"]</label>
-            <input asp-for="Amount" type="number" class="form-control" value="1" id="amount"/>
+            <input asp-for="Amount" type="number" class="form-control" value="1" ng-model="item.amount"/>
             <span asp-validation-for="Amount" class="text-danger"></span>
         </div>
         <div class="form-group mb-3 dropdown">
             <i class="bi bi-people-fill"></i>
             <label class="control-label">@Localizer["UserList"]</label>
-            <button class="btn btn-outline-dark dropdown-toggle w-100 text single-line" type="button" style="text-align: left;"
+            <div class="dropdown" ng-click="dropdownOpen = !dropdownOpen" style="position: relative;">
+                <button class="btn btn-outline-dark dropdown-toggle w-100" type="button" style="text-align: left">
+                    {{ getSelectedText() || 'Select items' }}
+                </button>
+
+                <ul class="dropdown-menu show w-100" ng-show="dropdownOpen" style="position: absolute; z-index: 999;">
+                    <li ng-repeat="item in itemList">
+                        <label style="display: block; padding: 5px 10px;">
+                            <input type="checkbox" class="form-check-input text-left"
+                                   ng-checked="selectedItems.indexOf(item.value) > -1"
+                                   ng-click="toggleSelection(item.value)" />
+                            {{ item.text }}
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            @* <button class="btn btn-outline-dark dropdown-toggle w-100 text single-line" type="button" style="text-align: left;"
                     id="multiSelectDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 @Localizer["SelectUsers"]
             </button>
@@ -69,36 +88,11 @@
                         </label>
                     </li>
                 }
-            </ul>
+            </ul> *@
             <span asp-validation-for="UserList" class="text-danger"></span>
         </div>
-        <button type="button" value="Create" class="btn btn-success" id="createButton">
+        <button type="button" value="Create" class="btn btn-success" ng-click="createItem()">
             <i class="bi bi-plus-circle"></i> @Localizer["AddItemButton"]
         </button>
     </form>
 </div>
-
-@if(Model is null)
-{
-    <script>
-        var token = '@Html.AntiForgeryToken()'
-        var checkId = @ViewData["CheckId"]
-        var dayExpensesId = @ViewData["DayExpensesId"]
-        var mySelectedItems = []
-    </script>
-}
-else
-{
-    <script>
-        var token = '@Html.AntiForgeryToken()'
-        var checkId = @ViewData["CheckId"]
-        var dayExpensesId = @ViewData["DayExpensesId"]
-        var mySelectedItems = @(Model.UserList == null ? Html.Raw("[]") : Html.Raw(JsonConvert.SerializeObject(Model.UserList)))
-
-        $(document).ready(function () {
-            const dropdownButton = document.getElementById('multiSelectDropdown')
-            dropdownButton.innerText = "@ViewData["FormatUserList"]"
-        });
-    </script>
-}
-

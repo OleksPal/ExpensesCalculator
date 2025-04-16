@@ -53,7 +53,7 @@ namespace ExpensesCalculator.Services
 
         public async Task<DayExpensesViewModel> GetDayExpensesViewModelById(int id)
         {
-            var dayExpenses = await GetDayExpensesByIdWithChecks(id);
+            var dayExpenses = await GetFullDayExpensesById(id);
             var totalSum = dayExpenses.Checks.Select(check => check.Sum).Sum();
 
             var dayExpensesViewModel = new DayExpensesViewModel

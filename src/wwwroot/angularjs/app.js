@@ -495,7 +495,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 
 	function getChecksSuccessfulCallback(response) {
 		$scope.dayExpenses = response.data;
-		$scope.checks = response.data.dayExpenses.checks;		
+		$scope.checks = response.data.dayExpenses.checks;	
 		$scope.filterPagedChecks();        
 	}
 	function getChecksErrorCallback(error) {
@@ -873,9 +873,11 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 	};
 }])
 
-expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', function ($scope, $http, $filter) {
+expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$compile', '$timeout',
+	'toastService', 'rowAnimationService',
+	function ($scope, $http, $filter, $compile, $timeout, toastService, rowAnimationService) {
 	$scope.itemCollections = [];
-
+		
 	angular.forEach($scope.checks, function (value, key) {
 		var itemCollection = {
 			checkId: value.id,
@@ -888,27 +890,155 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', fun
 			currentPage: 0
 		};
 
+		angular.forEach(itemCollection.items, function (value, key) {
+			value.usersList = JSON.parse(value.usersList);
+		});
+
 		var itemsPerPage = 5;
 		for (var i = 0; i < value.items.length; i++) {
 			if (i % itemsPerPage === 0) {
-				itemCollection.pagedItems[Math.floor(i / itemsPerPage)] = [value.Items[i]];
+				itemCollection.pagedItems[Math.floor(i / itemsPerPage)] = [value.items[i]];
 			} else {
-				itemCollection.pagedItems[Math.floor(i / itemsPerPage)].push(value.Items[i]);
+				itemCollection.pagedItems[Math.floor(i / itemsPerPage)].push(value.items[i]);
 			}
 		}
 
 		$scope.itemCollections.push(itemCollection);
 	});
+		console.log($scope.itemCollections[0].pagedItems);
+	// Expose the toastService's toasts array to the scope (if you need to access it in the view)
+	$scope.toasts = toastService.toasts;
+	
+	// Use the showToast method from the toastService
+	$scope.showToast = function (type, title, message) {
+		toastService.showToast(type, title, message);
+	};
+	
+	// Animations
+	$scope.triggerAnimation = function (index, type) {
+		rowAnimationService.triggerAnimation(index, type);
+	};
+	
+	$scope.getAnimatedRowIndex = function () {
+		return rowAnimationService.getAnimatedRowIndex();
+	};
+	
+	$scope.getAnimationType = function () {
+		return rowAnimationService.getAnimationType();
+	};
 
 	$scope.showModalForItemCreate = function (checkId, dayId) {
+
 		$http.get('/Items/CreateItem?checkId=' + checkId + '&dayExpensesId=' + dayId).then(
 			function (response) {
 				modalContent = angular.element(document.querySelector('#modal-content'));
 				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
 			}
 		);
+
+		$timeout(function () {
+			$scope.item = { amount: 1 };
+			var rawParticipants = document.querySelector('input[name="Participants"]').value;
+			var participantsJson = JSON.parse(rawParticipants);
+			$scope.itemList = participantsJson.map(function (p) {
+				return {
+					value: p.Value,
+					text: p.Text
+				}
+			});
+
+			$scope.selectedItems = participantsJson
+				.filter(p => p.Selected)
+				.map(p => p.Value);
+			
+			// Toggle checkbox
+			$scope.toggleSelection = function (value) {
+				var idx = $scope.selectedItems.indexOf(value);
+				if (idx > -1) {
+					$scope.selectedItems.splice(idx, 1);
+				} else {
+					$scope.selectedItems.push(value);
+				}
+			};
+
+			// Display selected text
+			$scope.getSelectedText = function () {
+				var selected = $scope.itemList.filter(function (item) {
+					return $scope.selectedItems.includes(item.value);
+				});
+				return selected.map(i => i.text).join(', ');
+			};
+		}, 200);
 	}
 
+	$scope.createItem = function () {
+
+		if (!$scope.item) $scope.item = {};
+
+		var name = ($scope.item.name && $scope.item.name !== undefined)
+			? $scope.item.name
+			: "";
+		var description = ($scope.item.description && $scope.item.description !== undefined)
+			? $scope.item.description
+			: "";
+		var price = ($scope.item.price && $scope.item.price !== undefined)
+			? $scope.item.price
+			: "None";
+		var amount = ($scope.item.amount && $scope.item.amount !== undefined)
+			? $scope.item.amount
+			: "None";
+		var selectedItems = $scope.selectedItems;
+		var checkId = document.querySelector('input[name="CheckId"]').value;
+		var dayExpensesId = document.querySelector('input[name="DayExpensesId"]').value;
+		var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+		var params = "Name=" + encodeURIComponent(name) +
+			"&Description=" + encodeURIComponent(description) +
+			"&Price=" + encodeURIComponent(price) +
+			"&Amount=" + encodeURIComponent(amount) +
+			"&UserList=" + encodeURIComponent(JSON.stringify(selectedItems)) +
+			"&CheckId=" + encodeURIComponent(checkId);
+
+		$http.post(`/Items/Create?dayexpensesid=` + dayExpensesId, params, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+				'RequestVerificationToken': token  // Anti-forgery token
+			}
+		}).then(function (response) {
+			// Check if response contains div with class modal-body
+			if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+				modalContent = angular.element(document.querySelector('#modal-content'));
+				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
+			}
+			else {
+				$scope.item = { name: '', description: '', price: '', amount: '', selectedItems: '' };
+				$('#staticBackdrop').modal('hide');
+
+				
+				var collection = $scope.itemCollections.find(c => c.checkId === checkId);
+				console.log($scope.itemCollections.find(c => c.checkId === checkId));
+				// Move one page forward if added element can`t be displayed on the same page
+				var currentPage = $scope.currentPage;
+				
+				if ($scope.collection.pagedItems[currentPage] === undefined)
+					$scope.collection.pagedItems[currentPage] = [];
+
+				$scope.collection.items.push(response.data);
+
+				$scope.collection.filterPagedItems();
+
+				if (currentPage === -1 || $scope.pagedItems[currentPage].length === 5)
+					currentPage = $scope.pagedItems.length - 1;
+
+				$scope.currentPage = currentPage;
+
+				$scope.showToast('success', 'Success!', 'Item was successfully added.');
+				$scope.triggerAnimation($scope.collection.pagedItems[currentPage].length - 1, 'create');
+			}
+		});
+	}
 	$scope.showModalForItemEdit = function (itemId, dayId) {
 		$http.get('/Items/EditItem/' + itemId + '?dayExpensesId=' + dayId).then(
 			function (response) {
