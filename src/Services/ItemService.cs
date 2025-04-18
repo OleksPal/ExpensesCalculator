@@ -3,6 +3,8 @@ using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
 using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace ExpensesCalculator.Services
@@ -37,7 +39,12 @@ namespace ExpensesCalculator.Services
         public async Task<string> GetItemUsers(IEnumerable<string> userList)
         {
             if (userList is not null)
+            {
+                if (userList.Count() == 1 && userList.ToList()[0].Contains("["))
+                    userList = JsonSerializer.Deserialize<List<string>>(userList.ToList()[0]);
+
                 return String.Join(", ", userList);
+            }                
 
             return null;
         }
@@ -76,6 +83,18 @@ namespace ExpensesCalculator.Services
             }
 
             return new MultiSelectList(optionList, "Value", "Text", userList);
+        }
+
+        public async Task<Item> AddItemRItem(AddItemViewModel<int> newItemViewModel)
+        {
+            var check = await GetCheckWithItems(newItemViewModel.CheckId);
+
+            var itemToAdd = newItemViewModel.ToItem();
+
+            check.Sum += itemToAdd.Price;
+            await _checkRepository.Update(check);
+
+            return await _itemRepository.Insert(itemToAdd);
         }
 
         public async Task<Check> AddItem(AddItemViewModel<int> newItemViewModel)

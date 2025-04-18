@@ -889,9 +889,9 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 			pagedItems: [],
 			currentPage: 0
 		};
-
+		
 		angular.forEach(itemCollection.items, function (value, key) {
-			value.usersList = JSON.parse(value.usersList);
+			value.usersList = JSON.parse(value.usersList[0]);			
 		});
 
 		var itemsPerPage = 5;
@@ -905,7 +905,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 
 		$scope.itemCollections.push(itemCollection);
 	});
-		console.log($scope.itemCollections[0].pagedItems);
+
 	// Expose the toastService's toasts array to the scope (if you need to access it in the view)
 	$scope.toasts = toastService.toasts;
 	
@@ -927,6 +927,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 		return rowAnimationService.getAnimationType();
 	};
 
+	// Create item
 	$scope.showModalForItemCreate = function (checkId, dayId) {
 
 		$http.get('/Items/CreateItem?checkId=' + checkId + '&dayExpensesId=' + dayId).then(
@@ -969,7 +970,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 				});
 				return selected.map(i => i.text).join(', ');
 			};
-		}, 200);
+		}, 300);
 	}
 
 	$scope.createItem = function () {
@@ -1014,31 +1015,38 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 			}
 			else {
 				$scope.item = { name: '', description: '', price: '', amount: '', selectedItems: '' };
+				response.data.usersList = JSON.parse(response.data.usersList);
+				var checkIndex = $scope.checks.findIndex(function (c) {
+					return c.id == checkId
+				});
+				$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum + response.data.price;
+
 				$('#staticBackdrop').modal('hide');
-
 				
-				var collection = $scope.itemCollections.find(c => c.checkId === checkId);
-				console.log($scope.itemCollections.find(c => c.checkId === checkId));
+				var itemCollectionIndex = $scope.itemCollections.findIndex(function (i) {
+					return i.checkId == checkId
+				});
+
 				// Move one page forward if added element can`t be displayed on the same page
-				var currentPage = $scope.currentPage;
+				var currentPage = $scope.itemCollections[itemCollectionIndex].currentPage;
+
+				if ($scope.itemCollections[itemCollectionIndex].pagedItems[currentPage] === undefined)
+					$scope.itemCollections[itemCollectionIndex].pagedItems[currentPage] = [];
+
+				$scope.itemCollections[itemCollectionIndex].items.push(response.data);
+				$scope.itemCollections[itemCollectionIndex].pagedItems = $scope.groupToPages($scope.itemCollections[itemCollectionIndex].items);
+
+				if (currentPage === -1 || $scope.itemCollections[itemCollectionIndex].pagedItems[currentPage].length === 5)
+					currentPage = $scope.itemCollections[itemCollectionIndex].pagedItems.length - 1;
 				
-				if ($scope.collection.pagedItems[currentPage] === undefined)
-					$scope.collection.pagedItems[currentPage] = [];
-
-				$scope.collection.items.push(response.data);
-
-				$scope.collection.filterPagedItems();
-
-				if (currentPage === -1 || $scope.pagedItems[currentPage].length === 5)
-					currentPage = $scope.pagedItems.length - 1;
-
-				$scope.currentPage = currentPage;
+				$scope.itemCollections[itemCollectionIndex].currentPage = currentPage;
 
 				$scope.showToast('success', 'Success!', 'Item was successfully added.');
-				$scope.triggerAnimation($scope.collection.pagedItems[currentPage].length - 1, 'create');
+				$scope.triggerAnimation($scope.itemCollections[itemCollectionIndex].pagedItems[currentPage].length - 1, 'create');
 			}
 		});
 	}
+
 	$scope.showModalForItemEdit = function (itemId, dayId) {
 		$http.get('/Items/EditItem/' + itemId + '?dayExpensesId=' + dayId).then(
 			function (response) {
@@ -1048,14 +1056,62 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 		);
 	}
 
-	$scope.showModalForItemDelete = function (itemId, dayId) {
-		$http.get('/Items/DeleteItem/' + itemId + '?dayExpensesId=' + dayId).then(
+	// Delete item
+	$scope.showModalForItemDelete = function (itemId) {
+		$http.get('/Items/DeleteItem/' + itemId).then(
 			function (response) {
 				modalContent = angular.element(document.querySelector('#modal-content'));
 				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
 			}
 		);
 	}
+
+	$scope.deleteItem = function () {
+		var idToRemove = document.querySelector('input[name="Id"]').value;
+		var checkId = document.querySelector('input[name="CheckId"]').value;
+		var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+		var price = document.querySelector('input[name="Price"]').value;
+		console.log(price.slice(0, -1));
+		var checkIndex = $scope.checks.findIndex(function (c) {
+			return c.id == checkId
+		});
+		$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum - price.slice(0, -1);
+
+		$http.post(`/Items/Delete/` + idToRemove, {}, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'RequestVerificationToken': token
+			}
+		}).then(function (response) {
+			$('#staticBackdrop').modal('hide');
+
+			var itemCollectionIndex = $scope.itemCollections.findIndex(function (i) {
+				return i.checkId == checkId
+			});
+
+			var itemIndex = $scope.itemCollections[itemCollectionIndex].items.findIndex(function (item) {
+				return item.id == idToRemove;
+			});
+
+			if (itemIndex > -1) {			
+
+				$scope.itemCollections[itemCollectionIndex].items.splice(itemIndex, 1);
+				$scope.itemCollections[itemCollectionIndex].pagedItems = $scope.groupToPages($scope.itemCollections[itemCollectionIndex].items);
+	
+				var currentPage = $scope.itemCollections[itemCollectionIndex].currentPage;
+
+				if (currentPage > $scope.itemCollections[itemCollectionIndex].pagedItems.length - 1) {
+					currentPage -= 1;
+				}
+	
+				$scope.itemCollections[itemCollectionIndex].currentPage = currentPage;
+			}
+	
+			$scope.showToast('success', 'Success!', 'Item was successfully deleted.');
+		});
+	};
 
 	$scope.getCheckItems = function (checkId) {
 		return $scope.itemCollections.find(x => x.checkId === checkId);
