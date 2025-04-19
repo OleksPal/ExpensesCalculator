@@ -1119,6 +1119,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 		var price = ($scope.item.price && $scope.item.price !== undefined)
 			? $scope.item.price
 			: "None";
+		var oldPrice = document.querySelector('input[name="PriceValue"]').value;
 		var amount = ($scope.item.amount && $scope.item.amount !== undefined)
 			? $scope.item.amount
 			: "None";
@@ -1156,7 +1157,8 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 				var checkIndex = $scope.checks.findIndex(function (c) {
 					return c.id == checkId
 				});
-				$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum - price;
+
+				$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum - parseFloat(oldPrice.replace(',', '.'));	
 				$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum + response.data.price;
 
 				$('#staticBackdrop').modal('hide');
@@ -1199,7 +1201,7 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 		var checkIndex = $scope.checks.findIndex(function (c) {
 			return c.id == checkId
 		});
-		$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum - price.slice(0, -1);
+		$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum - parseFloat(price.slice(0, -1).replace(',', '.')).toFixed(2);
 
 		$http.post(`/Items/Delete/` + idToRemove, {}, {
 			headers: {
