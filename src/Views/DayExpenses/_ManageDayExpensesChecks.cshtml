@@ -4,11 +4,7 @@
 
 @model DayExpenses
 
-<tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px; overflow: hidden;"
-    ng-class="{
-        'create-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'create'),
-        'edit-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'edit')
-    }">
+<tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px; overflow: hidden;">
     <td>
         <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click="getCollapseIcon($event)"
                 data-bs-target="#collapseExample{{check.id}}" aria-expanded="false" aria-controls="collapseExample">
