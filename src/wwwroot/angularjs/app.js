@@ -805,10 +805,10 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 			return true;
 		}
 		else {
-			var checkSum = $filter('currency')(check.Sum, '₴');
-			if (check.Location.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1 ||
+			var checkSum = $filter('currency')(check.sum, '₴');
+			if (check.location.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1 ||
 				checkSum.indexOf($scope.searchText) != -1 ||
-				check.Payer.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1) {
+				check.payer.toLowerCase().indexOf($scope.searchText.toLowerCase()) != -1) {
 				return true;
 			}
 		}
@@ -1274,11 +1274,11 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 				filteredItems.push(value);
 			}
 			else {
-				var itemPrice = $filter('currency')(value.Price, '₴');
-				if (value.Name.toLowerCase().indexOf($scope.itemSearchText.toLowerCase()) != -1 ||
-					(value.Description && value.Description.toLowerCase().indexOf($scope.itemSearchText.toLowerCase()) != -1) ||
+				var itemPrice = $filter('currency')(value.price, '₴');
+				if (value.name.toLowerCase().indexOf($scope.itemSearchText.toLowerCase()) != -1 ||
+					(value.description && value.description.toLowerCase().indexOf($scope.itemSearchText.toLowerCase()) != -1) ||
 					itemPrice.indexOf($scope.itemSearchText) != -1 ||
-					((value.UsersList.length.toString()) + ' people').indexOf($scope.itemSearchText) != -1) {
+					((value.usersList.length.toString()) + ' people').indexOf($scope.itemSearchText) != -1) {
 					filteredItems.push(value);
 				}
 			}
