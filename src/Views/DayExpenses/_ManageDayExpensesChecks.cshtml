@@ -4,7 +4,7 @@
 
 @model DayExpenses
 
-<tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px; overflow: hidden;">
+<tr ng-repeat-start="check in pagedChecks[currentPage]" style="height: 60px; overflow: hidden;">
     <td>
         <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click="getCollapseIcon($event)"
                 data-bs-target="#collapseExample{{check.id}}" aria-expanded="false" aria-controls="collapseExample">
@@ -36,10 +36,7 @@
         </div>
     </td>
 </tr>
-<tr style="overflow: hidden;" ng-repeat-end ng-class="{
-        'create-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'create'),
-        'edit-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'edit')
-    }">
+<tr ng-repeat-end style="overflow: hidden;">
     <td colspan="5">
         <div class="collapse" id="collapseExample{{check.id}}">
             <div class="card card-body dark-blue-1 border-primary" ng-controller="ItemsCtrl" ng-init="itemCollection = getCheckItems(check.id)">
@@ -65,35 +62,35 @@
                     <table class="table table-borderless text-white item-table">
                         <thead>
                             <tr>
-                                <th class="text-nowrap" ng-click="changeOrder('Name', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('Name', itemCollection)">
                                     <i class="bi bi-box"></i>
                                     @Localizer["Name"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Name', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Description', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('Description', itemCollection)">
                                     <i class="bi bi-alphabet"></i>
                                     @Localizer["Description"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Description', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Price', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('Price', itemCollection)">
                                     <i class="bi bi-coin"></i>
                                     @Localizer["Price"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Price', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Users', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('Users', itemCollection)">
                                     <i class="bi bi-people-fill"></i>
                                     @Localizer["Users"]
                                     <i class="bi bi-funnel-fill ps-1"
                                        ng-class="getIcon('Users', itemCollection)">
                                     </i>
                                 </th>
-                                <th width="120px"></th>
+                                <th width="10%"></th>
                             </tr>
                         </thead>
                         <tbody>

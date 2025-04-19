@@ -496,7 +496,7 @@ expensesCalculatorApp.controller('DayExpensesChecksCtrl', ['$scope', '$http', '$
 	function getChecksSuccessfulCallback(response) {
 		$scope.dayExpenses = response.data;
 		$scope.checks = response.data.dayExpenses.checks;	
-		$scope.filterPagedChecks();        
+		$scope.filterPagedChecks();  
 	}
 	function getChecksErrorCallback(error) {
 		console.log(error);
@@ -889,9 +889,18 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 			pagedItems: [],
 			currentPage: 0
 		};
-		
+
 		angular.forEach(itemCollection.items, function (value, key) {
-			value.usersList = JSON.parse(value.usersList[0]);			
+			if (
+				Array.isArray(value.usersList) &&
+				value.usersList.length === 1 &&
+				typeof value.usersList[0] === 'string' &&
+				value.usersList[0].includes('[')
+			) {
+				// It's a single-element array and the element looks like a JSON array string
+				value.usersList = JSON.parse(value.usersList[0]);
+			}
+
 		});
 
 		var itemsPerPage = 5;
