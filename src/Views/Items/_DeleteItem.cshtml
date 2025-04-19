@@ -4,47 +4,38 @@
 
 @model Item
 
-<script src="~/js/ajax/items/delete-item.js"></script>
-
 <div class="modal-header">
     <h5 class="modal-title">@Localizer["DeleteItem"]</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form asp-action="Delete" asp-route-checkid="@ViewData["CheckId"]" asp-route-dayexpensesid="@ViewData["DayExpensesId"]">
+    <form asp-action="Delete">
+        @Html.AntiForgeryToken()
+        <input asp-for="CheckId" type="hidden" />
+        <input type="hidden" value="@ViewData["CheckId"]" />
         <div class="form-group mb-3">
             <i class="bi bi-box"></i>
             <label class="control-label">@Localizer["Name"]</label>
             <input asp-for="Name" class="form-control" disabled readonly />
-            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-alphabet"></i>
             <label class="control-label">@Localizer["Description"]</label>
             <input asp-for="Description" class="form-control" disabled readonly />
-            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-coin"></i>
             <label class="control-label">@Localizer["Price"]</label>
             <input asp-for="Price" class="form-control" disabled readonly />
-            <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-people-fill"></i>
             <label class="control-label">@Localizer["UserList"]</label>
-            <input asp-for="UsersList" value="@ViewData["FormatUserList"]" class="form-control" disabled readonly />
-            <span asp-validation-for="UsersList" class="text-danger"></span>
+            <input name="UsersList" value="@ViewData["FormatUserList"]" class="form-control" disabled readonly />
         </div>
         <input type="hidden" asp-for="Id"/>
-        <button type="button" value="Delete" class="btn btn-danger" id="deleteButton">
+        <button type="button" value="Delete" class="btn btn-danger" ng-click="deleteItem()">
             <i class="bi bi-trash me-1"></i>@Localizer["DeleteItemButton"]
         </button>
     </form>
 </div>
-
-<script>
-    var token = '@Html.AntiForgeryToken()';
-    var itemId = $("#Id").val();
-    var checkId = @Model.CheckId;
-</script>

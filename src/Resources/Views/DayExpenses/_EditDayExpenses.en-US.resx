@@ -129,4 +129,7 @@
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="TotalSum" xml:space="preserve">
+    <value>Total Sum</value>
+  </data>
 </root>

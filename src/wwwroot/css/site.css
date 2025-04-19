@@ -83,6 +83,7 @@ button:focus, a:focus, input:focus {
     overflow-y: auto;
     padding-top: 4rem;
     margin-top: -4rem;
+    overflow-y: hidden;
 }
 
 ul {
@@ -95,4 +96,69 @@ ul {
 
 #customProportion > .col-10 {
     width: 86%;
+}
+
+.toast-container {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1050; /* Ensure it appears above other content */
+}
+
+/* Custom Dark Toast Style */
+.toast-dark {
+    background-color: #343a40; /* Dark background */
+    color: #f8f9fa; /* Light text color */
+}
+
+    .toast-dark .toast-header {
+        background-color: #495057; /* Dark header background */
+        color: #f8f9fa; /* Light text for the header */
+        display: flex;
+        justify-content: space-between; /* Title to the left, time and close button to the right */
+        align-items: center;
+    }
+
+    .toast-dark .toast-body {
+        background-color: #1c1f24; /* Dark body background */
+        color: #f8f9fa; /* Light text for the body */
+    }
+
+    .toast-dark .toast-header small {
+        margin-left: auto; /* Push the time to the far right */
+    }
+
+/* ANIMATIONS */
+@keyframes createAnimation {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes editAnimation {
+    0% {
+        transform: rotateY(30deg);
+    }
+
+    50% {
+        transform: rotateY(-10deg);
+    }
+
+    100% {
+        transform: rotateY(0deg);
+    }
+}
+
+.create-row {
+    animation: createAnimation 0.3s linear;
+}
+
+.edit-row {
+    animation: editAnimation 0.5s linear;
 }

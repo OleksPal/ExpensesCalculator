@@ -150,6 +150,9 @@
   <data name="Search" xml:space="preserve">
     <value>Search for expenses...</value>
   </data>
+  <data name="TotalSum" xml:space="preserve">
+    <value>Total sum</value>
+  </data>
   <data name="TryNewExpenses" xml:space="preserve">
     <value>Try to add new expenses</value>
   </data>

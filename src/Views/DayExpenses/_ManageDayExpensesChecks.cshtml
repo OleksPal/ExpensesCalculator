@@ -4,53 +4,53 @@
 
 @model DayExpenses
 
-<tr ng-repeat-start="check in pagedChecks[currentPage] | filter:search" style="height: 60px;">
+<tr ng-repeat-start="check in pagedChecks[currentPage]" style="height: 60px; overflow: hidden;">
     <td>
         <i class="bi bi-plus-square-fill fs-5" type="button" data-bs-toggle="collapse" ng-click="getCollapseIcon($event)"
-                data-bs-target="#collapseExample{{check.Id}}" aria-expanded="false" aria-controls="collapseExample">
+                data-bs-target="#collapseExample{{check.id}}" aria-expanded="false" aria-controls="collapseExample">
         </i>
     </td>
     <td class="text-nowrap">
-        {{check.Location}}
+        {{check.location}}
     </td>
     <td class="text-nowrap">
         <div id="check-{{check.Id}}-Sum">
-            {{check.Sum | currency : '₴'}}
+            {{check.sum | currency : '₴'}}
         </div>
     </td>
     <td class="text-nowrap">
-        {{check.Payer}}
+        {{check.payer}}
     </td>
     <td>
         <div class="d-flex justify-content-end">
             <div class="btn-group" role="group">
                 <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                        ng-click="showModalForCheckEdit(check.Id)">
+                        ng-click="showModalForCheckEdit(check.id)">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                        ng-click="showModalForCheckDelete(check.Id)">
+                        ng-click="showModalForCheckDelete(check.id)">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
         </div>
     </td>
 </tr>
-<tr ng-repeat-end>
+<tr ng-repeat-end style="overflow: hidden;">
     <td colspan="5">
-        <div class="collapse" id="collapseExample{{check.Id}}">
-            <div class="card card-body dark-blue-1 border-primary" ng-controller="ItemsCtrl" ng-init="itemCollection = getCheckItems(check.Id)">
+        <div class="collapse" id="collapseExample{{check.id}}">
+            <div class="card card-body dark-blue-1 border-primary" ng-controller="ItemsCtrl" ng-init="itemCollection = getCheckItems(check.id)">
                 <div class="container-fluid p-3 text-white">
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                            ng-click="showModalForItemCreate(check.Id, check.DayExpensesId)">
+                            ng-click="showModalForItemCreate(check.id, check.dayExpensesId)">
                         <i class="bi bi-plus-circle me-1"></i>@Localizer["AddItem"]
                     </button>
                 </div>
-                <div class="text-white text-center pt-4" ng-if="check.Items.length == 0">
+                <div class="text-white text-center pt-4" ng-if="check.items.length == 0 || check.items === undefined">
                     <h2>@Localizer["NoData"]</h2>
                     <h5 class="p-3">@Localizer["TryAddItems"]</h5>
                 </div>
-                <div class="d-flex justify-content-end pb-lg-2 p-3" ng-if="check.Items.length > 0">
+                <div class="d-flex justify-content-end pb-lg-2 p-3" ng-if="check.items.length > 0">
                     <div class="col-12 col-lg-3">
                         <div class="input-group">
                             <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
@@ -58,62 +58,66 @@
                         </div>
                     </div>
                 </div>
-                <div class="table-responsive fix-table-height" ng-if="check.Items.length > 0">
+                <div class="table-responsive fix-table-height" ng-if="check.items.length > 0">
                     <table class="table table-borderless text-white item-table">
                         <thead>
                             <tr>
-                                <th class="text-nowrap" ng-click="changeOrder('Name', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('name', itemCollection)">
                                     <i class="bi bi-box"></i>
                                     @Localizer["Name"]
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Name', itemCollection)">
+                                       ng-class="getIcon('name', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Description', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('description', itemCollection)">
                                     <i class="bi bi-alphabet"></i>
                                     @Localizer["Description"]
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Description', itemCollection)">
+                                       ng-class="getIcon('description', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Price', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('price', itemCollection)">
                                     <i class="bi bi-coin"></i>
                                     @Localizer["Price"]
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Price', itemCollection)">
+                                       ng-class="getIcon('price', itemCollection)">
                                     </i>
                                 </th>
-                                <th class="text-nowrap" ng-click="changeOrder('Users', itemCollection)">
+                                <th class="text-nowrap" width="23%" ng-click="changeOrder('users', itemCollection)">
                                     <i class="bi bi-people-fill"></i>
                                     @Localizer["Users"]
                                     <i class="bi bi-funnel-fill ps-1"
-                                       ng-class="getIcon('Users', itemCollection)">
+                                       ng-class="getIcon('users', itemCollection)">
                                     </i>
                                 </th>
-                                <th width="120px"></th>
+                                <th width="10%"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in itemCollection.pagedItems[itemCollection.currentPage]" style="height: 60px;">
+                            <tr ng-repeat="item in itemCollection.pagedItems[itemCollection.currentPage]" style="height: 60px;"
+                                ng-class="{
+                                    'create-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'create'),
+                                    'edit-row': ($index === getAnimatedRowIndex() && getAnimationType() === 'edit')
+                                }">
                                 <td class="text-nowrap">
-                                    {{item.Name}}
+                                    {{item.name}}
                                 </td>
                                 <td class="text-nowrap">
-                                    {{item.Description}}
+                                    {{item.description}}
                                 </td>
                                 <td class="text-nowrap">
-                                    {{item.Price | currency : '₴'}}
+                                    {{item.price | currency : '₴'}}
                                 </td>
                                 <td class="text-nowrap">
                                     <div class="mytooltip">
-                                        {{item.UsersList.length}} @Localizer["People"]
+                                        {{item.usersList.length}} @Localizer["People"]
                                         <span class="tooltiptext" style="height:110px;">
                                             <i class="bi bi-people-fill pe-1"></i>@Localizer["Users"]:<br />
-                                            <div ng-repeat="user in item.UsersList | limitTo:3" class="text-truncate">
+                                            <div ng-repeat="user in item.usersList | limitTo:3" class="text-truncate">
                                                 <i class="bi bi-person-fill pe-1"></i>{{user}}<br />
                                             </div>
-                                            <div ng-if="item.UsersList.length > 3">
-                                                @Localizer["And"] {{item.UsersList.length - 3}} @Localizer["More"]
+                                            <div ng-if="item.usersList.length > 3">
+                                                @Localizer["And"] {{item.usersList.length - 3}} @Localizer["More"]
                                             </div>
                                         </span>
                                     </div>
@@ -121,12 +125,12 @@
                                 <td>
                                     <div class="btn-group" role="group">
                                         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                ng-click="showModalForItemEdit(item.Id, check.DayExpensesId)">
+                                                ng-click="showModalForItemEdit(item.id, check.dayExpensesId)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-danger" data-bs-toggle="modal"
                                                 data-bs-target="#staticBackdrop"
-                                                ng-click="showModalForItemDelete(item.Id, check.DayExpensesId)">
+                                                ng-click="showModalForItemDelete(item.id)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -135,7 +139,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="d-flex align-items-center justify-content-center py-2 pe-4" ng-if="check.Items.length > 0">
+                <div class="d-flex align-items-center justify-content-center py-2 pe-4" ng-if="check.items.length > 0">
                     <ul class="pagination overflow-auto d-flex align-items-center text-nowrap pb-2">
                         <li class="page-item text-nowrap" ng-class="{disabled: itemCollection.currentPage == 0}">
                             <a class="page-link bg-transparent border border-dark" href ng-click="prevPage(itemCollection)">« @Localizer["Previous"]</a>

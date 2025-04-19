@@ -7,8 +7,9 @@ namespace ExpensesCalculator.Services
     {
         public string RequestorName { get; set; }
 
-        Task<ICollection<DayExpenses>> GetAllDays();
+        Task<ICollection<DayExpensesViewModel>> GetAllDays();
         Task<DayExpenses> GetDayExpensesById(int id);
+        Task<DayExpensesViewModel> GetDayExpensesViewModelById(int id);
         Task<DayExpenses> GetDayExpensesByIdWithChecks(int id);
         Task<DayExpenses> GetFullDayExpensesById(int id);
         Task<DayExpenses> AddDayExpenses(DayExpenses dayExpenses);

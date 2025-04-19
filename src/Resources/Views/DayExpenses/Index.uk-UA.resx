@@ -150,6 +150,9 @@
   <data name="Search" xml:space="preserve">
     <value>Шукати витрати...</value>
   </data>
+  <data name="TotalSum" xml:space="preserve">
+    <value>Загальна сума</value>
+  </data>
   <data name="TryNewExpenses" xml:space="preserve">
     <value>Спробуйте додати нові витрати</value>
   </data>

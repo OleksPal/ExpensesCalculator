@@ -1,5 +1,6 @@
 ﻿using ExpensesCalculator.Models;
 using ExpensesCalculator.ViewModels;
+using System.Text.Json;
 
 namespace ExpensesCalculator.Extensions
 {
@@ -35,6 +36,9 @@ namespace ExpensesCalculator.Extensions
                         var checkCalculation = new CheckCalculation { Check = check };
                         foreach (var item in check.Items)
                         {
+                            if (item.UsersList.Count == 1 && item.UsersList.ToList()[0].Contains('['))
+                                item.UsersList = JsonSerializer.Deserialize<List<string>>(item.UsersList.ToList()[0]);
+
                             if (item.UsersList.Contains(participant))
                             {
                                 decimal pricePerUser = Math.Round(item.Price / item.UsersList.Count, 2);

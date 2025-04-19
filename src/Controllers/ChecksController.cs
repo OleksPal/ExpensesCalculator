@@ -2,6 +2,8 @@
 using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -13,6 +15,21 @@ namespace ExpensesCalculator.Controllers
         public ChecksController(ICheckService checkService)
         {
             _checkService = checkService;
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetCheckById(int id)
+        {
+            var check = await _checkService.GetCheckById(id);
+
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
+
+            return Json(check, options);
         }
 
         // GET: Checks/CreateCheck?dayExpensesId=1
@@ -81,8 +98,8 @@ namespace ExpensesCalculator.Controllers
 
             if (TryValidateModel(check))
             {
-                var model = await _checkService.AddCheck(check); 
-                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
+                var newCheck = await _checkService.AddCheckRCheck(check);
+                return RedirectToAction(nameof(GetCheckById), new { id = newCheck.Id });
             }
 
             ViewData["DayExpensesId"] = check.DayExpensesId;
@@ -103,9 +120,8 @@ namespace ExpensesCalculator.Controllers
 
             if (TryValidateModel(check))
             {
-                var model = await _checkService.EditCheck(check);
-
-                return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
+                var editedCheck = await _checkService.EditCheckRCheck(check);
+                return RedirectToAction(nameof(GetCheckById), new { id = editedCheck.Id });
             }
 
             ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);

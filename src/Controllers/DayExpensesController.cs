@@ -24,7 +24,6 @@ namespace ExpensesCalculator.Controllers
             return View();
         }
 
-        // GET: DayExpenses
         [HttpGet]
         public async Task<JsonResult> GetAllDays()
         {
@@ -34,6 +33,24 @@ namespace ExpensesCalculator.Controllers
             var days = await _dayExpensesService.GetAllDays();
 
             return Json(days);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetDayById(int id)
+        {
+            if (User.Identity.Name is not null)
+                _dayExpensesService.RequestorName = User.Identity.Name;
+
+            var day = await _dayExpensesService.GetDayExpensesViewModelById(id);
+
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
+
+            return Json(day, options);
         }
 
         // GET: DayExpenses/CreateDayExpenses
@@ -54,14 +71,14 @@ namespace ExpensesCalculator.Controllers
 
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
-            
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+
+            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
 
             if (day is null)
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
 
             return PartialView("_EditDayExpenses", day);
         }
@@ -76,12 +93,12 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
 
             if (day is null)
                 return NotFound();
 
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
 
             return PartialView("_DeleteDayExpenses", day);
         }
@@ -96,13 +113,13 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
 
             if (day is null)
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.ParticipantsList);
+            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
 
             return PartialView("_ShareDayExpenses", day);
         }
@@ -191,9 +208,9 @@ namespace ExpensesCalculator.Controllers
 
             if (ModelState.IsValid)
             {
-                await _dayExpensesService.AddDayExpenses(dayExpenses);
+                var newDayExpenses = await _dayExpensesService.AddDayExpenses(dayExpenses);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetDayById), new { id = newDayExpenses.Id });
             }
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
@@ -216,9 +233,10 @@ namespace ExpensesCalculator.Controllers
 
             if (ModelState.IsValid)
             {
-                await _dayExpensesService.EditDayExpenses(dayExpenses);
+                dayExpenses.PeopleWithAccessList = JsonSerializer.Deserialize<List<string>>(dayExpenses.PeopleWithAccessList.ToList()[0]);
+                var editedDayExpenses = await _dayExpensesService.EditDayExpenses(dayExpenses);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetDayById), new { id = editedDayExpenses.Id });
             }
 
             ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.ParticipantsList);

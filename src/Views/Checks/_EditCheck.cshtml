@@ -2,9 +2,7 @@
 
 @inject IViewLocalizer Localizer
 
-@model ExpensesCalculator.Models.Check
-
-<script src="~/js/ajax/checks/edit-check.js"></script>
+@model Check
 
 <div class="modal-header">
     <h5 class="modal-title">@Localizer["EditCheck"]</h5>
@@ -12,33 +10,40 @@
 </div>
 <div class="modal-body">
     <form asp-action="Edit" asp-route-dayexpensesid="@ViewData["DayExpensesId"]">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="DayExpensesId" />
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Payer" />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group mb-3">
             <i class="bi bi-cart-fill"></i>
             <label class="control-label">@Localizer["Location"]</label>
-            <input asp-for="Location" class="form-control" id="checkLocation" />
+            <input asp-for="Location" class="form-control" ng-model="check.location" />
             <span asp-validation-for="Location" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <i class="bi bi-cash-stack"></i>
+            <label class="control-label">@Localizer["Sum"]</label>
+            <input asp-for="Sum" class="form-control" ng-model="check.sum" disabled readonly/>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-wallet2"></i>
             <label class="control-label">@Localizer["Payer"]</label><br />
-            @Html.DropDownListFor(m => m.Payer, ViewData["Participants"] as SelectList,
-                     Localizer["ChoosePayer"].Value, new { @class = "form-control", id = "payerDropdown" })
+            @* @Html.DropDownListFor(m => m.Payer, ViewData["Participants"] as SelectList,
+                     Localizer["ChoosePayer"].Value, new { @class = "form-control", id = "payerDropdown" }) *@
+            <select class="form-control" id="payerDropdown" ng-model="check.selectedPayer" ng-cloak>
+                <option value="" disabled hidden ng-selected="!check.selectedPayer">@Localizer["ChoosePayer"]</option>
+                @foreach (var item in (SelectList)ViewData["Participants"])
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
             <span asp-validation-for="Payer" class="text-danger"></span>
         </div>
-        <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="Sum" />
         <div class="form-group">
-            <button type="button" value="Save" class="btn btn-warning" id="editCheckButton">
+            <button type="button" value="Save" class="btn btn-warning" ng-click="editCheck()">
                 <i class="bi bi-pencil me-1"></i>@Localizer["Save"]
             </button>
         </div>
     </form>
 </div>
-
-<script>
-    var token = '@Html.AntiForgeryToken()';
-    var checkId = $("#Id").val();
-    var sum = $("#Sum").val();
-    var dayExpensesId = @Model.DayExpensesId;
-</script>

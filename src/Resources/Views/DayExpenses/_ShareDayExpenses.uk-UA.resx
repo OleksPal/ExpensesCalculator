@@ -132,4 +132,7 @@
   <data name="ShareExpenses" xml:space="preserve">
     <value>Поділитися доступом до витрат</value>
   </data>
+  <data name="TotalSum" xml:space="preserve">
+    <value>Загальна сума</value>
+  </data>
 </root>

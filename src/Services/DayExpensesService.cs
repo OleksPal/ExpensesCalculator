@@ -26,11 +26,43 @@ namespace ExpensesCalculator.Services
             _userRepository = userRepository;
         }
 
-        public async Task<ICollection<DayExpenses>> GetAllDays()
+        public async Task<ICollection<DayExpensesViewModel>> GetAllDays()
         {            
-            var result = await _dayExpensesRepository.GetAll();
+            var dayExpenses = await _dayExpensesRepository.GetAll();
+            dayExpenses = dayExpenses.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
 
-            return result.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
+            var dayExpensesViewModels = new List<DayExpensesViewModel>();
+            foreach (var dayExpense in dayExpenses)
+            {
+                var checks = await _checkRepository.GetAllDayChecks(dayExpense.Id);
+                var totalSum = checks.Select(check => check.Sum).Sum();
+                dayExpense.Checks = null;
+
+                dayExpensesViewModels.Add(
+                    new DayExpensesViewModel
+                    {
+                        DayExpenses = dayExpense,
+                        TotalSum = totalSum
+                    }
+                );
+            }
+
+            return dayExpensesViewModels
+                .Where(r => r.DayExpenses.PeopleWithAccessList.Contains(RequestorName)).ToList();
+        }
+
+        public async Task<DayExpensesViewModel> GetDayExpensesViewModelById(int id)
+        {
+            var dayExpenses = await GetFullDayExpensesById(id);
+            var totalSum = dayExpenses.Checks.Select(check => check.Sum).Sum();
+
+            var dayExpensesViewModel = new DayExpensesViewModel
+            {
+                DayExpenses = dayExpenses,
+                TotalSum = totalSum
+            };
+
+            return dayExpensesViewModel;
         }
 
         public async Task<DayExpenses> GetDayExpensesById(int id)

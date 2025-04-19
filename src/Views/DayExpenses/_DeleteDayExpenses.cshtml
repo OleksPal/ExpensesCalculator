@@ -1,30 +1,35 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using ExpensesCalculator.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
 
 @inject IViewLocalizer Localizer
 
-@model ExpensesCalculator.Models.DayExpenses
+@model DayExpensesViewModel
 
 <div class="modal-header">
     <h5 class="modal-title">@Localizer["DeleteExpenses"]</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <form asp-action="Delete">
+    @Html.AntiForgeryToken()
+    <form name="CreateDayExpensesForm" novalidate>
         <div class="form-group mb-3">
             <i class="bi bi-calendar-event-fill"></i>
             <label class="control-label">@Localizer["Date"]</label>
-            <input value="@Model.Date" class="form-control" disabled readonly/>
-            <span asp-validation-for="Date" class="text-danger"></span>
+            <input value="@Model.DayExpenses.Date" class="form-control" disabled readonly/>
         </div>
         <div class="form-group mb-3">
             <i class="bi bi-people-fill"></i>
             <label class="control-label">@Localizer["Participants"]</label>
-            <input asp-for="Participants" value="@ViewBag.FormatParticipantNames" class="form-control"
+            <input asp-for="DayExpenses.Participants" value="@ViewBag.FormatParticipantNames" class="form-control"
                 disabled readonly/>
-            <span asp-validation-for="Participants" class="text-danger"></span>
         </div>
-        <input type="hidden" asp-for="Id" />
-        <button type="submit" value="Delete" class="btn btn-danger">
+        <div class="form-group mb-3">
+            <i class="bi bi-cash-stack pe-1"></i>
+            <label class="control-label">@Localizer["TotalSum"]</label>
+            <input asp-for="TotalSum" class="form-control" value="₴@Model.TotalSum.ToString("F2")" disabled readonly />
+        </div>
+        <input type="hidden" asp-for="DayExpenses.Id" />
+        <button type="button" value="Delete" class="btn btn-danger" ng-click="deleteDayExpenses()">
             <i class="bi bi-trash me-1"></i>@Localizer["DeleteExpensesButton"]
         </button>
     </form>
