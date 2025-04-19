@@ -52,7 +52,7 @@
             <label class="control-label">@Localizer["UserList"]</label>
             <div class="dropdown" ng-click="dropdownOpen = !dropdownOpen" style="position: relative;">
                 <button class="btn btn-outline-dark dropdown-toggle w-100" type="button" style="text-align: left">
-                    {{ getSelectedText() || 'Select items' }}
+                    {{ getSelectedText() || '@Localizer["SelectUsers"]'}}
                 </button>
 
                 <ul class="dropdown-menu show w-100" ng-show="dropdownOpen" style="position: absolute; z-index: 999;">
