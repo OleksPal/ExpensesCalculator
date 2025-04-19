@@ -13,6 +13,7 @@ namespace ExpensesCalculator.Services
         Task<Item> SetCheck(Item item);
         Task<Item> AddItemRItem(AddItemViewModel<int> item);
         Task<Check> AddItem(AddItemViewModel<int> item);
+        Task<Item> EditItemRItem(EditItemViewModel<int> item);
         Task<Check> EditItem(EditItemViewModel<int> item);
         Task<Check> DeleteItem(int id);
     }

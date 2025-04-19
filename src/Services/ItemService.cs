@@ -68,6 +68,9 @@ namespace ExpensesCalculator.Services
             if (userList is null)
                 return await GetAllAvailableItemUsers(dayExpensesId);
 
+            if (userList.Count() == 1 && userList.ToList()[0].Contains("["))
+                userList = JsonSerializer.Deserialize<List<string>>(userList.ToList()[0]);
+
             var dayExpenses = await _dayExpensesRepository.GetById(dayExpensesId);
             var optionList = new List<SelectListItem>();
 
@@ -108,6 +111,24 @@ namespace ExpensesCalculator.Services
             check = await _checkRepository.Update(check);            
 
             return check;
+        }
+
+        public async Task<Item> EditItemRItem(EditItemViewModel<int> editItemViewModel)
+        {
+            var check = await _checkRepository.GetById(editItemViewModel.CheckId);
+            var oldItemPrice = await _itemRepository.GetItemPriceById(editItemViewModel.Id);
+
+            if (editItemViewModel is not null)
+            {
+                var editedItem = editItemViewModel.ToItem();
+                await _itemRepository.Update(editedItem);
+                check.Sum -= oldItemPrice;
+                check.Sum += editedItem.Price;
+                await _checkRepository.Update(check);
+                check = await GetCheckWithItems(editedItem.CheckId);
+            }
+
+            return editItemViewModel.ToItem();
         }
 
         public async Task<Check> EditItem(EditItemViewModel<int> editItemViewModel)

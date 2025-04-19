@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using ExpensesCalculator.Models;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -87,6 +88,9 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] AddItemViewModel<int> newItem, int dayExpensesId)
         {
+            if (newItem.UserList[0] == "\"None\"")
+                ModelState.AddModelError("UserList", "Add some users");
+
             if (ModelState.IsValid)
             {
                 var addedItem = await _itemService.AddItemRItem(newItem);
@@ -108,10 +112,13 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] EditItemViewModel<int> item, int dayExpensesId)
         {
+            if (item.UserList[0] == "\"None\"")
+                ModelState.AddModelError("UserList", "Add some users");
+
             if (ModelState.IsValid)
             {
-                var model = await _itemService.EditItem(item);
-                return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
+                var editedItem = await _itemService.EditItemRItem(item);
+                return RedirectToAction(nameof(GetItemById), new { id = editedItem.Id });
             }
 
             ViewData["CheckId"] = item.CheckId;

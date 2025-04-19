@@ -989,7 +989,9 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 		var amount = ($scope.item.amount && $scope.item.amount !== undefined)
 			? $scope.item.amount
 			: "None";
-		var selectedItems = $scope.selectedItems;
+		var selectedItems = $scope.selectedItems.length !== 0
+			? $scope.selectedItems
+			: "None";
 		var checkId = document.querySelector('input[name="CheckId"]').value;
 		var dayExpensesId = document.querySelector('input[name="DayExpensesId"]').value;
 		var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
@@ -1047,13 +1049,125 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 		});
 	}
 
+	// Edit item
 	$scope.showModalForItemEdit = function (itemId, dayId) {
 		$http.get('/Items/EditItem/' + itemId + '?dayExpensesId=' + dayId).then(
 			function (response) {
 				modalContent = angular.element(document.querySelector('#modal-content'));
 				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
 			}
 		);
+
+		$timeout(function () {
+			$scope.item = {
+				name: document.querySelector('input[name="NameValue"]').value,
+				description: document.querySelector('input[name="DescriptionValue"]').value,
+				price: document.querySelector('input[name="PriceValue"]').value,
+				amount: 1
+			};
+			var rawParticipants = document.querySelector('input[name="Participants"]').value;
+			var participantsJson = JSON.parse(rawParticipants);
+			$scope.itemList = participantsJson.map(function (p) {
+				return {
+					value: p.Value,
+					text: p.Text
+				}
+			});
+
+			$scope.selectedItems = participantsJson
+				.filter(p => p.Selected)
+				.map(p => p.Value);
+
+			// Toggle checkbox
+			$scope.toggleSelection = function (value) {
+				var idx = $scope.selectedItems.indexOf(value);
+				if (idx > -1) {
+					$scope.selectedItems.splice(idx, 1);
+				} else {
+					$scope.selectedItems.push(value);
+				}
+			};
+
+			// Display selected text
+			$scope.getSelectedText = function () {
+				var selected = $scope.itemList.filter(function (item) {
+					return $scope.selectedItems.includes(item.value);
+				});
+				return selected.map(i => i.text).join(', ');
+			};
+		}, 300);
+	}
+
+	$scope.editItem = function () {
+
+		var name = ($scope.item.name && $scope.item.name !== undefined)
+			? $scope.item.name
+			: "";
+		var description = ($scope.item.description && $scope.item.description !== undefined)
+			? $scope.item.description
+			: "";
+		var price = ($scope.item.price && $scope.item.price !== undefined)
+			? $scope.item.price
+			: "None";
+		var amount = ($scope.item.amount && $scope.item.amount !== undefined)
+			? $scope.item.amount
+			: "None";
+		var selectedItems = $scope.selectedItems.length !== 0
+			? $scope.selectedItems
+			: "None";
+
+		var idToEdit = document.querySelector('input[name="Id"]').value;
+		var checkId = document.querySelector('input[name="CheckId"]').value;
+		var dayExpensesId = document.querySelector('input[name="DayExpensesId"]').value;
+		var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+		var params = "Name=" + encodeURIComponent(name) +
+			"&Description=" + encodeURIComponent(description) + 
+			"&Price=" + encodeURIComponent(price) +
+			"&Amount=" + encodeURIComponent(amount) +
+			"&UserList=" + encodeURIComponent(JSON.stringify(selectedItems)) +
+			"&CheckId=" + encodeURIComponent(checkId);
+
+		$http.post(`/Items/Edit/` + idToEdit + `?dayexpensesid=` + dayExpensesId, params, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
+				'RequestVerificationToken': token  // Anti-forgery token
+			}
+		}).then(function (response) {
+			// Check if response contains div with class modal-body
+			if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+				modalContent = angular.element(document.querySelector('#modal-content'));
+				modalContent.html(response.data);
+				compiledContent = $compile(modalContent)($scope);
+			}
+			else {
+				$scope.item = { name: '', description: '', price: '', amount: '', selectedItems: '' };
+				response.data.usersList = JSON.parse(response.data.usersList);
+				var checkIndex = $scope.checks.findIndex(function (c) {
+					return c.id == checkId
+				});
+				$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum - price;
+				$scope.checks[checkIndex].sum = $scope.checks[checkIndex].sum + response.data.price;
+
+				$('#staticBackdrop').modal('hide');
+				
+				var itemCollectionIndex = $scope.itemCollections.findIndex(function (i) {
+					return i.checkId == checkId
+				});
+
+				const itemIndex = $scope.itemCollections[itemCollectionIndex].items.findIndex(item => item.id == idToEdit);
+
+				if (itemIndex !== -1) {
+					$scope.itemCollections[itemCollectionIndex].items.splice(itemIndex, 1, response.data);
+					var currentPage = $scope.itemCollections[itemCollectionIndex].currentPage;
+					$scope.itemCollections[itemCollectionIndex].pagedItems[currentPage].splice(itemIndex % 5, 1, response.data);
+					$scope.triggerAnimation(itemIndex % 5, 'edit');
+				}
+
+				$scope.showToast('success', 'Success!', 'Item was successfully edited.');
+			}
+		});
 	}
 
 	// Delete item
@@ -1073,7 +1187,6 @@ expensesCalculatorApp.controller('ItemsCtrl', ['$scope', '$http', '$filter', '$c
 		var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
 		var price = document.querySelector('input[name="Price"]').value;
-		console.log(price.slice(0, -1));
 		var checkIndex = $scope.checks.findIndex(function (c) {
 			return c.id == checkId
 		});
