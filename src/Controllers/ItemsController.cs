@@ -59,8 +59,8 @@ namespace ExpensesCalculator.Controllers
 
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UsersList, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
+            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UserList, dayExpensesId);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UserList);
 
             var editItemViewModel = item.ToEditItemViewModel();
             return PartialView("_EditItem", editItemViewModel);
@@ -78,7 +78,7 @@ namespace ExpensesCalculator.Controllers
             if (item is null)
                 return NotFound();
 
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
+            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UserList);
 
             return PartialView("_DeleteItem", item);
         }

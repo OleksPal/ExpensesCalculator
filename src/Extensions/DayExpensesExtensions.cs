@@ -36,12 +36,12 @@ namespace ExpensesCalculator.Extensions
                         var checkCalculation = new CheckCalculation { Check = check };
                         foreach (var item in check.Items)
                         {
-                            if (item.UsersList.Count == 1 && item.UsersList.ToList()[0].Contains('['))
-                                item.UsersList = JsonSerializer.Deserialize<List<string>>(item.UsersList.ToList()[0]);
+                            if (item.UserList.Count == 1 && item.UserList.ToList()[0].Contains('['))
+                                item.UserList = JsonSerializer.Deserialize<List<string>>(item.UserList.ToList()[0]);
 
-                            if (item.UsersList.Contains(participant))
+                            if (item.UserList.Contains(participant))
                             {
-                                decimal pricePerUser = Math.Round(item.Price / item.UsersList.Count, 2);
+                                decimal pricePerUser = Math.Round(item.Price / item.UserList.Count, 2);
 
                                 checkCalculation.Items.Add(new ItemCalculation
                                 {

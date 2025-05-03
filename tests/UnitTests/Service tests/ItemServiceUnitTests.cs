@@ -14,7 +14,7 @@ namespace ExpensesCalculator.UnitTests
             Description = "Description2",
             Price = 1000,
             CheckId = 1,
-            UsersList = ["User1", "User2"]
+            UserList = ["User1", "User2"]
         };
 
         public ItemServiceUnitTests() 
@@ -22,29 +22,6 @@ namespace ExpensesCalculator.UnitTests
             _itemService = Helper.GetRequiredService<IItemService>()
                 ?? throw new ArgumentNullException(nameof(IItemService));
         }
-
-        #region SetCheck method
-        [Fact]
-        public async void SetCheckThatDoesNotExists()
-        {
-            var item = _itemDefaultObject;
-            item.CheckId = 0;
-
-            await _itemService.SetCheck(item);
-
-            Assert.Null(item.Check);
-        }
-
-        [Fact]
-        public async void SetCheckThatExists()
-        {
-            var item = _itemDefaultObject;
-
-            await _itemService.SetCheck(item);
-
-            Assert.Equal(1, item.Check.Id);
-        }
-        #endregion
 
         #region GetItemById method
         [Fact]
@@ -78,7 +55,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetItemUsers()
         {
-            var userList = _itemDefaultObject.UsersList;
+            var userList = _itemDefaultObject.UserList;
 
             var userListSting = await _itemService.GetItemUsers(userList);
 

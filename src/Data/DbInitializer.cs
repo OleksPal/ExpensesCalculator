@@ -38,7 +38,7 @@ namespace ExpensesCalculator.Data
                 Description = "Description1",
                 Price = 1000,
                 CheckId = checkId,
-                UsersList = ["User1", "User2"]
+                UserList = ["User1", "User2"]
             };
 
             context.Items.Add(item);

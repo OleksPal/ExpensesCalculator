@@ -1,7 +1,6 @@
-﻿namespace ExpensesCalculator.Models
+﻿namespace ExpensesCalculator.Models;
+
+public abstract class DbObject
 {
-    public abstract class DbObject
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }

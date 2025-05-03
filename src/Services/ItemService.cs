@@ -25,9 +25,6 @@ namespace ExpensesCalculator.Services
 
         public async Task<Item> SetCheck(Item item)
         {
-            if (item.CheckId != 0)
-                item.Check = await _checkRepository.GetById(item.CheckId);
-
             return item;
         }
 

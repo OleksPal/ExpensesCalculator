@@ -77,19 +77,19 @@
                                     <i class="bi bi-box pe-1"></i>@item.Item.Name:
                                     @Html.DisplayFor(model => item.Item.Price) /
                                     <div class="mytooltip">
-                                        <i class="bi bi-people-fill pe-1"></i>@item.Item.UsersList.Count
+                                        <i class="bi bi-people-fill pe-1"></i>@item.Item.UserList.Count
                                         <span class="tooltiptext" style="height:110px; margin-left: -30px;">
                                             <i class="bi bi-people-fill pe-1"></i>@Localizer["Users"]:<br />
-                                            @foreach (var user in item.Item.UsersList.Take(3))
+                                            @foreach (var user in item.Item.UserList.Take(3))
                                             {
                                                 <div class="text-truncate">
                                                     <i class="bi bi-person-fill pe-1"></i>
                                                     @user<br />
                                                 </div>
                                             }
-                                            @if (item.Item.UsersList.Count > 3)
+                                            @if (item.Item.UserList.Count > 3)
                                             {
-                                                <div>@Localizer["And"] @(item.Item.UsersList.Count - 3) @Localizer["More"]</div>
+                                                <div>@Localizer["And"] @(item.Item.UserList.Count - 3) @Localizer["More"]</div>
                                             }
                                         </span>
                                     </div>
