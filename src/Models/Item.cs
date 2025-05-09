@@ -23,17 +23,19 @@ public class Item : DbObject
     [Display(Name = "Price")]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:n2}₴")]
     [Range(0, Double.MaxValue, ErrorMessage = "Please enter correct price")]
-    public decimal Price { get; set; }
+    public decimal Price { get; set; } = 0;
 
     [Required(ErrorMessage = "Please enter item amount")]
     [Display(Name = "Amount")]
     [Range(1, int.MaxValue, ErrorMessage = "Please enter correct amount")]
-    public int Amount { get; set; }
+    public int Amount { get; set; } = 1;
 
     [Required(ErrorMessage = "Please enter item rating")]
     [Display(Name = "Rating")]
     [Range(0, 10, ErrorMessage = "Please enter correct rating")]
-    public double Rating { get; set; }
+    public double Rating { get; set; } = 0;
+
+    public ICollection<ItemTag>? ItemTags { get; set; }
 
     [NotMapped]
     [Display(Name = "Users")]
