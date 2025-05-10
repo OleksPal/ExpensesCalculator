@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ExpensesCalculator.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExpensesCalculator.ViewModels
 {
@@ -24,8 +25,15 @@ namespace ExpensesCalculator.ViewModels
 
         [Required(ErrorMessage = "Please enter item amount")]
         [Display(Name = "Amount")]
-        [Range(1, int.MaxValue, ErrorMessage = "Amount cannot be less than one")]
-        public int Amount { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Please enter correct amount")]
+        public int Amount { get; set; } = 1;
+
+        [Required(ErrorMessage = "Please enter item rating")]
+        [Display(Name = "Rating")]
+        [Range(0, 10, ErrorMessage = "Please enter correct rating")]
+        public int Rating { get; set; } = 0;
+
+        public ICollection<ItemTag>? ItemTags { get; set; }
 
         [Required]
         [Display(Name = "Users")]

@@ -11,8 +11,7 @@ namespace ExpensesCalculator.Data
 
             var dayExpenses = new DayExpenses
             {
-                Id = 1,
-                Date = new DateOnly(2024, 1, 1),
+                Date = new DateOnly(2025, 1, 1),
                 ParticipantsList = ["User1", "User2"],
                 PeopleWithAccessList = ["Guest"]
             };
@@ -22,7 +21,6 @@ namespace ExpensesCalculator.Data
 
             var check = new Check
             {
-                Id = 1,
                 Location = "Shop1",
                 Sum = 1000,
                 Payer = "User1",
@@ -34,16 +32,15 @@ namespace ExpensesCalculator.Data
 
             var tag = new Tag
             {
-                Id = 1,
                 Name = "Meat",
                 Color = "#FF0000"
             };
+
             context.Tags.Add(tag);
             context.SaveChanges();
 
             var item = new Item
             {
-                Id = 1,
                 Name = "Item1",
                 Description = "Description1",
                 Price = 1000,

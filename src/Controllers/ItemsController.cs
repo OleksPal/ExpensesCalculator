@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using ExpensesCalculator.Models;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -93,7 +92,7 @@ namespace ExpensesCalculator.Controllers
 
             if (ModelState.IsValid)
             {
-                var addedItem = await _itemService.AddItemRItem(newItem);
+                var addedItem = await _itemService.AddItem(newItem);
                 return RedirectToAction(nameof(GetItemById), new { id = addedItem.Id });
             }
 
@@ -117,7 +116,7 @@ namespace ExpensesCalculator.Controllers
 
             if (ModelState.IsValid)
             {
-                var editedItem = await _itemService.EditItemRItem(item);
+                var editedItem = await _itemService.EditItem(item);
                 return RedirectToAction(nameof(GetItemById), new { id = editedItem.Id });
             }
 

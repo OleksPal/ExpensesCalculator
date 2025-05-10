@@ -11,8 +11,9 @@ namespace ExpensesCalculator.Mappers
             {
                 Name = addItemViewModel.Name,
                 Description = addItemViewModel.Description,
-                Price = addItemViewModel.Price * addItemViewModel.Amount,
+                Price = addItemViewModel.Price,
                 UserList = addItemViewModel.UserList,
+                Amount = addItemViewModel.Amount,
                 CheckId = addItemViewModel.CheckId
             };
         }
@@ -24,7 +25,8 @@ namespace ExpensesCalculator.Mappers
                 Id = editItemViewModel.Id,
                 Name = editItemViewModel.Name,
                 Description = editItemViewModel.Description,
-                Price = editItemViewModel.Price * editItemViewModel.Amount,
+                Price = editItemViewModel.Price,
+                Amount = editItemViewModel.Amount,
                 UserList = editItemViewModel.UserList,
                 CheckId = editItemViewModel.CheckId
             };

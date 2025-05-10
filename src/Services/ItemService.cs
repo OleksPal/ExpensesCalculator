@@ -3,7 +3,6 @@ using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
 using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -23,15 +22,7 @@ namespace ExpensesCalculator.Services
             _dayExpensesRepository = dayExpensesRepository;
         }
 
-        public async Task<Item> SetCheck(Item item)
-        {
-            return item;
-        }
-
-        public async Task<Item> GetItemById(int id)
-        {
-            return await _itemRepository.GetById(id);
-        }
+        public async Task<Item> GetItemById(int id) => await _itemRepository.GetById(id);
 
         public async Task<string> GetItemUsers(IEnumerable<string> userList)
         {
@@ -85,7 +76,7 @@ namespace ExpensesCalculator.Services
             return new MultiSelectList(optionList, "Value", "Text", userList);
         }
 
-        public async Task<Item> AddItemRItem(AddItemViewModel<int> newItemViewModel)
+        public async Task<Item> AddItem(AddItemViewModel<int> newItemViewModel)
         {
             var check = await GetCheckWithItems(newItemViewModel.CheckId);
 
@@ -97,23 +88,11 @@ namespace ExpensesCalculator.Services
             return await _itemRepository.Insert(itemToAdd);
         }
 
-        public async Task<Check> AddItem(AddItemViewModel<int> newItemViewModel)
-        {
-            var check = await GetCheckWithItems(newItemViewModel.CheckId);
-
-            var itemToAdd = newItemViewModel.ToItem();
-
-            check.Sum += itemToAdd.Price;
-            await _itemRepository.Insert(itemToAdd);
-            check = await _checkRepository.Update(check);            
-
-            return check;
-        }
-
-        public async Task<Item> EditItemRItem(EditItemViewModel<int> editItemViewModel)
+        public async Task<Item> EditItem(EditItemViewModel<int> editItemViewModel)
         {
             var check = await _checkRepository.GetById(editItemViewModel.CheckId);
-            var oldItemPrice = await _itemRepository.GetItemPriceById(editItemViewModel.Id);
+            var oldItem = await _itemRepository.GetById(editItemViewModel.Id);
+            var oldItemPrice = oldItem.Price;
 
             if (editItemViewModel is not null)
             {
@@ -128,25 +107,7 @@ namespace ExpensesCalculator.Services
             return editItemViewModel.ToItem();
         }
 
-        public async Task<Check> EditItem(EditItemViewModel<int> editItemViewModel)
-        {
-            var check = await _checkRepository.GetById(editItemViewModel.CheckId);
-            var oldItemPrice = await _itemRepository.GetItemPriceById(editItemViewModel.Id);
-
-            if (editItemViewModel is not null)
-            {
-                var editedItem = editItemViewModel.ToItem();
-                await _itemRepository.Update(editedItem);
-                check.Sum -= oldItemPrice;
-                check.Sum += editedItem.Price;
-                await _checkRepository.Update(check);
-                check = await GetCheckWithItems(editedItem.CheckId);
-            }
-
-            return check;
-        }
-
-        public async Task<Check> DeleteItem(int id)
+        public async Task<Item> DeleteItem(int id)
         {
             var item = await _itemRepository.GetById(id);
             var check = await GetCheckWithItems(item.CheckId);            
@@ -156,10 +117,9 @@ namespace ExpensesCalculator.Services
                 check.Sum -= item.Price;
                 await _itemRepository.Delete(id);
                 await _checkRepository.Update(check);
-                check = await GetCheckWithItems(item.CheckId);
             }            
 
-            return check;
+            return item;
         }
 
         private async Task<Check> GetCheckWithItems(int checkId)

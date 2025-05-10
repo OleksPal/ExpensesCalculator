@@ -32,30 +32,6 @@ namespace ExpensesCalculator.UnitTests
         }
         #endregion
 
-        #region GetItemPriceById method
-        [Fact]
-        public async void GetItemPriceByIdWhenItemWithSuchDoesNotExists()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var price = await repository.GetItemPriceById(0);
-
-            Assert.Equal(0, price);
-        }
-
-        [Fact]
-        public async void GetItemPriceByIdWhenItemWithSuchIdExists()
-        {
-            using var context = CreateContext();
-            var repository = new ItemRepository(context);
-
-            var price = await repository.GetItemPriceById(1);
-
-            Assert.Equal(1000m, price);
-        }
-        #endregion
-
         #region Update method
         public async override void UpdateValidObject()
         {

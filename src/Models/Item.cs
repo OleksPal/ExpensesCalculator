@@ -33,7 +33,7 @@ public class Item : DbObject
     [Required(ErrorMessage = "Please enter item rating")]
     [Display(Name = "Rating")]
     [Range(0, 10, ErrorMessage = "Please enter correct rating")]
-    public double Rating { get; set; } = 0;
+    public int Rating { get; set; } = 0;
 
     public ICollection<ItemTag>? ItemTags { get; set; }
 
