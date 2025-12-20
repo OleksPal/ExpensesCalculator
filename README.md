@@ -44,7 +44,6 @@ The ExpensesCalculator is compatible with devices of all sizes and all OS's, and
 
 ## Built with 
 * [![Dotnet][Dotnet.com]][Dotnet-url]
-* [![Blazor][Blazor.com]][Blazor-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 * [![JQuery][JQuery.com]][JQuery-url]
 * [![AngularJS][AngularJS.org]][AngularJS-url]
@@ -54,18 +53,14 @@ The ExpensesCalculator is compatible with devices of all sizes and all OS's, and
 - [x] Add an expenses calculator
 - [x] Add instructions for using the website
 - [ ] Add a preview of the check photo
-- [ ] Add an email confirmation
-- [ ] Add two-factor authentication
 - [ ] Improve the user data access model
-- [ ] Add expenses statistics (average number of participants, money spent by party, money spent per month, etc.)
-- [ ] Multi-language support
-    - [ ] Ukrainian
+- [x] Add expenses statistics (average number of participants, money spent by party, money spent per month, etc.)
+- [x] Multi-language support
+    - [x] Ukrainian
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [Dotnet.com]: https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white
 [Dotnet-url]: https://dotnet.microsoft.com
-[Blazor.com]: https://img.shields.io/badge/Blazor-512BD4?style=for-the-badge&logo=blazor&logoColor=white
-[Blazor-url]: https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor
 [Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
