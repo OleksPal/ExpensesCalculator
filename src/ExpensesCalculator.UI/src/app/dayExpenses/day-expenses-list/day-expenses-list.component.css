@@ -1,0 +1,118 @@
+.dark-blue-0 {
+    background: #080f27;
+}
+
+.dark-blue-1 {
+    background: #0b1739;
+}
+
+th {
+    cursor: pointer;
+    user-select: none;
+}
+
+td {
+    vertical-align: middle !important;
+}
+
+.table tr:nth-child(odd) td {
+    background: #0a1330 !important;
+}
+
+.table tr:nth-child(even) td {
+    background: #0b1739 !important;
+}
+
+.table tr > *:nth-child(1) {
+    padding-left: 20px;
+}
+
+.form-control::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+.form-control::-webkit-input-placeholder {
+  color: white;
+}
+
+.form-control::-moz-placeholder {
+  color: white;
+}
+
+.form-control:-ms-input-placeholder {
+  color: white;
+}
+
+.tooltip-inner {
+  text-align: left !important;
+  white-space: normal; /* allow wrapping */
+  max-width: 250px; /* optional: control max width */
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-menu-custom {
+  min-width: unset !important;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+.btn-outline-primary:hover {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+.btn-outline-primary:active {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+/* Blue border input group */
+.input-group-primary .form-control,
+.input-group-primary .input-group-text {
+  border-color: #0d6efd;
+}
+
+.input-group-primary .form-control {
+  color: white;
+  background-color: transparent;
+}
+
+.input-group-primary .form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  background-color: transparent;
+  color: white;
+}
+
+.input-group-primary .input-group-text {
+  background-color: transparent;
+  color: white;
+}
+
+.input-group-primary .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: white;
+}

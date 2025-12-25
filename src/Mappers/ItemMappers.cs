@@ -12,7 +12,7 @@ namespace ExpensesCalculator.Mappers
                 Name = addItemViewModel.Name,
                 Description = addItemViewModel.Description,
                 Price = addItemViewModel.Price * addItemViewModel.Amount,
-                UsersList = addItemViewModel.UserList,
+                Users = addItemViewModel.UserList,
                 CheckId = addItemViewModel.CheckId
             };
         }
@@ -25,7 +25,7 @@ namespace ExpensesCalculator.Mappers
                 Name = editItemViewModel.Name,
                 Description = editItemViewModel.Description,
                 Price = editItemViewModel.Price * editItemViewModel.Amount,
-                UsersList = editItemViewModel.UserList,
+                Users = editItemViewModel.UserList,
                 CheckId = editItemViewModel.CheckId
             };
         }
@@ -39,7 +39,7 @@ namespace ExpensesCalculator.Mappers
                 Description = item.Description,
                 Price = item.Price,
                 Amount = 1,
-                UserList = item.UsersList.ToList(),
+                UserList = item.Users.ToList(),
                 CheckId = item.CheckId
             };
         }
@@ -52,7 +52,7 @@ namespace ExpensesCalculator.Mappers
                 Description = item.Description,
                 Price = item.Price,
                 Amount = 1,
-                UserList = item.UsersList.ToList(),
+                UserList = item.Users.ToList(),
                 CheckId = item.CheckId
             };
         }

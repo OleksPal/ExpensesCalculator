@@ -64,32 +64,26 @@ namespace ExpensesCalculator.Controllers
 
         // GET: DayExpenses/EditDayExpenses/5
         [HttpGet]
-        public async Task<IActionResult> EditDayExpenses(int? id)
+        public async Task<IActionResult> EditDayExpenses(int id)
         {
-            if (id is null)
-                return NotFound();
-
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesViewModelById(id);
 
             if (day is null)
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
+            ViewData["FormatParticipantNames"] = day.DayExpenses.Participants;
 
             return PartialView("_EditDayExpenses", day);
         }
 
         // GET: DayExpenses/DeleteDayExpenses/5
         [HttpGet]
-        public async Task<IActionResult> DeleteDayExpenses(int? id)
+        public async Task<IActionResult> DeleteDayExpenses(int id)
         {
-            if (id is null)
-                return NotFound();
-
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
@@ -98,43 +92,37 @@ namespace ExpensesCalculator.Controllers
             if (day is null)
                 return NotFound();
 
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
+            ViewData["FormatParticipantNames"] = day.DayExpenses.Participants;
 
             return PartialView("_DeleteDayExpenses", day);
         }
 
         // GET: DayExpenses/ShareDayExpenses/5
         [HttpGet]
-        public async Task<IActionResult> ShareDayExpenses(int? id)
+        public async Task<IActionResult> ShareDayExpenses(int id)
         {
-            if (id is null)
-                return NotFound();
-
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var day = await _dayExpensesService.GetDayExpensesViewModelById((int)id);
+            var day = await _dayExpensesService.GetDayExpensesViewModelById(id);
 
             if (day is null)
                 return NotFound();
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(day.DayExpenses.ParticipantsList);
+            ViewData["FormatParticipantNames"] = day.DayExpenses.Participants;
 
             return PartialView("_ShareDayExpenses", day);
         }
 
         // GET: DayExpenses/CalculateExpenses/5
         [HttpGet]
-        public async Task<IActionResult> CalculateExpenses(int? id)
+        public async Task<IActionResult> CalculateExpenses(int id)
         {
-            if (id is null)
-                return NotFound();
-
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses((int)id);
+            var dayExpensesCalculation = await _dayExpensesService.GetCalculationForDayExpenses(id);
 
             if (dayExpensesCalculation is null)
                 return NotFound();
@@ -144,17 +132,12 @@ namespace ExpensesCalculator.Controllers
 
         // GET: DayExpenses/ShowChecks/5
         [HttpGet]
-        public async Task<IActionResult> ShowChecks(int? id)
+        public async Task<IActionResult> ShowChecks(int id)
         {
-            if (id is null)
-            {
-                return NotFound();
-            }
-
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((int)id);
+            var dayExpenses = await _dayExpensesService.GetById(id);
 
             if (dayExpenses is null)
             {
@@ -165,20 +148,12 @@ namespace ExpensesCalculator.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> GetDayExpensesChecks(int? id)
+        public async Task<JsonResult> GetDayExpensesChecks(int id)
         {
-            if (id is null)
-            {
-                return new JsonResult("DayExpenses not found")
-                {
-                    StatusCode = StatusCodes.Status404NotFound
-                };
-            }
-
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            var dayExpenses = await _dayExpensesService.GetFullDayExpensesById((int)id);
+            var dayExpenses = await _dayExpensesService.GetById(id);
 
             if (dayExpenses is null)
             {
@@ -197,30 +172,25 @@ namespace ExpensesCalculator.Controllers
         }
 
         // POST: DayExpenses/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
+        public async Task<IActionResult> Create([FromBody] DayExpenses dayExpenses)
         {
-            if (dayExpenses.ParticipantsList.First() is null) 
+            if (dayExpenses.Participants.Count == 0) 
                 ModelState.AddModelError("ParticipantsList", "Add some participants");
 
             if (ModelState.IsValid)
             {
-                var newDayExpenses = await _dayExpensesService.AddDayExpenses(dayExpenses);
-
-                return RedirectToAction(nameof(GetDayById), new { id = newDayExpenses.Id });
-            }
+                await _dayExpensesService.AddDayExpenses(dayExpenses);
+                return Ok();
+            }                
 
             ViewData["CurrentUsersName"] = User.Identity.Name is not null ? User.Identity.Name : "Guest";
-
+            Response.StatusCode = StatusCodes.Status400BadRequest;
             return PartialView("_CreateDayExpenses", dayExpenses);
         }
 
         // POST: DayExpenses/Edit
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("PeopleWithAccessList,ParticipantsList,Date,Id")] DayExpenses dayExpenses)
@@ -228,25 +198,22 @@ namespace ExpensesCalculator.Controllers
             if (User.Identity.Name is not null)
                 _dayExpensesService.RequestorName = User.Identity.Name;
 
-            if (dayExpenses.ParticipantsList.First() is null)
+            if (dayExpenses.Participants is null)
                 ModelState.AddModelError("ParticipantsList", "Add some participants!");
 
             if (ModelState.IsValid)
             {
-                dayExpenses.PeopleWithAccessList = JsonSerializer.Deserialize<List<string>>(dayExpenses.PeopleWithAccessList.ToList()[0]);
-                var editedDayExpenses = await _dayExpensesService.EditDayExpenses(dayExpenses);
+                await _dayExpensesService.EditDayExpenses(dayExpenses);
 
-                return RedirectToAction(nameof(GetDayById), new { id = editedDayExpenses.Id });
+                return RedirectToAction(nameof(GetDayById), new { id = dayExpenses.Id });
             }
 
-            ViewData["FormatParticipantNames"] = await _dayExpensesService.GetFormatParticipantsNames(dayExpenses.ParticipantsList);
+            ViewData["FormatParticipantNames"] = dayExpenses.Participants;
 
             return PartialView("_EditDayExpenses", dayExpenses);
         }
 
         // POST: DayExpenses/Delete/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -260,8 +227,6 @@ namespace ExpensesCalculator.Controllers
         }
 
         // POST: DayExpenses/Share/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Share(int id, string newUserWithAccess)

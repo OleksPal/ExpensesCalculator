@@ -18,7 +18,7 @@ namespace ExpensesCalculator.Repositories
 
         public override async Task<Check> GetById(int id)
         {
-            var check = await _context.Checks.Include(c => c.DayExpenses).FirstOrDefaultAsync(i => i.Id == id);
+            var check = await _context.Checks.FirstOrDefaultAsync(i => i.Id == id);
 
             return check;
         }

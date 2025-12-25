@@ -20,10 +20,17 @@
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
+            <i class="bi bi-geo-alt-fill"></i>
+            <label class="control-label">@Localizer["Location"]*</label>
+            <input asp-for="Location" class="form-control" id="location" ng-model="day.location" />
+            <span asp-validation-for="Location" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
             <i class="bi bi-people-fill"></i>
             <label class="control-label">@Localizer["Participants"]</label>
-            <input asp-for="ParticipantsList" class="form-control" id="participants" ng-model="day.participantList" required/>
-            <span asp-validation-for="ParticipantsList" class="text-danger"></span>
+            <input asp-for="Participants" class="form-control" id="participants" ng-model="day.participants" placeholder="John, Mary, Alex" required />
+            <label for="participants" class="form-text text-muted small mt-0 pt-0">*Enter participant names, separated by commas (e.g. John, Mary, Alex)</label>
+            <span asp-validation-for="Participants" class="text-danger"></span>
         </div>
         <button type="button" value="Create" class="btn btn-success" ng-click="createDayExpenses()">
             <i class="bi bi-plus-circle me-1"></i>@Localizer["AddExpensesButton"]

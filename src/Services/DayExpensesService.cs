@@ -2,8 +2,6 @@
 using ExpensesCalculator.Models;
 using ExpensesCalculator.Repositories.Interfaces;
 using ExpensesCalculator.ViewModels;
-using NuGet.Packaging;
-using System.Text.RegularExpressions;
 
 namespace ExpensesCalculator.Services
 {
@@ -29,14 +27,19 @@ namespace ExpensesCalculator.Services
         public async Task<ICollection<DayExpensesViewModel>> GetAllDays()
         {            
             var dayExpenses = await _dayExpensesRepository.GetAll();
-            dayExpenses = dayExpenses.Where(r => r.PeopleWithAccessList.Contains(RequestorName)).ToList();
+            dayExpenses = dayExpenses.Where(r => r.PeopleWithAccess.Contains(RequestorName)).ToList();
 
             var dayExpensesViewModels = new List<DayExpensesViewModel>();
             foreach (var dayExpense in dayExpenses)
             {
                 var checks = await _checkRepository.GetAllDayChecks(dayExpense.Id);
-                var totalSum = checks.Select(check => check.Sum).Sum();
-                dayExpense.Checks = null;
+                var totalSum = 0m;
+
+                foreach (var check in checks)
+                {
+                    var items = await _itemRepository.GetAllCheckItems(check.Id);
+                    totalSum += items.Select(item => item.Price).Sum();
+                }
 
                 dayExpensesViewModels.Add(
                     new DayExpensesViewModel
@@ -48,13 +51,20 @@ namespace ExpensesCalculator.Services
             }
 
             return dayExpensesViewModels
-                .Where(r => r.DayExpenses.PeopleWithAccessList.Contains(RequestorName)).ToList();
+                .Where(r => r.DayExpenses.PeopleWithAccess.Contains(RequestorName)).ToList();
         }
 
         public async Task<DayExpensesViewModel> GetDayExpensesViewModelById(int id)
         {
-            var dayExpenses = await GetFullDayExpensesById(id);
-            var totalSum = dayExpenses.Checks.Select(check => check.Sum).Sum();
+            var dayExpenses = await GetById(id);
+            var checks = await _checkRepository.GetAllDayChecks(dayExpenses.Id);
+            var totalSum = 0m;
+
+            foreach (var check in checks)
+            {
+                var items = await _itemRepository.GetAllCheckItems(check.Id);
+                totalSum += items.Select(item => item.Price).Sum();
+            }
 
             var dayExpensesViewModel = new DayExpensesViewModel
             {
@@ -65,94 +75,44 @@ namespace ExpensesCalculator.Services
             return dayExpensesViewModel;
         }
 
-        public async Task<DayExpenses> GetDayExpensesById(int id)
+        public async Task<DayExpenses> GetById(int id)
         {
-            var result = await _dayExpensesRepository.GetById(id);
-
-            if (result is null)
+            var dayExpenses = await _dayExpensesRepository.GetById(id);
+            
+            if (dayExpenses == null || !dayExpenses.PeopleWithAccess.Contains(RequestorName))
                 return null;
-            else
-                return result.PeopleWithAccess.Contains(RequestorName) ? result : null;
-        }
-
-        public async Task<DayExpenses> GetDayExpensesByIdWithChecks(int id)
-        {
-            var dayExpenses = await GetDayExpensesById(id);
-
-            if (dayExpenses is not null)
-            {
-                var checks = await _checkRepository.GetAllDayChecks(id);
-                dayExpenses.Checks = checks.ToList();
-            }                
 
             return dayExpenses;
         }
 
-        public async Task<DayExpenses> GetFullDayExpensesById(int id)
+        public async Task AddDayExpenses(DayExpenses dayExpenses)
         {
-            var dayExpenses = await GetDayExpensesByIdWithChecks(id);
-
-            if (dayExpenses is not null)
-            {
-                foreach (var check in dayExpenses.Checks)
-                {
-                    var items = await _itemRepository.GetAllCheckItems(check.Id);
-                    check.Items = items.ToList();
-                }   
-            }
-
-            return dayExpenses;
+            await _dayExpensesRepository.Insert(dayExpenses);
         }
 
-        public async Task<DayExpenses> AddDayExpenses(DayExpenses dayExpenses)
+        public async Task EditDayExpenses(DayExpenses dayExpenses)
         {
-            string rareNameList = dayExpenses.ParticipantsList.First();
-            dayExpenses.ParticipantsList.Clear();
-            dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
-
-            return await _dayExpensesRepository.Insert(dayExpenses);
-        }
-
-        public async Task<DayExpenses> EditDayExpenses(DayExpenses dayExpenses)
-        {
-            if (dayExpenses.PeopleWithAccessList.Contains(RequestorName))
-            {
-                string rareNameList = dayExpenses.ParticipantsList.First();
-                dayExpenses.ParticipantsList.Clear();
-                dayExpenses.ParticipantsList.AddRange(GetParticipantListFromString(rareNameList));
-
+            if (dayExpenses.PeopleWithAccess.Contains(RequestorName))
                 dayExpenses = await _dayExpensesRepository.Update(dayExpenses);
-            }
-
-            return dayExpenses;
         }
 
-        public async Task<DayExpenses> DeleteDayExpenses(int id)
+        public async Task DeleteDayExpenses(int id)
         {
-            var dayExpensesToDelete = await GetDayExpensesById(id);
+            var dayExpensesToDelete = await GetById(id);
 
             if (dayExpensesToDelete is not null)
-                dayExpensesToDelete = await _dayExpensesRepository.Delete(id);
-
-            return dayExpensesToDelete;
+                dayExpensesToDelete = await _dayExpensesRepository.Delete(id);;
         }
 
         public async Task<DayExpensesCalculationViewModel> GetCalculationForDayExpenses(int id)
         {
-            var dayExpenses = await GetFullDayExpensesById(id);
-            var dayExpensesCalculation = dayExpenses.GetCalculations();
-
-            return dayExpensesCalculation;
-        }        
-
-        public async Task<string> GetFormatParticipantsNames(IEnumerable<string> participantList)
-        {
-            return String.Join(", ", participantList);
+            var dayExpenses = await GetById(id);
+            return dayExpenses.GetCalculations();
         }
 
         public async Task<string?> ChangeDayExpensesAccess(int id, string newUserWithAccess)
         {
-            var dayExpenses = await GetDayExpensesById(id);
+            var dayExpenses = await GetById(id);
 
             if (dayExpenses is not null)
             {
@@ -164,26 +124,13 @@ namespace ExpensesCalculator.Services
                     return "This user already has access!";
                 else
                 {
-                    dayExpenses.PeopleWithAccessList.Add(newUserWithAccess);
+                    dayExpenses.PeopleWithAccess.Add(newUserWithAccess);
                     await _dayExpensesRepository.Update(dayExpenses);
                     return "Done!";
                 }
             }
 
             return null;
-        }
-
-        private IEnumerable<string> GetParticipantListFromString(string rareText)
-        {
-            Regex pattern = new Regex(@"\w+");
-
-            var matchList = pattern.Matches(rareText).ToList();
-            List<string> participantList = new List<string>();
-
-            foreach (var match in matchList)
-                participantList.Add(match.Value);
-
-            return participantList;
-        }        
+        }      
     }
 }

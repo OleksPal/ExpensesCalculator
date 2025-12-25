@@ -272,53 +272,53 @@ expensesCalculatorApp.controller('DayExpensesCtrl', ['$scope', '$http', '$filter
 		};
 
 		$scope.createDayExpenses = function () {
-			var date = ($scope.day && $scope.day.date !== undefined)
-				? $filter('date')($scope.day.date, 'yyyy-MM-ddTHH:mm:ss')
-				: "None";
-			var participantsList = ($scope.day && $scope.day.participantList !== undefined)
-				? $scope.day.participantList
-				: "";
-			var peopleWithAccessList = document.querySelector('input[name="currentUserName"]').value;
+			var date = ($scope.day && $scope.day.date)
+				? $filter('date')($scope.day.date, 'yyyy-MM-dd')
+				: null;
+			var participants = ($scope.day && $scope.day.participants)
+				? $scope.day.participants
+					.split(',')
+					.map(p => p.trim())
+					.filter(p => p.length > 0)
+				: [];
+			var location = ($scope.day && $scope.day.location)
+				? $scope.day.location : null;
+			var peopleWithAccess = document.querySelector('input[name="currentUserName"]').value.split(',');			
 			var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-			var params = "Date=" + encodeURIComponent(date) +
-				"&ParticipantsList=" + encodeURIComponent(participantsList) +
-				"&PeopleWithAccessList=" + encodeURIComponent(peopleWithAccessList);
+			var data = {
+				date: date,
+				participants: participants,
+				peopleWithAccess: peopleWithAccess,
+				location: location
+			}
 
-			$http.post(`/DayExpenses/Create`, params, {
+			$http.post(`/DayExpenses/Create`, data, {
 				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',  // Set content type for form data
-					'RequestVerificationToken': token  // Anti-forgery token
+					'Content-Type': 'application/json',
+					'RequestVerificationToken': token
 				}
 			})
-			.then(function (response) {
-				// Check if response contains div with class modal-body
-				if (typeof response.data === 'string' && response.data.indexOf("<div class=\"modal-body\">") >= 0) {
+				.then(function (response) {
+				if (response.status === 200) {
+					$scope.day = { date: '', participantList: '' };
+					$('#staticBackdrop').modal('hide');
+
+					console.log(response.data)
+					$scope.filterPagedDays();
+
+					if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
+						currentPage = $scope.pagedDays.length - 1;
+
+					$scope.currentPage = currentPage;
+
+					$scope.showToast('success', 'Success!', 'Day was successfully added.');
+					$scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');
+				}
+				else {
 					modalContent = angular.element(document.querySelector('#modal-content'));
 					modalContent.html(response.data);
 					compiledContent = $compile(modalContent)($scope);
-				}
-				else {
-					$scope.day = { date: '', participantList: '' };
-					$('#staticBackdrop').modal('hide');
-			
-					// Move one page forward if added element can`t be displayed on the same page
-					var currentPage = $scope.currentPage;
-			
-					if ($scope.pagedDays[currentPage] === undefined)
-						$scope.pagedDays[currentPage] = [];
-			
-					$scope.days.push(response.data);
-			
-					$scope.filterPagedDays();
-			
-					if (currentPage === -1 || $scope.pagedDays[currentPage].length === 5)
-						currentPage = $scope.pagedDays.length - 1;
-			
-					$scope.currentPage = currentPage;
-			
-					$scope.showToast('success', 'Success!', 'Day was successfully added.');
-					$scope.triggerAnimation($scope.pagedDays[currentPage].length - 1, 'create');
 				}
 			});
 		};

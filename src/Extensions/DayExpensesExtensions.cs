@@ -13,8 +13,8 @@ namespace ExpensesCalculator.Extensions
             if (dayExpenses is not null)
             {
                 dayExpensesCalculation.DayExpensesId = dayExpenses.Id;
-                dayExpensesCalculation.Participants = dayExpenses.ParticipantsList;
-                dayExpensesCalculation.Checks = dayExpenses.Checks;
+                dayExpensesCalculation.Participants = null;
+                dayExpensesCalculation.Checks = null;
                 dayExpensesCalculation.DayExpensesCalculations = CalculateDayExpensesList(dayExpenses);
                 dayExpensesCalculation.AllUsersTrasactions = CalculateTransactionList(dayExpensesCalculation.DayExpensesCalculations);
                 dayExpensesCalculation.OptimizedUserTransactions = OptimizeTransactions(dayExpensesCalculation.AllUsersTrasactions.ToList());
@@ -26,37 +26,37 @@ namespace ExpensesCalculator.Extensions
         private static ICollection<DayExpensesCalculation> CalculateDayExpensesList(DayExpenses dayExpenses)
         {
             var dayExpensesCalculationList = new List<DayExpensesCalculation>();
-            foreach (var participant in dayExpenses.ParticipantsList)
+            foreach (var participant in dayExpenses.Participants)
             {
                 var participantExpenses = new DayExpensesCalculation { UserName = participant };
-                foreach (var check in dayExpenses.Checks)
-                {
-                    if (check.Items.Count > 0)
-                    {
-                        var checkCalculation = new CheckCalculation { Check = check };
-                        foreach (var item in check.Items)
-                        {
-                            if (item.UsersList.Count == 1 && item.UsersList.ToList()[0].Contains('['))
-                                item.UsersList = JsonSerializer.Deserialize<List<string>>(item.UsersList.ToList()[0]);
+                //foreach (var check in dayExpenses.Checks)
+                //{
+                //    if (check.Items.Count > 0)
+                //    {
+                //        var checkCalculation = new CheckCalculation { Check = check };
+                //        foreach (var item in check.Items)
+                //        {
+                //            if (item.UsersList.Count == 1 && item.UsersList.ToList()[0].Contains('['))
+                //                item.UsersList = JsonSerializer.Deserialize<List<string>>(item.UsersList.ToList()[0]);
 
-                            if (item.UsersList.Contains(participant))
-                            {
-                                decimal pricePerUser = Math.Round(item.Price / item.UsersList.Count, 2);
+                //            if (item.UsersList.Contains(participant))
+                //            {
+                //                decimal pricePerUser = Math.Round(item.Price / item.UsersList.Count, 2);
 
-                                checkCalculation.Items.Add(new ItemCalculation
-                                {
-                                    Item = item,
-                                    PricePerUser = pricePerUser
-                                });
+                //                checkCalculation.Items.Add(new ItemCalculation
+                //                {
+                //                    Item = item,
+                //                    PricePerUser = pricePerUser
+                //                });
 
-                                checkCalculation.SumPerParticipant += pricePerUser;
-                            }
-                        }
+                //                checkCalculation.SumPerParticipant += pricePerUser;
+                //            }
+                //        }
 
-                        if (checkCalculation.SumPerParticipant != 0)
-                            participantExpenses.CheckCalculations.Add(checkCalculation);
-                    }
-                }
+                //        if (checkCalculation.SumPerParticipant != 0)
+                //            participantExpenses.CheckCalculations.Add(checkCalculation);
+                //    }
+                //}
                 dayExpensesCalculationList.Add(participantExpenses);
             }
 

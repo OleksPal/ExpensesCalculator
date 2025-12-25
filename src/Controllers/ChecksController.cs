@@ -1,9 +1,9 @@
 ﻿using ExpensesCalculator.Models;
-using ExpensesCalculator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using ExpensesCalculator.Services.Interfaces;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -20,7 +20,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<JsonResult> GetCheckById(int id)
         {
-            var check = await _checkService.GetCheckById(id);
+            var check = await _checkService.GetById(id);
 
             JsonSerializerOptions options = new()
             {
@@ -44,12 +44,9 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Checks/EditCheck/5
         [HttpGet]
-        public async Task<IActionResult> EditCheck(int? id)
+        public async Task<IActionResult> EditCheck(int id)
         {
-            if (id is null)
-                return NotFound();
-
-            var check = await _checkService.GetCheckById((int)id);
+            var check = await _checkService.GetById(id);
 
             if (check is null)
                 return NotFound();
@@ -61,12 +58,9 @@ namespace ExpensesCalculator.Controllers
 
         // GET: Checks/DeleteCheck/5
         [HttpGet]
-        public async Task<IActionResult> DeleteCheck(int? id)
+        public async Task<IActionResult> DeleteCheck(int id)
         {
-            if (id is null)
-                return NotFound();
-
-            var check = await _checkService.GetCheckById((int)id);
+            var check = await _checkService.GetById(id);
 
             if (check is null)
                 return NotFound();
@@ -78,7 +72,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCheckItemsManager(int id)
         {
-            var check = await _checkService.GetCheckByIdWithItems(id);
+            var check = await _checkService.GetById(id);
 
             if (check is null)
                 return NotFound();
@@ -87,21 +81,10 @@ namespace ExpensesCalculator.Controllers
         }
 
         // POST: Checks/Create?dayExpensesId=1
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
-            check = await _checkService.SetDayExpenses(check);
-            ModelState.Clear();
-
-            if (TryValidateModel(check))
-            {
-                var newCheck = await _checkService.AddCheckRCheck(check);
-                return RedirectToAction(nameof(GetCheckById), new { id = newCheck.Id });
-            }
-
             ViewData["DayExpensesId"] = check.DayExpensesId;
             ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
 
@@ -115,30 +98,19 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("DayExpensesId,Payer,Sum,Location,Items,Id")] Check check)
         {
-            check = await _checkService.SetDayExpenses(check);
-            ModelState.Clear();
-
-            if (TryValidateModel(check))
-            {
-                var editedCheck = await _checkService.EditCheckRCheck(check);
-                return RedirectToAction(nameof(GetCheckById), new { id = editedCheck.Id });
-            }
-
             ViewData["Participants"] = await _checkService.GetAllAvailableCheckPayers(check.DayExpensesId);
 
             return PartialView("_EditCheck", check);
         }
 
         // POST: Checks/Delete/5?dayExpensesId=1
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var model = await _checkService.DeleteCheck(id);
+            await _checkService.DeleteCheck(id);
 
-            return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml", model);
+            return PartialView("~/Views/DayExpenses/_ManageDayExpensesChecks.cshtml");
         }
     }
 }

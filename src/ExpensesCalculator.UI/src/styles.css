@@ -1,0 +1,44 @@
+.dark-blue-0 {
+    background: #080f27;
+}
+
+.dark-blue-1 {
+    background: #0b1739;
+}
+
+#customProportion > .col-2 {
+    width: 14%;
+}
+
+#customProportion > .col-10 {
+    width: 86%;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.tooltip-inner {
+  text-align: left !important;
+}
+
+/* Custom Dark Toast Style */
+.toast-dark {
+    background-color: #343a40; /* Dark background */
+    color: #f8f9fa; /* Light text color */
+}
+
+    .toast-dark .toast-header {
+        background-color: #495057; /* Dark header background */
+        color: #f8f9fa; /* Light text for the header */
+        display: flex;
+        justify-content: space-between; /* Title to the left, time and close button to the right */
+        align-items: center;
+    }
+
+    .toast-dark .toast-body {
+        background-color: #1c1f24; /* Dark body background */
+        color: #f8f9fa; /* Light text for the body */
+    }
+
+    .toast-dark .toast-header small {
+        margin-left: auto; /* Push the time to the far right */
+    }

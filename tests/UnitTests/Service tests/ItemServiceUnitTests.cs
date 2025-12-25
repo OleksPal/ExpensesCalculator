@@ -1,6 +1,6 @@
 using ExpensesCalculator.Mappers;
 using ExpensesCalculator.Models;
-using ExpensesCalculator.Services;
+using ExpensesCalculator.Services.Interfaces;
 using ExpensesCalculator.ViewModels;
 
 namespace ExpensesCalculator.UnitTests
@@ -50,7 +50,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetItemByIdThatDoesNotExists()
         {
-            var item = await _itemService.GetItemById(0);
+            var item = await _itemService.GetById(0);
 
             Assert.Null(item);
         }
@@ -58,7 +58,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetItemByIdThatExists()
         {
-            var item = await _itemService.GetItemById(1);
+            var item = await _itemService.GetById(1);
 
             Assert.Equal("Item1", item.Name);
         }

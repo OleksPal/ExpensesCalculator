@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using ExpensesCalculator.Repositories.Interfaces;
 using System.Globalization;
+using ExpensesCalculator.Services.Interfaces;
 
 namespace ExpensesCalculator
 {

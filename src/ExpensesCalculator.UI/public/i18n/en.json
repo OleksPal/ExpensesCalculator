@@ -1,0 +1,129 @@
+{
+  "NAV": {
+    "LOGIN": "Login",
+    "REGISTER": "Register",
+    "LOGOUT": "Logout",
+    "HI": "Hi,",
+    "MANAGE": "Manage"
+  },
+  "SIDEBAR": {
+    "BRAND": "ExpensesCalculator",
+    "GET_STARTED": "Get Started",
+    "MY_EXPENSES": "My Expenses List",
+    "GITHUB": "Github"
+  },
+  "HOME": {
+    "WELCOME": "Welcome to ExpensesCalculator",
+    "DESCRIPTION": "Distribute expenses among party participants based on their consumption.",
+    "ABOUT": "About this page",
+    "ABOUT_DESCRIPTION": "This page is including some instructions what you can do on this website",
+    "STEP_1": "1. Select the \"My expenses list\" tab.",
+    "STEP_2": "2. Click the \"Add expenses\" button and enter the required data.",
+    "STEP_3": "3. Click the button with a list image, to enter data about the items to be calculated.",
+    "STEP_4": "4. On the next page, add checks, which are used to group items by who paid for them.",
+    "STEP_5": "5. Open the appropriate check and add the items of this check.",
+    "STEP_6": "6. Use the edit and delete buttons to change data if it was entered incorrectly.",
+    "STEP_7": "7. Click the button with a calculator image, to calculate the expenses between the participants.",
+    "STEP_8": "8. Switch between tabs to see how much every participant spent on the party.",
+    "STEP_9": "9. On the \"Transaction list\" tab you can see how much money each participant owes to the people who paid for the party.",
+    "COPYRIGHT": "© 2024-2026 ExpensesCalculator"
+  },
+  "LOGIN": {
+    "TITLE": "Log in",
+    "SUBTITLE": "Use a local account to log in.",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "SUBMIT": "Log in",
+    "ERRORS": {
+      "INVALID_CREDENTIALS": "Invalid username or password.",
+      "REQUIRED_FIELD": "This field is required.",
+      "UNKNOWN_ERROR": "An error occurred during login."
+    }
+  },
+  "REGISTER": {
+    "TITLE": "Register",
+    "SUBTITLE": "Create a new account.",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "SUBMIT": "Register",
+    "PASSWORD_MISMATCH": "Passwords do not match",
+    "ERRORS": {
+      "USERNAME_TAKEN": "Username is already taken.",
+      "PASSWORD_TOO_SHORT": "Password must be at least 6 characters long.",
+      "PASSWORD_REQUIRES_DIGIT": "Password must contain at least one digit.",
+      "PASSWORD_REQUIRES_UPPERCASE": "Password must contain at least one uppercase letter.",
+      "PASSWORD_REQUIRES_LOWERCASE": "Password must contain at least one lowercase letter.",
+      "PASSWORD_REQUIRES_SPECIAL": "Password must contain at least one special character.",
+      "INVALID_USERNAME": "Username is invalid.",
+      "UNKNOWN_ERROR": "An error occurred during registration."
+    }
+  },
+  "EXPENSES": {
+    "TITLE": "Expenses List",
+    "ADD": "Add Expenses",
+    "NO_DATA": "No Data",
+    "NO_DATA_HINT": "Try To Add New Expenses",
+    "NO_SEARCH_RESULTS": "No data found for this search.",
+    "SEARCH": "Search",
+    "DATE": "Date",
+    "LOCATION": "Location",
+    "PARTICIPANTS": "Participants",
+    "TOTAL_SUM": "Total Sum",
+    "PEOPLE": "people",
+    "ALL": "All",
+    "FILTER": {
+      "ALL": "All",
+      "LOCATION": "Location",
+      "PARTICIPANTS": "Participants",
+      "TOTAL_SUM": "Total Sum"
+    },
+    "PAGINATION": {
+      "SHOWING_PAGE": "Showing page",
+      "OF": "of",
+      "FIRST": "First",
+      "LAST": "Last",
+      "ITEMS_PER_PAGE": "Items per page:"
+    },
+    "MODAL": {
+      "ADD_TITLE": "Add Day Expenses",
+      "EDIT_TITLE": "Edit Day Expenses",
+      "DELETE_TITLE": "Delete Day Expenses",
+      "SHARE_TITLE": "Share Day Expenses",
+      "DATE_LABEL": "Date",
+      "LOCATION_LABEL": "Location",
+      "PARTICIPANTS_LABEL": "Participants",
+      "PARTICIPANTS_PLACEHOLDER": "John, Mary, Alex",
+      "PARTICIPANTS_HINT": "*Enter participant names, separated by commas (e.g. John, Mary, Alex)",
+      "ADD_BUTTON": "Add Expenses",
+      "EDIT_BUTTON": "Edit Expenses",
+      "DELETE_BUTTON": "Delete Expenses",
+      "SHARE_BUTTON": "Share Expenses",
+      "SHARE_USER_LABEL": "Add Access For User"
+    },
+    "TOOLTIP": {
+      "PARTICIPANTS_TITLE": "Participants:",
+      "AND_MORE": "and {{count}} more"
+    },
+    "TOAST": {
+      "SUCCESS": "Success!",
+      "ERROR": "Error!",
+      "CREATE_SUCCESS": "Expenses for the selected day have been created.",
+      "CREATE_ERROR": "We couldn't create the expenses. Please check your input and try again.",
+      "EDIT_SUCCESS": "Expenses for the selected day were updated successfully.",
+      "EDIT_ERROR": "Unable to edit expenses. Please review your input and try again.",
+      "DELETE_SUCCESS": "Expenses deleted successfully.",
+      "DELETE_ERROR": "Deleting expenses failed. Please try once more.",
+      "SHARE_SUCCESS": "Expenses shared successfully.",
+      "SHARE_ERROR": "Sharing expenses failed. Please try once more."
+    },
+    "BACKEND_ERRORS": {
+      "USER_NOT_FOUND": "User not found.",
+      "INVALID_DATA": "Invalid data provided.",
+      "UNAUTHORIZED": "You are not authorized to perform this action.",
+      "ALREADY_SHARED": "This expense is already shared with this user.",
+      "ALREADY_HAS_ACCESS": "This user already has access.",
+      "UNKNOWN_ERROR": "An unknown error occurred."
+    }
+  }
+}

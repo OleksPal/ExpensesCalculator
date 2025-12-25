@@ -1,11 +1,10 @@
 ﻿using ExpensesCalculator.Mappers;
-using ExpensesCalculator.Services;
 using ExpensesCalculator.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using ExpensesCalculator.Models;
+using ExpensesCalculator.Services.Interfaces;
 
 namespace ExpensesCalculator.Controllers
 {
@@ -22,7 +21,7 @@ namespace ExpensesCalculator.Controllers
         [HttpGet]
         public async Task<JsonResult> GetItemById(int id)
         {
-            var item = await _itemService.GetItemById(id);
+            var item = await _itemService.GetById(id);
 
             JsonSerializerOptions options = new()
             {
@@ -52,15 +51,13 @@ namespace ExpensesCalculator.Controllers
             if (id is null)
                 return NotFound();
 
-            var item = await _itemService.GetItemById((int)id);
+            var item = await _itemService.GetById((int)id);
 
             if (item is null)
                 return NotFound();
 
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
-            ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UsersList, dayExpensesId);
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             var editItemViewModel = item.ToEditItemViewModel();
             return PartialView("_EditItem", editItemViewModel);
@@ -73,12 +70,10 @@ namespace ExpensesCalculator.Controllers
             if (id is null)
                 return NotFound();
 
-            var item = await _itemService.GetItemById((int)id);
+            var item = await _itemService.GetById((int)id);
 
             if (item is null)
                 return NotFound();
-
-            ViewData["FormatUserList"] = await _itemService.GetItemUsers(item.UsersList);
 
             return PartialView("_DeleteItem", item);
         }
@@ -88,21 +83,9 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] AddItemViewModel<int> newItem, int dayExpensesId)
         {
-            if (newItem.UserList[0] == "\"None\"")
-                ModelState.AddModelError("UserList", "Add some users");
-
-            if (ModelState.IsValid)
-            {
-                var addedItem = await _itemService.AddItemRItem(newItem);
-                return RedirectToAction(nameof(GetItemById), new { id = addedItem.Id });
-            }
-
             ViewData["CheckId"] = newItem.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(newItem.UserList, dayExpensesId);
-            
-            string formatedUserList = await _itemService.GetItemUsers(newItem.UserList);
-            ViewData["FormatUserList"] = formatedUserList ?? "Select users";
 
             return PartialView("_CreateItem", newItem);
         }
@@ -112,21 +95,9 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("CheckId,UserList,Name,Description,Price,Amount,Id")] EditItemViewModel<int> item, int dayExpensesId)
         {
-            if (item.UserList[0] == "\"None\"")
-                ModelState.AddModelError("UserList", "Add some users");
-
-            if (ModelState.IsValid)
-            {
-                var editedItem = await _itemService.EditItemRItem(item);
-                return RedirectToAction(nameof(GetItemById), new { id = editedItem.Id });
-            }
-
             ViewData["CheckId"] = item.CheckId;
             ViewData["DayExpensesId"] = dayExpensesId;
             ViewData["Participants"] = await _itemService.GetCheckedItemUsers(item.UserList, dayExpensesId);
-
-            string formatedUserList = await _itemService.GetItemUsers(item.UserList);
-            ViewData["FormatUserList"] = formatedUserList ?? "Select users";
 
             return PartialView("_EditItem", item);
         }
@@ -136,8 +107,8 @@ namespace ExpensesCalculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var model = await _itemService.DeleteItem(id);
-            return PartialView("~/Views/Checks/_ManageCheckItems.cshtml", model);
+            await _itemService.DeleteItem(id);
+            return PartialView("~/Views/Checks/_ManageCheckItems.cshtml");
         }
     }
 }

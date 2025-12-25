@@ -12,8 +12,8 @@ namespace ExpensesCalculator.Data
             var dayExpenses = new DayExpenses
             {
                 Date = new DateOnly(2024, 1, 1),
-                ParticipantsList = ["User1", "User2"],
-                PeopleWithAccessList = ["Guest"]
+                Participants = ["User1", "User2"],
+                PeopleWithAccess = ["Guest"]
             };
 
             context.Days.Add(dayExpenses);
@@ -23,7 +23,6 @@ namespace ExpensesCalculator.Data
             var check = new Check
             {
                 Location = "Shop1",
-                Sum = 1000,
                 Payer = "User1",
                 DayExpensesId = dayExpensesId
             };
@@ -38,7 +37,7 @@ namespace ExpensesCalculator.Data
                 Description = "Description1",
                 Price = 1000,
                 CheckId = checkId,
-                UsersList = ["User1", "User2"]
+                Users = ["User1", "User2"]
             };
 
             context.Items.Add(item);

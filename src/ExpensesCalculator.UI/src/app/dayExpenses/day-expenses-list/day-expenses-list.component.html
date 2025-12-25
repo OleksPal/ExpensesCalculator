@@ -1,0 +1,368 @@
+<div class="rounded mb-4 ms-sm-5 me-sm-4 dark-blue-1">
+    <div class="container-fluid px-3 pt-2 text-white">
+        <div class="d-flex align-items-center justify-content-between">
+            <h4 class="mt-1 mb-4">
+                <i class="bi bi-list-nested me-1"></i>{{ 'EXPENSES.TITLE' | translate }}
+            </h4>
+            <div *ngIf="isLoading" class="spinner-border" role="status"></div>
+        </div>
+
+        <button class="btn btn-success" (click)="openModal('add', '')">
+            <i class="bi bi-plus-circle me-1"></i>{{ 'EXPENSES.ADD' | translate }}
+        </button>
+
+        <hr class="w-100 my-3" style="border-color: #080f27; opacity: 1;" />
+
+    </div>
+    <div *ngIf="expensesList.length === 0 && filterText === '' && fromDate === ''" class="text-white text-center pt-4 pb-5">
+        <h2>{{ 'EXPENSES.NO_DATA' | translate }}</h2>
+        <h5 class="pt-3">{{ 'EXPENSES.NO_DATA_HINT' | translate }}</h5>
+    </div>
+    <div *ngIf="expensesList.length !== 0 || filterText !== '' || fromDate !== ''" class="d-flex justify-content-end pb-lg-2 px-2 mt-3 mb-2">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch align-items-lg-center justify-content-lg-between">
+                <!-- LEFT SIDE: Date range -->
+                <div class="d-flex gap-2 align-items-center ms-2">
+                    <div class="input-group text-center" style="width: 270px;">
+                        <span
+                            class="input-group-text bi bi-calendar-range-fill bg-transparent text-white border-primary"
+                            id="calendarButton"
+                            style="cursor: pointer;"
+                        ></span>
+                        <input
+                            id="dateRangeInput"
+                            type="text"
+                            class="form-control form-control-sm bg-transparent text-white border-primary text-center"
+                            style="height: 37px; outline: none !important; box-shadow: none !important;"
+                            readonly
+                        >
+                        <button
+                            class="btn btn-sm btn-outline-primary text-white"
+                            type="button"
+                            (click)="clearDateRange()"
+                            style="height: 37px;">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE: Filter dropdown and search -->
+                <div class="d-flex gap-2 align-items-center">
+                    <div class="search-criteria-dropdown">
+                        <button
+                            class="btn btn-sm btn-outline-primary text-white dropdown-toggle"
+                            type="button"
+                            id="searchCriteriaDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            style="width: 140px; height: 37px;">
+                            {{ filterCriteriaKey | translate }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-custom dark-blue-0" style="width: 140px !important;" aria-labelledby="searchCriteriaDropdown">
+                            <li><a
+                                class="dropdown-item text-white"
+                                href="javascript:void(0)"
+                                [class.active]="filterCriteria === 'Location'"
+                                (click)="changeFilterCriteria('Location')">{{ 'EXPENSES.FILTER.LOCATION' | translate }}</a></li>
+                            <li><a
+                                class="dropdown-item text-white"
+                                href="javascript:void(0)"
+                                [class.active]="filterCriteria === 'Participants'"
+                                (click)="changeFilterCriteria('Participants')">{{ 'EXPENSES.FILTER.PARTICIPANTS' | translate }}</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="input-group input-group-primary" style="width: 280px;">
+                        <span class="input-group-text bi bi-search bg-transparent text-white" id="basic-addon1"></span>
+                        <input
+                            [(ngModel)]="filterText"
+                            (input)="onFilterChange()"
+                            class="form-control bg-transparent text-white"
+                            type="search"
+                            aria-describedby="basic-addon1"
+                            [placeholder]="'EXPENSES.SEARCH' | translate"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="expensesList.length === 0 && (filterText !== '' || fromDate !== '')" class="text-white text-center py-4">
+        <h3>{{ 'EXPENSES.NO_SEARCH_RESULTS' | translate }}</h3>
+    </div>
+    <div *ngIf="expensesList.length > 0" class="table-responsive fix-table-height">
+        <table class="table table-borderless text-white mb-0" id="daysTable">
+            <thead style="position: sticky;">
+                <tr>
+                    <th class="text-nowrap bg-transparent text-white" width="25%" (click)="sortExpenses('date')">
+                        <i class="bi bi-calendar-event"></i>
+                        {{ 'EXPENSES.DATE' | translate }}
+                        <i [ngClass]="getIconOrderClass('date')"></i>
+                    </th>
+                    <th class="text-nowrap bg-transparent text-white" width="25%" (click)="sortExpenses('location')">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        {{ 'EXPENSES.LOCATION' | translate }}
+                        <i [ngClass]="getIconOrderClass('location')"></i>
+                    </th>
+                    <th class="text-nowrap bg-transparent text-white" width="25%" (click)="sortExpenses('participants')">
+                        <i class="bi bi-people-fill pe-1"></i>
+                        {{ 'EXPENSES.PARTICIPANTS' | translate }}
+                        <i [ngClass]="getIconOrderClass('participants')"></i>
+                    </th>
+                    <th class="text-nowrap bg-transparent text-white" width="20%" (click)="sortExpenses('totalSum')">
+                        <i class="bi bi-cash-stack pe-1"></i>
+                        {{ 'EXPENSES.TOTAL_SUM' | translate }}
+                        <i [ngClass]="getIconOrderClass('totalSum')"></i>
+                    </th>
+                    <th class="bg-transparent text-white" width="15%"></th>
+                </tr>
+            </thead>
+            <tbody id="day-list">
+                <tr *ngFor="let day of expensesList" style="height: 60px; overflow: hidden;">
+                    <td class="text-nowrap" class="text-white">
+                        {{ day.date | date:'MMM dd, yyyy':'':currentLocale | titlecase }}
+                    </td>
+                    <td class="text-nowrap" class="text-white">
+                        {{ day.location }}
+                    </td>
+                    <td>
+                        <label
+                            class="text-nowrap text-white"
+                            style="cursor: pointer;"
+                            data-bs-toggle="tooltip"
+                            data-bs-html="true"
+                            [attr.data-bs-title]="getTooltipContent(day.id)"
+                        >
+                            {{ day.participants.length }} {{ 'EXPENSES.PEOPLE' | translate }}
+                        </label>
+                    </td>
+                    <td class="text-nowrap" class="text-white">
+                        {{ day.totalSum | currency:'UAH':'₴' }}
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-dark" (click)="openModal('share', day.id)">
+                                <i class="bi bi-share"></i>
+                            </button>
+                            <a role="button" class="btn btn-info text-white">
+                                <i class="bi bi-list-check"></i>
+                            </a>
+                            <a role="button" class="btn btn-primary">
+                                <i class="bi bi-calculator"></i>
+                            </a>
+                            <button class="btn btn-warning" (click)="openModal('edit', day.id)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger" (click)="openModal('delete', day.id)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr class="w-100 my-0" style="border-color: #080f27; opacity: 1;" />
+
+    <div *ngIf="expensesList.length > 0" class="pagination-container">
+        <div class="pagination-info ms-3 text-white">
+            {{ 'EXPENSES.PAGINATION.SHOWING_PAGE' | translate }} {{currentPage}} {{ 'EXPENSES.PAGINATION.OF' | translate }} {{totalPages}}
+        </div>
+
+        <div class="btn-group" role="group">
+            <button
+                type="button"
+                class="btn btn-outline-primary text-white"
+                (click)="goToPage(1)"
+                [disabled]="currentPage === 1">
+                {{ 'EXPENSES.PAGINATION.FIRST' | translate }}
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-outline-primary text-white"
+                (click)="goToPage(currentPage - 1)"
+                [disabled]="currentPage === 1">
+                &laquo;
+            </button>
+
+            <button
+                *ngFor="let page of getPageNumbers()"
+                type="button"
+                class="btn btn-outline-primary text-white"
+                [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+                {{page}}
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-outline-primary text-white"
+                (click)="goToPage(currentPage + 1)"
+                [disabled]="currentPage === totalPages">
+                &raquo;
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-outline-primary text-white"
+                (click)="goToPage(totalPages)"
+                [disabled]="currentPage === totalPages">
+                {{ 'EXPENSES.PAGINATION.LAST' | translate }}
+            </button>
+        </div>
+
+        <div class="page-size-selector me-2 text-white">
+            <label>{{ 'EXPENSES.PAGINATION.ITEMS_PER_PAGE' | translate }}</label>
+            <div class="items-per-page-dropdown">
+                <button
+                    class="btn btn-sm btn-outline-primary text-white dropdown-toggle"
+                    type="button"
+                    id="pageSizeDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style="width: 70px;"
+                >
+                    {{ pageSize }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-custom dark-blue-0" style="width: 70px !important;" aria-labelledby="pageSizeDropdown">
+                    <li><a class="dropdown-item text-white" href="javascript:void(0)" [class.active]="pageSize === 10" (click)="changePageSize(10)">10</a></li>
+                    <li><a class="dropdown-item text-white" href="javascript:void(0)" [class.active]="pageSize === 25" (click)="changePageSize(25)">25</a></li>
+                    <li><a class="dropdown-item text-white" href="javascript:void(0)" [class.active]="pageSize === 50" (click)="changePageSize(50)">50</a></li>
+                    <li><a class="dropdown-item text-white" href="javascript:void(0)" [class.active]="pageSize === 100" (click)="changePageSize(100)">100</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast toast-dark rounded-bottom" role="alert" [class.show]="showToast" [class.hide]="!showToast" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header" [ngClass]="status">
+                <strong class="me-auto">{{ toastHeaderText }}</strong>
+                <small>{{ eventDate }}</small>
+                <button type="button" class="btn-close" (click)="hideToast()" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ toastMessage }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-modal-window [modalId]="'staticBackdrop'" [modalTitle]="modalTitle" [currentModalContent]="currentModalContent">
+    <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" (click)="hideModal()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+
+        <!-- Add Expenses -->
+        <form *ngIf="currentModalContent === 'add'">
+            <div class="form-group mb-3">
+                <i class="bi bi-calendar-event-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.DATE_LABEL' | translate }}*</label>
+                <input [(ngModel)]="date" name="date" type="text" class="form-control" id="modalDateInput" required readonly/>
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-geo-alt-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.LOCATION_LABEL' | translate }}</label>
+                <input [(ngModel)]="location" name="location" class="form-control" id="location" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-people-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.PARTICIPANTS_LABEL' | translate }}*</label>
+                <input [(ngModel)]="participants" name="participants" class="form-control" id="participants" [placeholder]="'EXPENSES.MODAL.PARTICIPANTS_PLACEHOLDER' | translate" required />
+                <label class="form-text text-muted small mt-0 pt-0">{{ 'EXPENSES.MODAL.PARTICIPANTS_HINT' | translate }}</label>
+                <span class="text-danger"></span>
+            </div>
+            <button type="button" value="Create" class="btn btn-success" (click)="createDayExpenses()">
+                <i class="bi bi-plus-circle me-1"></i>{{ 'EXPENSES.MODAL.ADD_BUTTON' | translate }}
+            </button>
+        </form>
+
+        <!-- Edit Expenses -->
+        <form *ngIf="currentModalContent === 'edit'">
+            <div class="form-group mb-3">
+                <i class="bi bi-calendar-event-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.DATE_LABEL' | translate }}*</label>
+                <input [(ngModel)]="date" name="date" type="text" class="form-control" id="modalDateInput" required readonly/>
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-geo-alt-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.LOCATION_LABEL' | translate }}</label>
+                <input [(ngModel)]="location" name="location" class="form-control" id="location" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-people-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.PARTICIPANTS_LABEL' | translate }}*</label>
+                <input [(ngModel)]="participants" name="participants" class="form-control" id="participants" [placeholder]="'EXPENSES.MODAL.PARTICIPANTS_PLACEHOLDER' | translate" required />
+                <label class="form-text text-muted small mt-0 pt-0">{{ 'EXPENSES.MODAL.PARTICIPANTS_HINT' | translate }}</label>
+                <span class="text-danger"></span>
+            </div>
+            <button type="button" value="Edit" class="btn btn-warning" (click)="editDayExpenses()">
+                <i class="bi bi-pencil me-1"></i>{{ 'EXPENSES.MODAL.EDIT_BUTTON' | translate }}
+            </button>
+        </form>
+
+        <!-- Delete Expenses -->
+        <form *ngIf="currentModalContent === 'delete'">
+            <div class="form-group mb-3">
+                <i class="bi bi-calendar-event-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.DATE_LABEL' | translate }}</label>
+                <input [(ngModel)]="date" name="date" type="text" class="form-control" id="modalDateInput" disabled readonly />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-geo-alt-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.LOCATION_LABEL' | translate }}</label>
+                <input [(ngModel)]="location" name="location" class="form-control" id="location" disabled readonly />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-people-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.PARTICIPANTS_LABEL' | translate }}</label>
+                <input [(ngModel)]="participants" name="participants" class="form-control" id="participants" disabled readonly />
+                <span class="text-danger"></span>
+            </div>
+            <button type="button" value="Delete" class="btn btn-danger" (click)="deleteDayExpenses()">
+                <i class="bi bi-trash me-1"></i>{{ 'EXPENSES.MODAL.DELETE_BUTTON' | translate }}
+            </button>
+        </form>
+
+        <!-- Share Expenses -->
+        <form *ngIf="currentModalContent === 'share'">
+            <div class="form-group mb-3">
+                <i class="bi bi-calendar-event-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.DATE_LABEL' | translate }}</label>
+                <input [(ngModel)]="date" name="date" type="text" class="form-control" id="modalDateInput" disabled readonly />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-geo-alt-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.LOCATION_LABEL' | translate }}</label>
+                <input [(ngModel)]="location" name="location" class="form-control" id="location" disabled readonly />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-people-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.PARTICIPANTS_LABEL' | translate }}</label>
+                <input [(ngModel)]="participants" name="participants" class="form-control" id="participants" disabled readonly />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-person-fill mx-1"></i>
+                <label class="control-label">{{ 'EXPENSES.MODAL.SHARE_USER_LABEL' | translate }}*</label>
+                <input [(ngModel)]="newUserWithAccess" name="newUserWithAccess" class="form-control" id="newUserWithAccess" required/>
+                <span class="text-danger">{{ shareError }}</span>
+            </div>
+            <button type="button" value="Share" class="btn btn-dark" (click)="shareDayExpenses()">
+                <i class="bi bi-share me-1"></i>{{ 'EXPENSES.MODAL.SHARE_BUTTON' | translate }}
+            </button>
+        </form>
+    </div>
+</app-modal-window>

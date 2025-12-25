@@ -1,0 +1,23 @@
+<ul class="navbar-nav align-items-center">
+    <li class="nav-item me-1">
+        <button class="btn text-white lang-button" (click)="toggleLanguage()" style="height: 40px;">
+            <img class="me-1" [src]="flagSrc" alt="lang" width="30">
+            {{ langLabel }}
+        </button>
+    </li>
+    <li class="nav-item pe-2" *ngIf="!isAuthenticated()">
+        <button class="nav-link btn text-white" routerLink="/login" style="height: 40px;">{{ 'NAV.LOGIN' | translate }}</button>
+    </li>
+    <li *ngIf="!isAuthenticated()">
+        <button class="nav-link btn text-white" routerLink="/register" style="height: 40px;">{{ 'NAV.REGISTER' | translate }}</button>
+    </li>
+
+    <li class="nav-item pe-2" *ngIf="isAuthenticated()">
+        <a id="manage" class="nav-link text-white" style="height: 40px;" [title]="'NAV.MANAGE' | translate">
+            {{ 'NAV.HI' | translate }} <strong>{{ getUsername() }}</strong>
+        </a>
+    </li>
+    <li *ngIf="isAuthenticated()">
+        <button class="nav-link btn text-white" (click)="logout()" style="height: 40px;">{{ 'NAV.LOGOUT' | translate }}</button>
+    </li>
+</ul>
