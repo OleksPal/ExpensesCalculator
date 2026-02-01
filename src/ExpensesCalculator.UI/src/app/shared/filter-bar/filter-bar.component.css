@@ -1,0 +1,46 @@
+/* Filter bar component styles */
+
+/* Ensure dropdown is positioned relative to button */
+.search-criteria-dropdown {
+  position: relative;
+}
+
+/* Dropdown button hover and active effects to match pagination */
+.search-criteria-dropdown .btn-outline-primary:hover,
+.search-criteria-dropdown .btn-outline-primary:active,
+.search-criteria-dropdown .btn-outline-primary.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+
+/* Dropdown menu items hover effect - matches pagination active state */
+.search-criteria-dropdown .dropdown-item:hover {
+  background-color: #1f429d;
+  color: white;
+}
+
+/* Active dropdown item */
+.search-criteria-dropdown .dropdown-item.active {
+  background-color: #0d6efd;
+}
+
+/* Input with primary border */
+.input-group-primary .form-control {
+  border-color: #0d6efd;
+}
+
+.input-group-primary .form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* White placeholder text */
+.input-group-primary .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Input group addon styling */
+.input-group-primary .input-group-text {
+  border-color: #0d6efd;
+}

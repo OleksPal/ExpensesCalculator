@@ -4,4 +4,5 @@ public class DayExpensesCalculation
 {
     public string UserName { get; set; }
     public ICollection<CheckCalculation> CheckCalculations { get; set; }
+    public decimal TotalSum { get; set; }
 }

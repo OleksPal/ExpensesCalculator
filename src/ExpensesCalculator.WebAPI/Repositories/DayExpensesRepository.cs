@@ -44,15 +44,18 @@ public class DayExpensesRepository : IDayExpensesRepository
             .AsNoTracking()
             .ToListAsync();
 
-        if (!request.FromDate.HasValue)
-            request.FromDate = await _context.Days
-                .Where(day => day.PeopleWithAccess.Contains(userName))
-                .MinAsync(day => day.Date);
+        if (totalCount > 0)
+        {
+            if (!request.FromDate.HasValue)
+                request.FromDate = await _context.Days
+                    .Where(day => day.PeopleWithAccess.Contains(userName))
+                    .MinAsync(day => day.Date);
 
-        if (!request.ToDate.HasValue)
-            request.ToDate = await _context.Days
-                .Where(day => day.PeopleWithAccess.Contains(userName))
-                .MaxAsync(day => day.Date);
+            if (!request.ToDate.HasValue)
+                request.ToDate = await _context.Days
+                    .Where(day => day.PeopleWithAccess.Contains(userName))
+                    .MaxAsync(day => day.Date);
+        }
 
         return new PagedResultWithDateRangeDto<DayExpenses>
         {
@@ -113,10 +116,11 @@ public class DayExpensesRepository : IDayExpensesRepository
         return await _context.Days.FirstOrDefaultAsync(day => day.Id == id && day.PeopleWithAccess.Contains(userName));
     }
 
-    public async Task Insert(DayExpenses dayExpenses)
+    public async Task<Guid> Insert(DayExpenses dayExpenses)
     {
-        await _context.Days.AddAsync(dayExpenses);
+        var insertedDay = await _context.Days.AddAsync(dayExpenses);
         await _context.SaveChangesAsync();
+        return insertedDay.Entity.Id;
     }
 
     public async Task Update(DayExpenses dayExpenses)

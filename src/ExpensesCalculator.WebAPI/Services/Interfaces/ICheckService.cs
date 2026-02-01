@@ -5,7 +5,7 @@ namespace ExpensesCalculator.WebAPI.Services.Interfaces;
 
 public interface ICheckService
 {
-    Task<Check> GetById(Guid id);
+    Task<CheckDto> GetById(Guid id);
     Task AddCheck(Check check);
     Task UpdateCheck(Check check);
     Task DeleteCheck(Guid id);

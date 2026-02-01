@@ -1,4 +1,6 @@
-﻿namespace ExpensesCalculator.WebAPI.Models.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ExpensesCalculator.WebAPI.Models.Dtos;
 
 public class AllDayExpensesRequestDto
 {
@@ -23,18 +25,43 @@ public class DayExpensesResponseDto
 
 public class CreateDayExpensesRequestDto
 {
+    [Required(ErrorMessage = "Date is required.")]
     public DateOnly Date { get; set; }
+
+    [Required(ErrorMessage = "Participants are required.")]
+    [MinLength(1, ErrorMessage = "At least one participant is required.")]
     public ICollection<string> Participants { get; set; }
+
     public string? Location { get; set; }
 }
 
 public class EditDayExpensesRequestDto
 {
+    [Required(ErrorMessage = "Id is required.")]
     public Guid Id { get; set; }
+
+    [Required(ErrorMessage = "Date is required.")]
     public DateOnly Date { get; set; }
+
+    [Required(ErrorMessage = "Participants are required.")]
+    [MinLength(1, ErrorMessage = "At least one participant is required.")]
     public ICollection<string> Participants { get; set; }
+
     public string? Location { get; set; }
 }
 
-public record ShareDayExpensesRequestDto(string NewUserWithAccess);
+public record ShareDayExpensesRequestDto(
+    [Required(ErrorMessage = "Username is required.")]
+    string NewUserWithAccess
+);
 public record ShareDayExpensesResponseDto(bool IsSuccess, string Error);
+
+public class DayExpensesCalculationsDto
+{
+    public Guid DayExpensesId { get; set; }
+    public IEnumerable<string> Participants { get; set; }
+    public IEnumerable<Check> Checks { get; set; }
+    public ICollection<DayExpensesCalculation> DayExpensesCalculations { get; set; }
+    public ICollection<Transaction> AllUsersTrasactions { get; set; }
+    public ICollection<Transaction> OptimizedUserTransactions { get; set; }
+}

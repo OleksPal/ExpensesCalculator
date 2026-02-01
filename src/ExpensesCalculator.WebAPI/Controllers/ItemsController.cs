@@ -16,28 +16,34 @@ public class ItemsController : ControllerBase
     {
         _itemService = itemService;
     }
-
+    // TODO: Rename Description column to Comment
     [HttpGet]
     public async Task<Item> GetItemById(Guid id)
     {
         return await _itemService.GetById(id);
     }
 
-    [HttpPost]
-    public async Task Create(Item item)
+    [HttpGet("check/{checkId}")]
+    public async Task<ICollection<Item>> GetAllCheckItems(Guid checkId)
     {
-        await _itemService.AddItem(item);
+        return await _itemService.GetAllCheckItems(checkId);
+    }
+
+    [HttpPost]
+    public async Task<decimal> Create([FromBody] Item item)
+    {
+        return await _itemService.AddItem(item);
     }
 
     [HttpPut]
-    public async Task Edit([FromBody] Item item)
+    public async Task<decimal> Edit([FromBody] Item item)
     {
-        await _itemService.EditItem(item);
+        return await _itemService.EditItem(item);
     }
 
     [HttpDelete]  
-    public async Task DeleteConfirmed(Guid id)
+    public async Task<decimal> Delete(Guid id)
     {
-        await _itemService.DeleteItem(id);
+        return await _itemService.DeleteItem(id);
     }
 }

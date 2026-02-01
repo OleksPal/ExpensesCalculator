@@ -1,0 +1,103 @@
+.table {
+    background-color: #0b1739 !important;
+    color: white !important;
+}
+
+.table thead,
+.table tbody,
+.table tr {
+    background-color: transparent !important;
+    color: white !important;
+}
+
+.table th {
+    background-color: transparent !important;
+    color: white !important;
+    user-select: none;
+}
+
+.table td {
+    background-color: transparent !important;
+    color: white !important;
+    vertical-align: middle !important;
+}
+
+.table-responsive {
+    background-color: transparent;
+}
+
+/* Day expense data row styling */
+.day-expense-row td {
+    background: #0a1330 !important;
+    vertical-align: middle !important;
+}
+
+.table tr > *:nth-child(1) {
+    padding-left: 20px;
+}
+
+/* Truncate location column to approximately 15 characters */
+.location-cell {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Dropdown styling */
+.dropdown-menu-custom {
+    min-width: unset !important;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+    background-color: #1f429d !important;
+    color: white;
+}
+
+.btn-outline-primary:hover {
+    background-color: #1f429d !important;
+    color: white;
+}
+
+.btn-outline-primary:active {
+    background-color: #1f429d !important;
+    color: white;
+}
+
+/* Override table-responsive overflow to prevent scrollbar issues with dropdowns */
+.fix-table-height {
+    overflow: visible !important;
+}
+
+/* Ensure dropdowns are positioned above other content */
+.dropdown-menu {
+    z-index: 1050;
+}
+
+/* Force dropdown to ignore Popper.js right positioning and align to right edge */
+::ng-deep .dropdown-menu[data-popper-placement] {
+    inset: auto !important;
+    transform: none !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+}
+
+/* Day Expenses Info Card Styles */
+.info-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown button styling */
+.day-info-dropdown .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

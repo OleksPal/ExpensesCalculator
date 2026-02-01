@@ -1,0 +1,254 @@
+<div class="rounded dark-blue-1">
+    <!-- Header Section -->
+    <div class="container-fluid px-3 pt-2 text-white">
+        <div class="d-flex align-items-center justify-content-between">
+            <h4 class="mt-4 mb-0">
+                <i class="bi bi-receipt me-1"></i>{{ 'CHECKS.TITLE' | translate }}
+            </h4>
+            <div *ngIf="isLoading" class="spinner-border" role="status"></div>
+        </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="checksList.length === 0 && !isLoading" class="text-white text-center pt-4 pb-5">
+        <h2>{{ 'CHECKS.NO_DATA' | translate }}</h2>
+        <h5 class="pt-3">{{ 'CHECKS.NO_DATA_HINT' | translate }}</h5>
+        <button class="btn btn-outline-primary text-white mt-4" (click)="openModal('add', '')" tourAnchor="add-check-btn">
+            <i class="bi bi-plus-circle me-1"></i>{{ 'CHECKS.ADD' | translate }}
+        </button>
+    </div>
+
+    <!-- Add Check button and Search Filter -->
+    <div *ngIf="checksList.length > 0" class="d-flex justify-content-end pb-lg-2 px-2 my-3">
+        <div class="col-12">
+            <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch align-items-lg-center justify-content-lg-between">
+                <div class="d-flex flex-column ms-2">
+                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                        <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
+                    </small>
+                    <button class="btn btn-outline-primary text-white" (click)="openModal('add', '')" tourAnchor="add-check-btn">
+                        <i class="bi bi-plus-circle me-1"></i>{{ 'CHECKS.ADD' | translate }}
+                    </button>
+                </div>
+                <div class="d-flex flex-column">
+                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                        <i class="bi bi-funnel me-1"></i>{{ 'ITEMS.FILTER.CAPTION' | translate }}
+                    </small>
+                    <app-filter-bar
+                        [filterOptions]="filterOptions"
+                        [selectedCriteria]="filterCriteria"
+                        [filterText]="filterText"
+                        [placeholderKey]="'CHECKS.SEARCH'"
+                        (criteriaChange)="changeFilterCriteria($event)"
+                        (filterTextChange)="onFilterChange($event)">
+                    </app-filter-bar>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- No Search Results -->
+    <div *ngIf="checksList.length > 0 && filteredChecksList.length === 0" class="text-white text-center py-4">
+        <h3>{{ 'CHECKS.NO_SEARCH_RESULTS' | translate }}</h3>
+    </div>
+
+    <!-- Checks Table -->
+    <div *ngIf="filteredChecksList.length > 0" class="table-responsive fix-table-height">
+        <table class="table table-borderless text-white mb-0">
+            <thead>
+                <tr>
+                    <th class="text-white" width="5%"></th>
+                    <th class="text-nowrap text-white" width="30%" (click)="sortChecks('location')"
+                        style="cursor: pointer;">
+                        <i class="bi bi-cart pe-1"></i>
+                        {{ 'CHECKS.LOCATION' | translate }}
+                        <i [ngClass]="getIconOrderClass('location')"></i>
+                    </th>
+                    <th class="text-nowrap text-white" width="30%" (click)="sortChecks('payer')"
+                        style="cursor: pointer;">
+                        <i class="bi bi-wallet2 pe-1"></i>
+                        {{ 'CHECKS.PAYER' | translate }}
+                        <i [ngClass]="getIconOrderClass('payer')"></i>
+                    </th>
+                    <th class="text-nowrap text-white" width="30%" (click)="sortChecks('totalSum')"
+                        style="cursor: pointer;">
+                        <i class="bi bi-cash-stack pe-1"></i>
+                        {{ 'CHECKS.SUM' | translate }}
+                        <i [ngClass]="getIconOrderClass('totalSum')"></i>
+                    </th>
+                    <th class="text-white" width="7%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let check of filteredChecksList; let i = index">
+                    <tr style="height: 60px; cursor: pointer;" [class.row-odd]="i % 2 === 0" [class.row-even]="i % 2 !== 0" [attr.data-check-id]="check.id" (dblclick)="toggleCheckExpansion(check.id)">
+                        <td class="text-white text-center">
+                            <button *ngIf="i !== 0" class="btn btn-link text-white p-0 border-0" type="button" data-bs-toggle="collapse"
+                                [attr.data-bs-target]="'#collapse' + check.id"
+                                [attr.aria-expanded]="isCheckExpanded(check.id)"
+                                [attr.aria-controls]="'collapse' + check.id" (click)="toggleCheckExpansion(check.id)">
+                                <i [class]="isCheckExpanded(check.id) ? 'bi bi-dash-square-fill' : 'bi bi-plus-square-fill'"
+                                    style="font-size: 1.3rem;"></i>
+                            </button>
+                            <button *ngIf="i === 0" class="btn btn-link text-white p-0 border-0" type="button" data-bs-toggle="collapse"
+                                [attr.data-bs-target]="'#collapse' + check.id"
+                                [attr.aria-expanded]="isCheckExpanded(check.id)"
+                                [attr.aria-controls]="'collapse' + check.id" (click)="toggleCheckExpansion(check.id)" tourAnchor="expand-check-btn">
+                                <i [class]="isCheckExpanded(check.id) ? 'bi bi-dash-square-fill' : 'bi bi-plus-square-fill'"
+                                    style="font-size: 1.3rem;"></i>
+                            </button>
+                        </td>
+                        <td class="text-white location-cell">{{ check.location || '-' }}</td>
+                        <td class="text-white">{{ check.payer || '-' }}</td>
+                        <td class="text-nowrap text-white">{{ check.totalSum | currency:'UAH':'₴' }}</td>
+                        <td>
+                            <div class="dropdown ps-2">
+                                <button class="btn btn-outline-primary text-white" type="button"
+                                    [id]="'actionsDropdown' + check.id" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-custom dark-blue-0"
+                                    [attr.aria-labelledby]="'actionsDropdown' + check.id">
+                                    <li>
+                                        <a class="dropdown-item text-white" href="javascript:void(0)"
+                                            (click)="openModal('edit', check.id)">
+                                            <i class="bi bi-pencil me-2"></i>{{ 'CHECKS.EDIT' | translate }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-white" href="javascript:void(0)"
+                                            (click)="openModal('delete', check.id)">
+                                            <i class="bi bi-trash me-2"></i>{{ 'CHECKS.DELETE' | translate }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="p-0" style="background: #0d1739 !important;">
+                            <div class="collapse" [id]="'collapse' + check.id">
+                                <div class="p-3">
+                                    <app-item-list [checkId]="check.id" [users]="participants"></app-item-list>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Checks count -->
+    <div *ngIf="checksList.length > 0 && filteredChecksList.length > 0">
+        <hr class="w-100 my-0" style="border-color: #080f27; opacity: 1;" />
+        <div class="pagination-info ms-3 my-3 text-white">
+            {{ 'CHECKS.SHOWING' | translate }} 1 {{ 'CHECKS.TO' | translate }} {{ filteredChecksList.length }}
+        </div>
+    </div>
+
+    <hr class="w-100 my-0" style="border-color: #080f27; opacity: 1;" />
+</div>
+
+<!-- Modal -->
+<app-modal-window [modalId]="'checksModal'" [modalTitle]="modalTitle" [currentModalContent]="currentModalContent">
+    <div class="modal-header py-2 bg-dark text-white border-secondary">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="hideModal()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body bg-dark text-white">
+
+        <!-- Add Check Form -->
+        <form *ngIf="currentModalContent === 'add'">
+            <div class="form-group mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label mb-0">
+                        <i class="bi bi-cart me-1"></i>{{ 'CHECKS.MODAL.LOCATION_LABEL' | translate }}<span
+                            class="text-danger">*</span>
+                    </label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ location.length }}/25</small>
+                </div>
+                <input [(ngModel)]="location" name="location" class="form-control"
+                    [class.is-invalid]="formErrors['location']"
+                    [class.is-valid]="formValidated && !formErrors['location'] && location.trim()"
+                    maxlength="25" required />
+                <div class="invalid-feedback" *ngIf="formErrors['location']">{{ formErrors['location'] }}</div>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-wallet2 mx-1"></i>
+                <label class="control-label">{{ 'CHECKS.MODAL.PAYER_LABEL' | translate }}<span
+                        class="text-danger">*</span></label>
+                <select [(ngModel)]="payer" name="payer" class="form-control" [class.is-invalid]="formErrors['payer']"
+                    [class.is-valid]="formValidated && !formErrors['payer'] && payer" required>
+                    <option value="">{{ 'CHECKS.MODAL.SELECT_PAYER' | translate }}</option>
+                    <option *ngFor="let participant of participants" [value]="participant">{{ participant }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="formErrors['payer']">{{ formErrors['payer'] }}</div>
+            </div>
+            <button type="button" class="btn btn-success" (click)="createCheck()">
+                <i class="bi bi-plus-circle me-1"></i>{{ 'CHECKS.MODAL.ADD_BUTTON' | translate }}
+            </button>
+        </form>
+
+        <!-- Edit Check Form -->
+        <form *ngIf="currentModalContent === 'edit'">
+            <div class="form-group mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label mb-0">
+                        <i class="bi bi-cart me-1"></i>{{ 'CHECKS.MODAL.LOCATION_LABEL' | translate }}<span
+                            class="text-danger">*</span>
+                    </label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ location.length }}/25</small>
+                </div>
+                <input [(ngModel)]="location" name="location" class="form-control"
+                    [class.is-invalid]="formErrors['location']"
+                    [class.is-valid]="formValidated && !formErrors['location'] && location.trim()"
+                    maxlength="25" required />
+                <div class="invalid-feedback" *ngIf="formErrors['location']">{{ formErrors['location'] }}</div>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-wallet2 mx-1"></i>
+                <label class="control-label">{{ 'CHECKS.MODAL.PAYER_LABEL' | translate }}<span
+                        class="text-danger">*</span></label>
+                <select [(ngModel)]="payer" name="payer" class="form-control" [class.is-invalid]="formErrors['payer']"
+                    [class.is-valid]="formValidated && !formErrors['payer'] && payer" required>
+                    <option value="">{{ 'CHECKS.MODAL.SELECT_PAYER' | translate }}</option>
+                    <option *ngFor="let participant of participants" [value]="participant">{{ participant }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="formErrors['payer']">{{ formErrors['payer'] }}</div>
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-cash-stack mx-1"></i>
+                <label class="control-label">{{ 'CHECKS.MODAL.SUM_LABEL' | translate }}</label>
+                <input [value]="currentCheckTotalSum | currency:'UAH':'₴'" class="form-control" disabled readonly />
+            </div>
+            <button type="button" class="btn btn-warning" (click)="editCheck()">
+                <i class="bi bi-pencil me-1"></i>{{ 'CHECKS.MODAL.EDIT_BUTTON' | translate }}
+            </button>
+        </form>
+
+        <!-- Delete Check Form -->
+        <form *ngIf="currentModalContent === 'delete'">
+            <div class="form-group mb-3">
+                <i class="bi bi-cart mx-1"></i>
+                <label class="control-label">{{ 'CHECKS.MODAL.LOCATION_LABEL' | translate }}</label>
+                <input [(ngModel)]="location" name="location" class="form-control" disabled readonly />
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-wallet2 mx-1"></i>
+                <label class="control-label">{{ 'CHECKS.MODAL.PAYER_LABEL' | translate }}</label>
+                <input [(ngModel)]="payer" name="payer" class="form-control" disabled readonly />
+            </div>
+            <div class="form-group mb-3">
+                <i class="bi bi-cash-stack mx-1"></i>
+                <label class="control-label">{{ 'CHECKS.MODAL.SUM_LABEL' | translate }}</label>
+                <input [value]="currentCheckTotalSum | currency:'UAH':'₴'" class="form-control" disabled readonly />
+            </div>
+            <button type="button" class="btn btn-danger" (click)="deleteCheck()">
+                <i class="bi bi-trash me-1"></i>{{ 'CHECKS.MODAL.DELETE_BUTTON' | translate }}
+            </button>
+        </form>
+
+    </div>
+</app-modal-window>

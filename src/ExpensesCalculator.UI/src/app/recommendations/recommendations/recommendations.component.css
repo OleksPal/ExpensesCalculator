@@ -1,0 +1,100 @@
+input[type="search"]::placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+input[type="search"]::-webkit-input-placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+input[type="search"]::-moz-placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+input[type="search"]:-ms-input-placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+/* Form control placeholder styles */
+.form-control::placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+.form-control::-webkit-input-placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+.form-control::-moz-placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+.form-control:-ms-input-placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+/* Dropdown menu styles */
+.dropdown-menu-custom {
+  min-width: unset !important;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+.dropdown-menu-custom .dropdown-item.active {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+.btn-outline-primary:hover {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+.btn-outline-primary:active {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+/* Tag suggestions styling */
+.list-group-item-action:hover {
+  background-color: #1f429d !important;
+  color: white !important;
+}
+
+.list-group-item {
+  background-color: #080f27 !important;
+  border-color: #0d6efd !important;
+}
+
+/* Dark scrollbar styling */
+.scrollbar-dark {
+  scrollbar-width: thin;
+  scrollbar-color: #888888 #2a2a2a;
+}
+
+.scrollbar-dark::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-track {
+  background: #2a2a2a;
+  border-radius: 4px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb {
+  background-color: #888888;
+  border-radius: 4px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background-color: #aaaaaa;
+}

@@ -1,0 +1,489 @@
+<tour-step-template></tour-step-template>
+
+<div class="rounded my-4 ms-sm-4 me-sm-4 dark-blue-1">
+    <div class="container-fluid px-3 pt-2 text-white">
+        <!-- Title with Loading Indicator -->
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <h4 class="mt-1 mb-4">
+                    <i class="bi bi-lightbulb me-1"></i>{{ 'SIDEBAR.RECOMMENDATIONS' | translate }}
+                </h4>
+                <button *ngIf="!isLoading" class="btn btn-outline-primary text-white mb-3" (click)="startTour()" title="Start tour">
+                    <i class="bi bi-question-circle"></i>
+                </button>
+            </div>
+            <div *ngIf="isLoading" class="spinner-border" role="status"></div>
+        </div>
+
+        <!-- Tag Filter Section and Filter/Sort Controls -->
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <!-- Tag Filter Group -->
+            <div class="d-flex flex-column" tourAnchor="tag-filter">
+                <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                    <i class="bi bi-tags me-1"></i>{{ 'ITEMS.FILTER.TAG_FILTER' | translate }}
+                </small>
+                <div class="position-relative" style="width: 400px;">
+                    <div class="input-group">
+                        <span class="input-group-text bi bi-tags bg-transparent text-white border-primary"></span>
+                        <input [(ngModel)]="tagFilterInput" name="tagFilterInput"
+                            class="form-control bg-transparent text-white border-primary"
+                            placeholder="Add tag to filter..." (input)="onTagInputChange()"
+                            (keydown.enter)="addFilterTag(); $event.preventDefault()" [disabled]="isLoading" />
+                        <button type="button" class="btn btn-outline-primary text-white" (click)="addFilterTag()"
+                            [disabled]="isLoading">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                    <!-- Tag Suggestions Dropdown -->
+                    <div *ngIf="showTagSuggestions" class="position-absolute w-100 mt-1" style="z-index: 1000;">
+                        <ul class="list-group">
+                            <li *ngFor="let tag of filteredTagSuggestions"
+                                class="list-group-item list-group-item-action bg-dark text-white border-primary"
+                                style="cursor: pointer;" (click)="selectTagSuggestion(tag)">
+                                #{{ tag }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Sort Group -->
+            <div class="d-flex gap-3 align-items-end">
+                <!-- Filter Group -->
+                <div class="d-flex flex-column" tourAnchor="search-filter">
+                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                        <i class="bi bi-funnel me-1"></i>{{ 'ITEMS.FILTER.CAPTION' | translate }}
+                    </small>
+                    <app-filter-bar [filterOptions]="filterOptions" [selectedCriteria]="filterCriteria"
+                        [filterText]="filterText" [placeholderKey]="'ITEMS.SEARCH'"
+                        (criteriaChange)="changeFilterCriteria($event)" (filterTextChange)="onFilterChange($event)">
+                    </app-filter-bar>
+                </div>
+
+                <!-- Sort Group -->
+                <div class="d-flex flex-column" tourAnchor="sort-bar">
+                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                        <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
+                    </small>
+                    <app-sort-bar [sortOptions]="sortOptions" [selectedColumn]="sortColumn" [selectedOrder]="sortOrder"
+                        (sortChange)="onSortChange($event)">
+                    </app-sort-bar>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tag Badges Display -->
+        <div *ngIf="filterTags.length > 0" class="mb-3">
+            <div class="scrollbar-dark"
+                style="max-height: 60px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+                <span *ngFor="let tag of filterTags" class="badge border border-primary text-white fw-normal me-2 mb-2"
+                    style="font-size: 0.9rem; display: inline-block; cursor: pointer;">
+                    #{{ tag }}
+                    <i class="bi bi-x ms-1" (click)="removeFilterTag(tag)"></i>
+                </span>
+            </div>
+        </div>
+
+        <!-- Add Button and Checkbox -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="btn btn-outline-primary text-white" (click)="openModal('add')" [disabled]="isLoading" tourAnchor="add-item-btn">
+                <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.ADD' | translate }}
+            </button>
+            <div class="form-check text-nowrap" tourAnchor="only-my-items">
+                <input type="checkbox" class="form-check-input" id="useOnlyMyItems"
+                    [(ngModel)]="onlyMyItems" (change)="onOnlyMyItemsChange()">
+                <label class="form-check-label text-white" for="useOnlyMyItems">
+                    {{ 'ITEMS.USE_ONLY_MY_ITEMS' | translate }}
+                </label>
+            </div>
+        </div>
+
+        <hr class="w-100 my-3" style="border-color: #080f27; opacity: 1;" />
+
+        <!-- No Items Message -->
+        <div *ngIf="!isLoading && itemsList.length === 0" class="text-white text-center py-4">
+            <h5>{{ 'ITEMS.NO_ITEMS' | translate }}</h5>
+            <p class="text-white-50">Add items to see personalized recommendations</p>
+        </div>
+
+        <!-- No Search Results -->
+        <div *ngIf="itemsList.length > 0 && filteredItemsList.length === 0" class="text-white text-center py-4">
+            <h3>{{ 'ITEMS.NO_SEARCH_RESULTS' | translate }}</h3>
+        </div>
+
+        <!-- Items Cards with Pagination -->
+        <div *ngIf="filteredItemsList.length > 0" class="d-flex align-items-center">
+            <!-- Previous Button -->
+            <button *ngIf="totalPages > 1" class="btn btn-outline-primary text-white me-1" (click)="goToPreviousPage()"
+                [disabled]="currentPage === 1"
+                style="width: 20px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0;">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <!-- Cards Grid -->
+            <div class="row g-3 flex-grow-1">
+                <div *ngFor="let item of paginatedItemsList; let i = index" class="col-md-3">
+                    <!-- Card without tour anchor -->
+                    <div *ngIf="i !== 0" class="card border-primary h-100 item-card" style="background-color: #0d1a3d;">
+                        <div class="card-body text-white p-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="card-title mb-0"
+                                    style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: calc(100% - 3rem);">
+                                    <i class="bi bi-box-seam me-2"></i>{{ item.name || '-' }}
+                                    <i *ngIf="item.description" class="bi bi-chat-left-text ms-2"
+                                        style="font-size: 0.75rem; cursor: pointer;" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" data-bs-html="true"
+                                        data-bs-custom-class="custom-tooltip"
+                                        [attr.data-bs-title]="item.description"></i>
+                                </h5>
+                                <!-- Edit button when item.checkId === currentUserId -->
+                                <button *ngIf="item.checkId === currentUserId" (click)="openModal('edit', item.id)"
+                                    class="btn btn-outline-primary text-white btn-sm"
+                                    style="padding: 0; font-size: 0.75rem; width: 1.5rem; height: 1.5rem; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <!-- Navigation button for other items -->
+                                <a *ngIf="item.checkId !== currentUserId && item.dayExpensesId && item.dayExpensesId !== '00000000-0000-0000-0000-000000000000' && item.canEdit"
+                                    [routerLink]="['/day-expenses-details', item.dayExpensesId]"
+                                    [queryParams]="{ checkId: item.checkId, itemId: item.id }"
+                                    class="btn btn-outline-primary text-white btn-sm"
+                                    style="padding: 0; font-size: 0.75rem; width: 1.5rem; height: 1.5rem; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-arrow-right-circle"></i>
+                                </a>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between my-2"
+                                style="font-size: 0.8rem;">
+                                <div>{{ item.price | currency:'UAH':'₴' }}</div>
+                                <div>×</div>
+                                <div><i class="bi bi-grid-fill me-1"></i>{{ item.amount }}</div>
+                                <div>=</div>
+                                <div>{{ getTotalPrice(item) | currency:'UAH':'₴' }}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between mt-2 mb-0 flex-nowrap"
+                                style="font-size: 0.8rem;">
+                                <div *ngIf="item.users && item.users.length > 0" style="white-space: nowrap;">
+                                    <label class="mb-0" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-html="true" data-bs-custom-class="custom-tooltip"
+                                        [attr.data-bs-title]="getUsersTooltipContent(item.id)">
+                                        <i class="bi bi-people-fill me-1"></i>{{ item.users.length || 0 }} {{
+                                        (item.users.length === 1 ? 'ITEMS.PERSON' : 'ITEMS.PEOPLE') | translate }}
+                                    </label>
+                                </div>
+                                <div style="white-space: nowrap;">
+                                    <i class="bi bi-star-fill me-1" style="color: #ffc107;"></i>{{ item.rating }}/10
+                                </div>
+                            </div>
+
+                            <div *ngIf="item.tags && item.tags.length > 0" class="mt-2 scrollbar-dark"
+                                style="max-height: 45px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;"
+                                (click)="$event.stopPropagation()" (dblclick)="$event.stopPropagation()">
+                                <span *ngFor="let tag of item.tags"
+                                    class="badge border border-primary text-white fw-normal me-1 mb-1"
+                                    style="font-size: 0.7rem; display: inline-block;">
+                                    #{{ tag }}
+                                </span>
+                            </div>
+                            <!-- Placeholder for items without tags -->
+                            <div *ngIf="!item.tags || item.tags.length === 0" class="mt-2"
+                                style="min-height: 10px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.5);">
+                                {{ 'ITEMS.NO_TAGS' | translate }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card with tour anchor (first item) -->
+                    <div *ngIf="i === 0" class="card border-primary h-100 item-card" style="background-color: #0d1a3d;" tourAnchor="items-grid">
+                        <div class="card-body text-white p-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="card-title mb-0"
+                                    style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: calc(100% - 3rem);">
+                                    <i class="bi bi-box-seam me-2"></i>{{ item.name || '-' }}
+                                    <i *ngIf="item.description" class="bi bi-chat-left-text ms-2"
+                                        style="font-size: 0.75rem; cursor: pointer;" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" data-bs-html="true"
+                                        data-bs-custom-class="custom-tooltip"
+                                        [attr.data-bs-title]="item.description"></i>
+                                </h5>
+                                <!-- Edit button when item.checkId === currentUserId -->
+                                <button *ngIf="item.checkId === currentUserId" (click)="openModal('edit', item.id)"
+                                    class="btn btn-outline-primary text-white btn-sm"
+                                    style="padding: 0; font-size: 0.75rem; width: 1.5rem; height: 1.5rem; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <!-- Navigation button for other items -->
+                                <a *ngIf="item.checkId !== currentUserId && item.dayExpensesId && item.dayExpensesId !== '00000000-0000-0000-0000-000000000000' && item.canEdit"
+                                    [routerLink]="['/day-expenses-details', item.dayExpensesId]"
+                                    [queryParams]="{ checkId: item.checkId, itemId: item.id }"
+                                    class="btn btn-outline-primary text-white btn-sm"
+                                    style="padding: 0; font-size: 0.75rem; width: 1.5rem; height: 1.5rem; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-arrow-right-circle"></i>
+                                </a>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between my-2"
+                                style="font-size: 0.8rem;">
+                                <div>{{ item.price | currency:'UAH':'₴' }}</div>
+                                <div>×</div>
+                                <div><i class="bi bi-grid-fill me-1"></i>{{ item.amount }}</div>
+                                <div>=</div>
+                                <div>{{ getTotalPrice(item) | currency:'UAH':'₴' }}</div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between mt-2 mb-0 flex-nowrap"
+                                style="font-size: 0.8rem;">
+                                <div *ngIf="item.users && item.users.length > 0" style="white-space: nowrap;">
+                                    <label class="mb-0" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-html="true" data-bs-custom-class="custom-tooltip"
+                                        [attr.data-bs-title]="getUsersTooltipContent(item.id)">
+                                        <i class="bi bi-people-fill me-1"></i>{{ item.users.length || 0 }} {{
+                                        (item.users.length === 1 ? 'ITEMS.PERSON' : 'ITEMS.PEOPLE') | translate }}
+                                    </label>
+                                </div>
+                                <div style="white-space: nowrap;">
+                                    <i class="bi bi-star-fill me-1" style="color: #ffc107;"></i>{{ item.rating }}/10
+                                </div>
+                            </div>
+
+                            <div *ngIf="item.tags && item.tags.length > 0" class="mt-2 scrollbar-dark"
+                                style="max-height: 45px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;"
+                                (click)="$event.stopPropagation()" (dblclick)="$event.stopPropagation()">
+                                <span *ngFor="let tag of item.tags"
+                                    class="badge border border-primary text-white fw-normal me-1 mb-1"
+                                    style="font-size: 0.7rem; display: inline-block;">
+                                    #{{ tag }}
+                                </span>
+                            </div>
+                            <!-- Placeholder for items without tags -->
+                            <div *ngIf="!item.tags || item.tags.length === 0" class="mt-2"
+                                style="min-height: 10px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.5);">
+                                {{ 'ITEMS.NO_TAGS' | translate }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Button -->
+            <button *ngIf="totalPages > 1" class="btn btn-outline-primary text-white ms-1" (click)="goToNextPage()"
+                [disabled]="currentPage === totalPages"
+                style="width: 20px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0;">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Items count -->
+        <div *ngIf="totalCount > 0">
+            <hr class="w-100 my-0" style="border-color: #080f27; opacity: 1;" />
+            <div class="pagination-info ms-3 my-3 pb-3 text-white">
+                {{ 'ITEMS.SHOWING' | translate }} {{ paginationStartIndex }} {{ 'ITEMS.TO' | translate }} {{
+                paginationEndIndex }} {{ 'ITEMS.OF' | translate }} {{ totalCount }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Window -->
+<app-modal-window [modalId]="'recommendationsModal'" [modalTitle]="modalTitle"
+    [currentModalContent]="currentModalContent" [modalSize]="'lg'">
+    <div class="modal-header py-2 bg-dark text-white border-secondary">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="hideModal()" aria-label="Close"></button>
+    </div>
+    <div class="modal-body bg-dark text-white" style="overflow: visible;">
+        <!-- Add Form -->
+        <form *ngIf="currentModalContent === 'add'">
+            <div class="alert alert-info p-2 mb-3" style="font-size: 0.9rem;">
+                <i class="bi bi-info-circle me-2"></i>{{ 'ITEMS.MODAL.RECOMMENDATIONS_INFO' | translate }}
+            </div>
+            <div class="form-group mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label mb-0"><i class="bi bi-box-seam me-1"></i>{{ 'ITEMS.MODAL.NAME' |
+                        translate }}<span class="text-danger">*</span></label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ name.length }}/20</small>
+                </div>
+                <input [(ngModel)]="name" name="name" class="form-control" [class.is-invalid]="formErrors['name']"
+                    [class.is-valid]="formValidated && !formErrors['name'] && name.trim()" maxlength="20" required />
+                <div class="invalid-feedback" *ngIf="formErrors['name']">{{ formErrors['name'] }}</div>
+            </div>
+            <div class="form-group mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label mb-0"><i class="bi bi-chat-text me-1"></i>{{ 'ITEMS.MODAL.COMMENT' | translate }}</label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ description.length }}/120</small>
+                </div>
+                <textarea [(ngModel)]="description" name="description" class="form-control" rows="3" maxlength="120"
+                    style="resize: none;"></textarea>
+            </div>
+            <div class="row mb-2">
+                <div class="col-3">
+                    <div class="form-group">
+                        <i class="bi bi-currency-dollar mx-1"></i>
+                        <label class="control-label">{{ 'ITEMS.MODAL.PRICE' | translate }}<span
+                                class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="price" name="price" class="form-control" step="0.01" min="0"
+                            [class.is-invalid]="formErrors['price']"
+                            [class.is-valid]="formValidated && !formErrors['price'] && price > 0" required />
+                        <div class="invalid-feedback" *ngIf="formErrors['price']">{{ formErrors['price'] }}</div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <i class="bi bi-grid-fill mx-1"></i>
+                        <label class="control-label">{{ 'ITEMS.MODAL.AMOUNT' | translate }}<span
+                                class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="amount" name="amount" class="form-control" min="1"
+                            [class.is-invalid]="formErrors['amount']"
+                            [class.is-valid]="formValidated && !formErrors['amount'] && amount > 0" required />
+                        <div class="invalid-feedback" *ngIf="formErrors['amount']">{{ formErrors['amount'] }}</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <i class="bi bi-star-fill mx-1"></i>
+                        <label class="control-label mb-0">{{ 'ITEMS.MODAL.RATING' | translate }}<span
+                                class="text-danger">*</span></label>
+                        <div class="d-flex align-items-center" style="padding-top: 0.3rem;">
+                            <div class="star-rating d-flex justify-content-between"
+                                style="flex: 1; margin-right: 0.5rem;">
+                                <i *ngFor="let star of [1,2,3,4,5,6,7,8,9,10]"
+                                    [class]="star <= (hoverRating || rating) ? 'bi bi-star-fill' : 'bi bi-star'"
+                                    (mouseenter)="hoverRating = star" (mouseleave)="hoverRating = 0"
+                                    (click)="setRating(star)"
+                                    style="cursor: pointer; font-size: 1.2rem; color: #ffc107;"></i>
+                            </div>
+                            <span class="text-white text-nowrap"
+                                style="min-width: 50px; text-align: right; display: inline-block;">{{ (hoverRating ||
+                                rating) }}/10</span>
+                        </div>
+                        <div class="invalid-feedback d-block" *ngIf="formErrors['rating']">{{ formErrors['rating'] }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label fw-normal mb-0"><i class="bi bi-tags me-1"></i>{{ 'ITEMS.MODAL.TAGS' |
+                        translate }}</label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ tags.length }}/5</small>
+                </div>
+                <div class="input-group border-secondary mb-2">
+                    <input [(ngModel)]="tagInput" name="tagInput" class="form-control"
+                        [placeholder]="'ITEMS.MODAL.TAG_PLACEHOLDER' | translate" [disabled]="tags.length >= 5"
+                        maxlength="15" (keydown.enter)="addTag(); $event.preventDefault()" />
+                    <button type="button" class="btn bg-white text-dark border border-dark" (click)="addTag()"
+                        [disabled]="tags.length >= 5">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+                <div class="mt-1" style="max-height: 75px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;"
+                    *ngIf="tags.length > 0">
+                    <span *ngFor="let tag of tags" class="badge border border-light text-white fw-normal me-2 mb-1"
+                        style="font-size: 0.85rem; display: inline-block;">
+                        #{{ tag }}
+                        <i class="bi bi-x ms-1" style="cursor: pointer;" (click)="removeTag(tag)"></i>
+                    </span>
+                </div>
+            </div>
+            <button type="button" class="btn btn-success" (click)="createItem()">
+                <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.MODAL.ADD' | translate }}
+            </button>
+        </form>
+
+        <!-- Edit Form -->
+        <form *ngIf="currentModalContent === 'edit'">
+            <div class="form-group mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label mb-0"><i class="bi bi-box-seam me-1"></i>{{ 'ITEMS.MODAL.NAME' |
+                        translate }}<span class="text-danger">*</span></label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ name.length }}/20</small>
+                </div>
+                <input [(ngModel)]="name" name="name" class="form-control" [class.is-invalid]="formErrors['name']"
+                    [class.is-valid]="formValidated && !formErrors['name'] && name.trim()" maxlength="20" required />
+                <div class="invalid-feedback" *ngIf="formErrors['name']">{{ formErrors['name'] }}</div>
+            </div>
+            <div class="form-group mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label mb-0"><i class="bi bi-chat-text me-1"></i>{{ 'ITEMS.MODAL.COMMENT' |
+                        translate }}</label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ description.length }}/120</small>
+                </div>
+                <textarea [(ngModel)]="description" name="description" class="form-control" rows="3" maxlength="120"
+                    style="resize: none;"></textarea>
+            </div>
+            <div class="row mb-2">
+                <div class="col-3">
+                    <div class="form-group">
+                        <i class="bi bi-currency-dollar mx-1"></i>
+                        <label class="control-label">{{ 'ITEMS.MODAL.PRICE' | translate }}<span
+                                class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="price" name="price" class="form-control" step="0.01" min="0"
+                            [class.is-invalid]="formErrors['price']"
+                            [class.is-valid]="formValidated && !formErrors['price'] && price > 0" required />
+                        <div class="invalid-feedback" *ngIf="formErrors['price']">{{ formErrors['price'] }}</div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <i class="bi bi-grid-fill mx-1"></i>
+                        <label class="control-label">{{ 'ITEMS.MODAL.AMOUNT' | translate }}<span
+                                class="text-danger">*</span></label>
+                        <input type="number" [(ngModel)]="amount" name="amount" class="form-control" min="1"
+                            [class.is-invalid]="formErrors['amount']"
+                            [class.is-valid]="formValidated && !formErrors['amount'] && amount > 0" required />
+                        <div class="invalid-feedback" *ngIf="formErrors['amount']">{{ formErrors['amount'] }}</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <i class="bi bi-star-fill mx-1"></i>
+                        <label class="control-label mb-0">{{ 'ITEMS.MODAL.RATING' | translate }}<span
+                                class="text-danger">*</span></label>
+                        <div class="d-flex align-items-center" style="padding-top: 0.3rem;">
+                            <div class="star-rating d-flex justify-content-between"
+                                style="flex: 1; margin-right: 0.5rem;">
+                                <i *ngFor="let star of [1,2,3,4,5,6,7,8,9,10]"
+                                    [class]="star <= (hoverRating || rating) ? 'bi bi-star-fill' : 'bi bi-star'"
+                                    (mouseenter)="hoverRating = star" (mouseleave)="hoverRating = 0"
+                                    (click)="setRating(star)"
+                                    style="cursor: pointer; font-size: 1.2rem; color: #ffc107;"></i>
+                            </div>
+                            <span class="text-white text-nowrap"
+                                style="min-width: 50px; text-align: right; display: inline-block;">{{ (hoverRating ||
+                                rating) }}/10</span>
+                        </div>
+                        <div class="invalid-feedback d-block" *ngIf="formErrors['rating']">{{ formErrors['rating'] }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="control-label fw-normal mb-0"><i class="bi bi-tags me-1"></i>{{ 'ITEMS.MODAL.TAGS' |
+                        translate }}</label>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ tags.length }}/5</small>
+                </div>
+                <div class="input-group border-secondary mb-2">
+                    <input [(ngModel)]="tagInput" name="tagInput" class="form-control"
+                        [placeholder]="'ITEMS.MODAL.TAG_PLACEHOLDER' | translate" [disabled]="tags.length >= 5"
+                        maxlength="15" (keydown.enter)="addTag(); $event.preventDefault()" />
+                    <button type="button" class="btn bg-white text-dark border border-dark" (click)="addTag()"
+                        [disabled]="tags.length >= 5">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+                <div class="mt-1" style="max-height: 75px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;"
+                    *ngIf="tags.length > 0">
+                    <span *ngFor="let tag of tags" class="badge border border-light text-white fw-normal me-2 mb-1"
+                        style="font-size: 0.85rem; display: inline-block;">
+                        #{{ tag }}
+                        <i class="bi bi-x ms-1" style="cursor: pointer;" (click)="removeTag(tag)"></i>
+                    </span>
+                </div>
+            </div>
+            <button type="button" class="btn btn-warning" (click)="editItem()">
+                <i class="bi bi-pencil me-1"></i>{{ 'ITEMS.MODAL.SAVE' | translate }}
+            </button>
+        </form>
+
+    </div>
+</app-modal-window>

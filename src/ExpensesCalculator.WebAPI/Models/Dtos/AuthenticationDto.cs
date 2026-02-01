@@ -1,6 +1,16 @@
-﻿namespace ExpensesCalculator.WebAPI.Models.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record RegisterRequest(string UserName, string Password);
-public record LoginRequest(string UserName, string Password);
+namespace ExpensesCalculator.WebAPI.Models.Dtos;
+
+public record RegisterRequest(
+    [Required(ErrorMessage = "Username is required.")] string UserName,
+    [Required(ErrorMessage = "Password is required.")] string Password
+);
+
+public record LoginRequest(
+    [Required(ErrorMessage = "Username is required.")] string UserName,
+    [Required(ErrorMessage = "Password is required.")] string Password
+);
+
 public record AuthResponse(string AccessToken, string RefreshToken);
 public record RefreshRequest(string RefreshToken);

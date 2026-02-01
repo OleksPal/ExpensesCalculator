@@ -114,5 +114,23 @@ td {
 .form-control:focus {
   outline: none !important;
   box-shadow: none !important;
-  border-color: white;
+  border-color: black;
+}
+
+/* Override table-responsive overflow to prevent scrollbar issues with dropdowns */
+.fix-table-height {
+  overflow: visible !important;
+}
+
+/* Ensure dropdowns are positioned above other content */
+.dropdown-menu {
+  z-index: 1050;
+}
+
+/* Truncate location column to approximately 15 characters */
+.location-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

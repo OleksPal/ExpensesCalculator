@@ -2,12 +2,14 @@
     <div id="customProportion" class="row flex-nowrap">
         <div class="col-2 col-md-3 col-xl-2 px-sm-2 px-0" style="background: #0b1739; border-right: 1px solid rgba(255,255,255,0.1);">
             <app-vertical-navbar></app-vertical-navbar>
-        </div>        
+        </div>
         <div class="col-10 dark-blue-0 d-flex flex-column" style="padding: 0; min-height: 100vh;">
-            <nav class="navbar navbar-expand px-4 justify-content-end">
-                <app-horizontal-navbar></app-horizontal-navbar>
-            </nav>
-            <hr class="mt-0 mb-4" style="border-color: rgba(255,255,255,0.1); opacity: 1;" />
+            <div class="sticky-top dark-blue-0" style="z-index: 1000;">
+                <nav class="navbar navbar-expand px-4 justify-content-end">
+                    <app-horizontal-navbar></app-horizontal-navbar>
+                </nav>
+                <hr class="my-0" style="border-color: rgba(255,255,255,0.1); opacity: 1;" />
+            </div>
             <router-outlet></router-outlet>
             <footer class="py-3 mt-auto dark-blue-1" style="border-top: 1px solid rgba(255,255,255,0.1);">
                 <div class="container px-4 text-center">
@@ -17,3 +19,5 @@
         </div>
     </div>
 </div>
+
+<app-toast></app-toast>

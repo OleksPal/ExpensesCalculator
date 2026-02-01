@@ -1,113 +1,516 @@
 <div>
     <app-scroll-top></app-scroll-top>
-    <div class="text-white text-center dark-blue-0">
+
+    <!-- ========================================
+         OPTION 1: Hero + Feature Grid
+         ======================================== -->
+    <div class="hero-section text-white dark-blue-0 py-5">
         <div class="container py-5">
-            <h1 class="fw-bolder">
-                {{ 'HOME.WELCOME' | translate }}
-            </h1>
-            <p class="lead">
-                {{ 'HOME.DESCRIPTION' | translate }}
-            </p>
-        </div>
-        <div class="py-5 px-3 px-lg-5 my-lg-5">
-            <div class="rounded p-5 dark-blue-1">
-                <h2>
-                    {{ 'HOME.ABOUT' | translate }}
-                </h2>
-                <p class="lead">
-                    {{ 'HOME.ABOUT_DESCRIPTION' | translate }}
-                </p>
+            <div class="text-center mb-5">
+                <h1 class="display-3 fw-bold mb-4">{{ 'HOME_PAGE.HERO.TITLE' | translate }}</h1>
+                <p class="lead mb-4">{{ 'HOME_PAGE.HERO.SUBTITLE' | translate }}</p>
+                <a routerLink="/day-expenses" class="btn btn-primary btn-lg px-5">
+                    <i class="bi bi-rocket-takeoff me-2"></i>{{ 'HOME_PAGE.HERO.CTA' | translate }}
+                </a>
             </div>
-        </div>
-        <div class="py-5 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/1-my-expenses-list-button.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_1' | translate }}
-                    </p>
+
+            <div class="row g-4 mt-5">
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card dark-blue-1 rounded p-4 text-center h-100">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-calculator-fill"></i>
+                        </div>
+                        <h4 class="mb-3">{{ 'HOME_PAGE.FEATURES.SMART_CALC.TITLE' | translate }}</h4>
+                        <p class="text-white-50">{{ 'HOME_PAGE.FEATURES.SMART_CALC.DESC' | translate }}</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card dark-blue-1 rounded p-4 text-center h-100">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h4 class="mb-3">{{ 'HOME_PAGE.FEATURES.GROUP_TRACKING.TITLE' | translate }}</h4>
+                        <p class="text-white-50">{{ 'HOME_PAGE.FEATURES.GROUP_TRACKING.DESC' | translate }}</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card dark-blue-1 rounded p-4 text-center h-100">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-tags-fill"></i>
+                        </div>
+                        <h4 class="mb-3">{{ 'HOME_PAGE.FEATURES.SMART_TAGS.TITLE' | translate }}</h4>
+                        <p class="text-white-50">{{ 'HOME_PAGE.FEATURES.SMART_TAGS.DESC' | translate }}</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card dark-blue-1 rounded p-4 text-center h-100">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h4 class="mb-3">{{ 'HOME_PAGE.FEATURES.ITEM_DISCOVERY.TITLE' | translate }}</h4>
+                        <p class="text-white-50">{{ 'HOME_PAGE.FEATURES.ITEM_DISCOVERY.DESC' | translate }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="py-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/2-add-expenses-button.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_2' | translate }}
-                    </p>
+    </div>
+
+    <!-- ========================================
+         OPTION 2: How It Works (3 Steps)
+         ======================================== -->
+    <div class="steps-section text-white dark-blue-0 py-4">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">{{ 'HOME_PAGE.STEPS.TITLE' | translate }}</h1>
+                <p class="lead text-white-50">{{ 'HOME_PAGE.STEPS.SUBTITLE' | translate }}</p>
+            </div>
+
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="step-card dark-blue-1 rounded p-4 text-center h-100">
+                        <div class="step-number mb-4">1</div>
+                        <div class="step-icon mb-3">
+                            <i class="bi bi-plus-circle-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.STEPS.STEP1.TITLE' | translate }}</h3>
+                        <p class="text-white-50">{{ 'HOME_PAGE.STEPS.STEP1.DESC' | translate }}</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="step-card dark-blue-1 rounded p-4 text-center h-100">
+                        <div class="step-number mb-4">2</div>
+                        <div class="step-icon mb-3">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.STEPS.STEP2.TITLE' | translate }}</h3>
+                        <p class="text-white-50">{{ 'HOME_PAGE.STEPS.STEP2.DESC' | translate }}</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="step-card dark-blue-1 rounded p-4 text-center h-100">
+                        <div class="step-number mb-4">3</div>
+                        <div class="step-icon mb-3">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.STEPS.STEP3.TITLE' | translate }}</h3>
+                        <p class="text-white-50">{{ 'HOME_PAGE.STEPS.STEP3.DESC' | translate }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="py-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/3-show-checks-button.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_3' | translate }}
-                    </p>
+    </div>
+
+    <!-- ========================================
+         OPTION 3: Interactive Tabs
+         ======================================== -->
+    <div class="tabs-section text-white dark-blue-0 py-4">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">{{ 'HOME_PAGE.TABS.TITLE' | translate }}</h1>
+                <p class="lead text-white-50">{{ 'HOME_PAGE.TABS.SUBTITLE' | translate }}</p>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="tab-buttons d-flex justify-content-center gap-3 flex-wrap">
+                        <button class="tab-btn" [class.active]="activeTab === 'expenses'" (click)="activeTab = 'expenses'">
+                            <i class="bi bi-receipt me-2"></i>{{ 'HOME_PAGE.TABS.BTN_EXPENSES' | translate }}
+                        </button>
+                        <button class="tab-btn" [class.active]="activeTab === 'split'" (click)="activeTab = 'split'">
+                            <i class="bi bi-scissors me-2"></i>{{ 'HOME_PAGE.TABS.BTN_SPLIT' | translate }}
+                        </button>
+                        <button class="tab-btn" [class.active]="activeTab === 'calculate'" (click)="activeTab = 'calculate'">
+                            <i class="bi bi-calculator me-2"></i>{{ 'HOME_PAGE.TABS.BTN_CALCULATE' | translate }}
+                        </button>
+                        <button class="tab-btn" [class.active]="activeTab === 'tags'" (click)="activeTab = 'tags'">
+                            <i class="bi bi-tags me-2"></i>{{ 'HOME_PAGE.TABS.BTN_TAGS' | translate }}
+                        </button>
+                        <button class="tab-btn" [class.active]="activeTab === 'recommendations'" (click)="activeTab = 'recommendations'">
+                            <i class="bi bi-lightbulb me-2"></i>{{ 'HOME_PAGE.TABS.BTN_RECOMMENDATIONS' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="tab-content dark-blue-1 rounded p-5">
+                        <div *ngIf="activeTab === 'expenses'" class="tab-pane-content">
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <h2 class="mb-4">{{ 'HOME_PAGE.TABS.EXPENSES.TITLE' | translate }}</h2>
+                                    <p class="lead text-white-50 mb-4">{{ 'HOME_PAGE.TABS.EXPENSES.DESC' | translate }}</p>
+                                    <ul class="feature-list">
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.EXPENSES.FEAT1' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.EXPENSES.FEAT2' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.EXPENSES.FEAT3' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.EXPENSES.FEAT4' | translate }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="feature-visual">
+                                        <i class="bi bi-journal-text display-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="activeTab === 'split'" class="tab-pane-content">
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <h2 class="mb-4">{{ 'HOME_PAGE.TABS.SPLIT.TITLE' | translate }}</h2>
+                                    <p class="lead text-white-50 mb-4">{{ 'HOME_PAGE.TABS.SPLIT.DESC' | translate }}</p>
+                                    <ul class="feature-list">
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.SPLIT.FEAT1' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.SPLIT.FEAT2' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.SPLIT.FEAT3' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.SPLIT.FEAT4' | translate }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="feature-visual">
+                                        <i class="bi bi-pie-chart-fill display-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="activeTab === 'calculate'" class="tab-pane-content">
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <h2 class="mb-4">{{ 'HOME_PAGE.TABS.CALCULATE.TITLE' | translate }}</h2>
+                                    <p class="lead text-white-50 mb-4">{{ 'HOME_PAGE.TABS.CALCULATE.DESC' | translate }}</p>
+                                    <ul class="feature-list">
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.CALCULATE.FEAT1' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.CALCULATE.FEAT2' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.CALCULATE.FEAT3' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.CALCULATE.FEAT4' | translate }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="feature-visual">
+                                        <i class="bi bi-calculator-fill display-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="activeTab === 'tags'" class="tab-pane-content">
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <h2 class="mb-4">{{ 'HOME_PAGE.TABS.TAGS.TITLE' | translate }}</h2>
+                                    <p class="lead text-white-50 mb-4">{{ 'HOME_PAGE.TABS.TAGS.DESC' | translate }}</p>
+                                    <ul class="feature-list">
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.TAGS.FEAT1' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.TAGS.FEAT2' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.TAGS.FEAT3' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.TAGS.FEAT4' | translate }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="feature-visual">
+                                        <i class="bi bi-tags-fill display-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="activeTab === 'recommendations'" class="tab-pane-content">
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <h2 class="mb-4">{{ 'HOME_PAGE.TABS.RECOMMENDATIONS.TITLE' | translate }}</h2>
+                                    <p class="lead text-white-50 mb-4">{{ 'HOME_PAGE.TABS.RECOMMENDATIONS.DESC' | translate }}</p>
+                                    <ul class="feature-list">
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.RECOMMENDATIONS.FEAT1' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.RECOMMENDATIONS.FEAT2' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.RECOMMENDATIONS.FEAT3' | translate }}</li>
+                                        <li><i class="bi bi-check-circle-fill me-2"></i>{{ 'HOME_PAGE.TABS.RECOMMENDATIONS.FEAT4' | translate }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <div class="feature-visual">
+                                        <i class="bi bi-search display-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="py-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/4-add-check-button.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_4' | translate }}
-                    </p>
+    </div>
+
+    <!-- ========================================
+         OPTION 4: Use Case Scenarios
+         ======================================== -->
+    <div class="use-cases-section text-white dark-blue-0 py-4">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">{{ 'HOME_PAGE.USE_CASES.TITLE' | translate }}</h1>
+                <p class="lead text-white-50">{{ 'HOME_PAGE.USE_CASES.SUBTITLE' | translate }}</p>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-lg-4 col-md-6">
+                    <div class="use-case-card dark-blue-1 rounded p-4 h-100">
+                        <div class="use-case-icon mb-3">
+                            <i class="bi bi-cup-hot-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.USE_CASES.RESTAURANT.TITLE' | translate }}</h3>
+                        <p class="text-white-50 mb-4">{{ 'HOME_PAGE.USE_CASES.RESTAURANT.DESC' | translate }}</p>
+                        <div class="use-case-example dark-blue-0 rounded p-3">
+                            <small class="text-white-50">
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.RESTAURANT.EX1' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.RESTAURANT.EX2' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.RESTAURANT.EX3' | translate }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="use-case-card dark-blue-1 rounded p-4 h-100">
+                        <div class="use-case-icon mb-3">
+                            <i class="bi bi-airplane-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.USE_CASES.VACATION.TITLE' | translate }}</h3>
+                        <p class="text-white-50 mb-4">{{ 'HOME_PAGE.USE_CASES.VACATION.DESC' | translate }}</p>
+                        <div class="use-case-example dark-blue-0 rounded p-3">
+                            <small class="text-white-50">
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.VACATION.EX1' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.VACATION.EX2' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.VACATION.EX3' | translate }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="use-case-card dark-blue-1 rounded p-4 h-100">
+                        <div class="use-case-icon mb-3">
+                            <i class="bi bi-house-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.USE_CASES.ROOMMATE.TITLE' | translate }}</h3>
+                        <p class="text-white-50 mb-4">{{ 'HOME_PAGE.USE_CASES.ROOMMATE.DESC' | translate }}</p>
+                        <div class="use-case-example dark-blue-0 rounded p-3">
+                            <small class="text-white-50">
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.ROOMMATE.EX1' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.ROOMMATE.EX2' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.ROOMMATE.EX3' | translate }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="use-case-card dark-blue-1 rounded p-4 h-100">
+                        <div class="use-case-icon mb-3">
+                            <i class="bi bi-balloon-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.USE_CASES.EVENTS.TITLE' | translate }}</h3>
+                        <p class="text-white-50 mb-4">{{ 'HOME_PAGE.USE_CASES.EVENTS.DESC' | translate }}</p>
+                        <div class="use-case-example dark-blue-0 rounded p-3">
+                            <small class="text-white-50">
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.EVENTS.EX1' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.EVENTS.EX2' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.EVENTS.EX3' | translate }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="use-case-card dark-blue-1 rounded p-4 h-100">
+                        <div class="use-case-icon mb-3">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.USE_CASES.ROAD_TRIP.TITLE' | translate }}</h3>
+                        <p class="text-white-50 mb-4">{{ 'HOME_PAGE.USE_CASES.ROAD_TRIP.DESC' | translate }}</p>
+                        <div class="use-case-example dark-blue-0 rounded p-3">
+                            <small class="text-white-50">
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.ROAD_TRIP.EX1' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.ROAD_TRIP.EX2' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.ROAD_TRIP.EX3' | translate }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="use-case-card dark-blue-1 rounded p-4 h-100">
+                        <div class="use-case-icon mb-3">
+                            <i class="bi bi-briefcase-fill"></i>
+                        </div>
+                        <h3 class="mb-3">{{ 'HOME_PAGE.USE_CASES.TEAM.TITLE' | translate }}</h3>
+                        <p class="text-white-50 mb-4">{{ 'HOME_PAGE.USE_CASES.TEAM.DESC' | translate }}</p>
+                        <div class="use-case-example dark-blue-0 rounded p-3">
+                            <small class="text-white-50">
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.TEAM.EX1' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.TEAM.EX2' | translate }}<br>
+                                <i class="bi bi-check2 me-2"></i>{{ 'HOME_PAGE.USE_CASES.TEAM.EX3' | translate }}
+                            </small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="py-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/5-add-item-button.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_5' | translate }}
-                    </p>
+    </div>
+
+    <!-- ========================================
+         OPTION 6: Problem/Solution
+         ======================================== -->
+    <div class="problem-solution-section text-white dark-blue-0 py-4">
+        <div class="container py-4">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.TITLE' | translate }}</h1>
+                <p class="lead text-white-50">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SUBTITLE' | translate }}</p>
+            </div>
+
+            <!-- Problem Section -->
+            <div class="mb-5">
+                <div class="section-label mb-4 text-center">
+                    <span class="badge bg-danger px-4 py-2">
+                        <i class="bi bi-x-circle me-2"></i>{{ 'HOME_PAGE.PROBLEM_SOLUTION.OLD_WAY' | translate }}
+                    </span>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="problem-card dark-blue-1 rounded p-4 h-100">
+                            <div class="problem-icon mb-3">
+                                <i class="bi bi-calculator"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P1_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P1_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="problem-card dark-blue-1 rounded p-4 h-100">
+                            <div class="problem-icon mb-3">
+                                <i class="bi bi-chat-left-dots"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P2_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P2_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="problem-card dark-blue-1 rounded p-4 h-100">
+                            <div class="problem-icon mb-3">
+                                <i class="bi bi-question-circle"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P3_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P3_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="problem-card dark-blue-1 rounded p-4 h-100">
+                            <div class="problem-icon mb-3">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P4_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P4_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="problem-card dark-blue-1 rounded p-4 h-100">
+                            <div class="problem-icon mb-3">
+                                <i class="bi bi-search"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P5_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P5_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="problem-card dark-blue-1 rounded p-4 h-100">
+                            <div class="problem-icon mb-3">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P6_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.PROBLEMS.P6_DESC' | translate }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="py-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/6-edit-and-delete-buttons.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_6' | translate }}
-                    </p>
+
+            <!-- Divider -->
+            <div class="text-center my-5">
+                <i class="bi bi-arrow-down-circle display-3" style="color: #6c63ff;"></i>
+            </div>
+
+            <!-- Solution Section -->
+            <div class="mb-5">
+                <div class="section-label mb-4 text-center">
+                    <span class="badge bg-success px-4 py-2">
+                        <i class="bi bi-check-circle me-2"></i>{{ 'HOME_PAGE.PROBLEM_SOLUTION.NEW_WAY' | translate }}
+                    </span>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="solution-card dark-blue-1 rounded p-4 h-100">
+                            <div class="solution-icon mb-3">
+                                <i class="bi bi-magic"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S1_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S1_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="solution-card dark-blue-1 rounded p-4 h-100">
+                            <div class="solution-icon mb-3">
+                                <i class="bi bi-archive"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S2_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S2_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="solution-card dark-blue-1 rounded p-4 h-100">
+                            <div class="solution-icon mb-3">
+                                <i class="bi bi-pie-chart"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S3_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S3_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="solution-card dark-blue-1 rounded p-4 h-100">
+                            <div class="solution-icon mb-3">
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S4_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S4_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="solution-card dark-blue-1 rounded p-4 h-100">
+                            <div class="solution-icon mb-3">
+                                <i class="bi bi-search"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S5_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S5_DESC' | translate }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="solution-card dark-blue-1 rounded p-4 h-100">
+                            <div class="solution-icon mb-3">
+                                <i class="bi bi-bar-chart"></i>
+                            </div>
+                            <h5 class="mb-3">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S6_TITLE' | translate }}</h5>
+                            <p class="text-white-50 mb-0">{{ 'HOME_PAGE.PROBLEM_SOLUTION.SOLUTIONS.S6_DESC' | translate }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="py-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/7-calculate-button.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_7' | translate }}
-                    </p>
-                </div>
+
+            <!-- CTA -->
+            <div class="text-center mt-5 py-5">
+                <h3 class="mb-4">{{ 'HOME_PAGE.PROBLEM_SOLUTION.CTA_TITLE' | translate }}</h3>
+                <a routerLink="/day-expenses" class="btn btn-primary btn-lg px-5">
+                    <i class="bi bi-rocket-takeoff me-2"></i>{{ 'HOME_PAGE.PROBLEM_SOLUTION.CTA_BUTTON' | translate }}
+                </a>
             </div>
         </div>
-        <div class="py-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/8-expenses-calculation-participant-tab.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_8' | translate }}
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="pt-4 px-3 px-lg-5 my-lg-5 justify-content-center">
-            <div class="card border-primary dark-blue-1 text-white">
-                <img src="/images/9-expenses-calculation-transaction-list-tab.jpg" class="card-img-top">
-                <div class="card-body" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p class="card-text">
-                        {{ 'HOME.STEP_9' | translate }}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>    
+    </div>
 </div>

@@ -16,9 +16,21 @@ public class CheckService : ICheckService
         _itemRepository = itemRepository;
     }
 
-    public async Task<Check> GetById(Guid id)
+    public async Task<CheckDto> GetById(Guid id)
     {
-        return await _checkRepository.GetById(id);
+        var check = await _checkRepository.GetById(id);
+
+        var checkDto = new CheckDto
+        {
+            Id = check.Id,
+            Location = check.Location,
+            Payer = check.Payer,
+            Photo = check.Photo,
+            DayExpensesId = check.DayExpensesId
+        };
+        checkDto.TotalSum = await GetTotalSum(checkDto.Id);
+
+        return checkDto;
     }
 
     public async Task AddCheck(Check check)
@@ -40,22 +52,24 @@ public class CheckService : ICheckService
     {
         var checks = await _checkRepository.GetAllDayChecks(dayExpensesId);
 
-        var tasks = checks.Select(async check => new CheckDto
+        var dtos = checks.Select(check => new CheckDto
         {
             Id = check.Id,
             Location = check.Location,
             Payer = check.Payer,
             Photo = check.Photo,
-            DayExpensesId = check.DayExpensesId,
-            TotalSum = await GetTotalSum(check.Id)
-        });
+            DayExpensesId = check.DayExpensesId
+        }).ToList();
 
-        return await Task.WhenAll(tasks);
+        for (int i=0;i<dtos.Count();i++)
+            dtos[i].TotalSum = await GetTotalSum(dtos[i].Id);
+
+        return dtos.ToList();
     }
 
     public async Task<decimal> GetTotalSum(Guid id)
     {
         var items = await _itemRepository.GetAllCheckItems(id);
-        return items.Select(item => item.Price).Sum();
+        return items.Select(item => item.Price * item.Amount).Sum();
     }
 }

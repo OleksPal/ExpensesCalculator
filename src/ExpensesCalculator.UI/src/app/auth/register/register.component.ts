@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ValidationErrors, parseValidationErrors } from '../../shared/models/validation-errors.model';
 
 export interface ResponseError {
   code: string;
@@ -21,6 +22,8 @@ export class RegisterComponent {
   password = '';
   confirmPassword = '';
   errors : ResponseError[] = [];
+  fieldErrors: ValidationErrors = {};
+  formValidated = false;
 
   constructor(private auth: AuthService, private router: Router, private translate: TranslateService){}
 
@@ -43,26 +46,43 @@ export class RegisterComponent {
       return this.translate.instant('REGISTER.ERRORS.INVALID_USERNAME');
     }
 
-    // Password character requirements (check these before length)
+    // Password character requirements - translate with proper key
     if (lowerMessage.includes('must contain at least one number') ||
         lowerMessage.includes('must contain at least one digit')) {
-      return this.translate.instant('REGISTER.ERRORS.PASSWORD_REQUIRES_DIGIT');
+      const key = 'REGISTER.ERRORS.PASSWORD_REQUIRES_DIGIT';
+      const translated = this.translate.instant(key);
+      return (translated && translated !== key && translated.trim()) ? translated : errorMessage;
     }
 
     if (lowerMessage.includes('uppercase')) {
-      return this.translate.instant('REGISTER.ERRORS.PASSWORD_REQUIRES_UPPERCASE');
+      const key = 'REGISTER.ERRORS.PASSWORD_REQUIRES_UPPERCASE';
+      const translated = this.translate.instant(key);
+      console.log('Uppercase translation:', { key, translated, currentLang: this.translate.currentLang });
+      return (translated && translated !== key && translated.trim()) ? translated : errorMessage;
     }
 
     if (lowerMessage.includes('lowercase')) {
-      return this.translate.instant('REGISTER.ERRORS.PASSWORD_REQUIRES_LOWERCASE');
+      const key = 'REGISTER.ERRORS.PASSWORD_REQUIRES_LOWERCASE';
+      const translated = this.translate.instant(key);
+      console.log('Lowercase translation:', { key, translated, currentLang: this.translate.currentLang });
+      return (translated && translated !== key && translated.trim()) ? translated : errorMessage;
     }
 
     if (lowerMessage.includes('special')) {
-      return this.translate.instant('REGISTER.ERRORS.PASSWORD_REQUIRES_SPECIAL');
+      const key = 'REGISTER.ERRORS.PASSWORD_REQUIRES_SPECIAL';
+      const translated = this.translate.instant(key);
+      return (translated && translated !== key && translated.trim()) ? translated : errorMessage;
     }
 
-    // Password length errors (check last to avoid false matches)
+    // Password length - extract the number and use it in translation
     if (lowerMessage.includes('must be at least') && lowerMessage.includes('characters')) {
+      // Try to extract the number from the message
+      const match = errorMessage.match(/(\d+)\s+characters/i);
+      if (match && match[1]) {
+        const length = match[1];
+        return this.translate.instant('REGISTER.ERRORS.PASSWORD_LENGTH_REQUIRED', { length });
+      }
+      // Fallback if we can't extract the number
       return this.translate.instant('REGISTER.ERRORS.PASSWORD_TOO_SHORT');
     }
 
@@ -70,15 +90,64 @@ export class RegisterComponent {
     return errorMessage;
   }
 
-  register() {
-    if (this.password !== this.confirmPassword)
-    {
-      if (!this.errors.some(e => e.code === 'PasswordMismatch')) {
-        this.errors.push({
-          code: 'PasswordMismatch',
-          description: this.translate.instant('REGISTER.PASSWORD_MISMATCH')
-        });
+  private translateValidationError(errorMessage: string): string {
+    if (!errorMessage) return '';
+
+    const lowerMessage = errorMessage.toLowerCase();
+
+    // Map common validation error messages to translation keys
+    if (lowerMessage.includes('username') && lowerMessage.includes('required')) {
+      return this.translate.instant('REGISTER.ERRORS.USERNAME_REQUIRED');
+    }
+    if (lowerMessage.includes('password') && lowerMessage.includes('required')) {
+      return this.translate.instant('REGISTER.ERRORS.PASSWORD_REQUIRED');
+    }
+    if (lowerMessage.includes('required')) {
+      return this.translate.instant('REGISTER.ERRORS.REQUIRED_FIELD');
+    }
+
+    // Try translateAuthError for other errors
+    return this.translateAuthError(errorMessage);
+  }
+
+  private mapErrorsToFields(errors: ResponseError[]) {
+    this.fieldErrors = {};
+    const passwordErrors: string[] = [];
+
+    console.log('mapErrorsToFields called with errors:', errors);
+
+    for (const err of errors) {
+      const code = err.code?.toLowerCase() || '';
+      const desc = err.description?.toLowerCase() || '';
+      console.log('Processing error:', { code, desc, fullDescription: err.description });
+
+      if (code.includes('userexists') || code.includes('username') ||
+          desc.includes('username') || desc.includes('already exists')) {
+        this.fieldErrors['userName'] = err.description;
+      } else if (code.includes('password') || desc.includes('password') || desc.includes('пароль')) {
+        console.log('Adding to passwordErrors:', err.description);
+        passwordErrors.push(err.description);
       }
+    }
+
+    // Join password errors with HTML line breaks for better display
+    if (passwordErrors.length > 0) {
+      this.fieldErrors['password'] = passwordErrors.join('<br>');
+      console.log('Final fieldErrors[password]:', this.fieldErrors['password']);
+    }
+  }
+
+  register() {
+    this.fieldErrors = {};
+    this.errors = [];
+    this.formValidated = true;
+
+    if (this.password !== this.confirmPassword) {
+      this.fieldErrors['confirmPassword'] = this.translate.instant('REGISTER.PASSWORD_MISMATCH');
+      this.errors = [{
+        code: 'PasswordMismatch',
+        description: this.translate.instant('REGISTER.PASSWORD_MISMATCH')
+      }];
       return;
     }
 
@@ -87,10 +156,23 @@ export class RegisterComponent {
         this.router.navigate(['/login'])
       },
       error: error => {
+        // Handle ValidationProblemDetails (from DataAnnotations)
+        const validationErrors = parseValidationErrors(error);
+        if (Object.keys(validationErrors).length > 0 && !validationErrors['general']) {
+          // Translate validation error messages
+          this.fieldErrors = {};
+          for (const [field, message] of Object.entries(validationErrors)) {
+            this.fieldErrors[field] = this.translateValidationError(message);
+          }
+          return;
+        }
+
+        // Handle IdentityError[] format (from auth controller)
         this.errors = error.error?.map((err: ResponseError) => ({
           code: err.code,
           description: this.translateAuthError(err.description)
         })) || [{ code: 'UnknownError', description: this.translate.instant('REGISTER.ERRORS.UNKNOWN_ERROR') }];
+        this.mapErrorsToFields(this.errors);
       }
     })
   }

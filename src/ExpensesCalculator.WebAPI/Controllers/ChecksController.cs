@@ -1,4 +1,6 @@
 ﻿using ExpensesCalculator.WebAPI.Models;
+using ExpensesCalculator.WebAPI.Models.Dtos;
+using ExpensesCalculator.WebAPI.Services;
 using ExpensesCalculator.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +19,21 @@ public class ChecksController : ControllerBase
         _checkService = checkService;
     }
 
+    [Route("day-expenses/{dayExpensesId}")]
     [HttpGet]
-    public async Task<Check> GetCheckById(Guid id)
+    public async Task<ICollection<CheckDto>> GetAllDayExpensesChecks(Guid dayExpensesId)
+    {
+        return await _checkService.GetAllDayExpensesChecks(dayExpensesId);
+    }
+
+    [HttpGet]
+    public async Task<CheckDto> GetCheckById(Guid id)
     {
         return await _checkService.GetById(id);
     }
 
     [HttpPost]
-    public async Task CreateCheck([FromBody] Check check)
+    public async Task Create([FromBody] Check check)
     {
         await _checkService.AddCheck(check);
     }
@@ -35,8 +44,8 @@ public class ChecksController : ControllerBase
         await _checkService.UpdateCheck(check);
     }
 
-    [HttpDelete]
-    public async Task DeleteConfirmed(Guid id)
+    [HttpDelete("{id}")]
+    public async Task Delete(Guid id)
     {
         await _checkService.DeleteCheck(id);
     }

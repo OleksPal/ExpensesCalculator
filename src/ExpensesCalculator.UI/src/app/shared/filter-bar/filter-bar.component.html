@@ -1,0 +1,38 @@
+<div class="d-flex gap-2 align-items-center">
+    <!-- Filter Criteria Dropdown -->
+    <div class="search-criteria-dropdown">
+        <button class="btn btn-outline-primary text-white dropdown-toggle"
+                type="button"
+                id="filterCriteriaDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style="width: 140px;">
+            {{ selectedCriteriaLabel | translate }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-custom dark-blue-0"
+            style="min-width: 140px;"
+            aria-labelledby="filterCriteriaDropdown">
+            <li *ngFor="let option of filterOptions">
+                <a class="dropdown-item text-white"
+                   href="javascript:void(0)"
+                   [class.active]="selectedCriteria === option.value"
+                   (click)="onCriteriaChange(option.value)">
+                    {{ option.labelKey | translate }}
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Search Input -->
+    <div class="input-group input-group-primary" style="width: 280px;">
+        <span class="input-group-text bi bi-search bg-transparent text-white" id="search-addon"></span>
+        <input [(ngModel)]="filterText"
+               (input)="onFilterInput()"
+               name="filterText"
+               type="search"
+               class="form-control bg-transparent text-white"
+               [placeholder]="placeholderKey | translate"
+               aria-label="Search"
+               aria-describedby="search-addon">
+    </div>
+</div>

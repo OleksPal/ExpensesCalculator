@@ -22,6 +22,59 @@ export interface ShareDayExpensesResponse {
   error: string;
 }
 
+// Calculation interfaces
+export interface SenderRecipient {
+  sender: string;
+  recipient: string;
+}
+
+export interface Transaction {
+  checkName: string;
+  subjects: SenderRecipient;
+  transferAmount: number;
+}
+
+export interface ItemCalculation {
+  item: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    amount: number;
+    rating: number;
+    tags: string[];
+    users: string[];
+    checkId: string;
+  };
+  pricePerUser: number;
+}
+
+export interface CheckCalculation {
+  check: {
+    id: string;
+    location: string;
+    payer: string;
+    dayExpensesId: string;
+  };
+  items: ItemCalculation[];
+  sumPerParticipant: number;
+}
+
+export interface DayExpensesCalculation {
+  userName: string;
+  checkCalculations: CheckCalculation[];
+}
+
+export interface DayExpensesCalculationsDto {
+  dayExpensesId: string;
+  participants: string[];
+  totalSum: number;
+  checks: { id: string; location: string; payer: string; dayExpensesId: string; }[];
+  dayExpensesCalculations: DayExpensesCalculation[];
+  allUsersTrasactions: Transaction[];
+  optimizedUserTransactions: Transaction[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -76,7 +129,11 @@ export class ExpensesService {
     return this.http.delete<void>(`${this.apiUrl}DayExpenses/${id}`);
   }
 
-  shareDayExpenses(id: string, newUserWithAccess: string) {   
+  shareDayExpenses(id: string, newUserWithAccess: string) {
     return this.http.post<ShareDayExpensesResponse>(`${this.apiUrl}DayExpenses/${id}/share`, { newUserWithAccess });
+  }
+
+  getCalculations(id: string): Observable<DayExpensesCalculationsDto> {
+    return this.http.get<DayExpensesCalculationsDto>(`${this.apiUrl}DayExpenses/${id}/calculate`);
   }
 }

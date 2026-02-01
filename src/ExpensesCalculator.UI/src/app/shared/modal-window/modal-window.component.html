@@ -1,6 +1,7 @@
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
-    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" [id]="modalId" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" [attr.aria-labelledby]="modalId + 'Label'" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"
+         [ngClass]="{'modal-sm': modalSize === 'sm', 'modal-lg': modalSize === 'lg', 'modal-xl': modalSize === 'xl'}">
         <div class="modal-content" id="modal-content">
             <ng-content></ng-content>
         </div>

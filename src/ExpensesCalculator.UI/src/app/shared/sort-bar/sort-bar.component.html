@@ -1,0 +1,73 @@
+<div class="dropdown sort-dropdown">
+  <button
+    class="btn btn-outline-primary text-white dropdown-toggle"
+    type="button"
+    id="sortDropdown"
+    data-bs-toggle="dropdown"
+    data-bs-auto-close="outside"
+    aria-expanded="false"
+    (click)="openSortModal()"
+    [style.width]="sortButtonWidth">
+    <span>{{ sortDisplayText }}</span>
+    <i [class]="sortArrowIcon"></i>
+  </button>
+  <div class="dropdown-menu dropdown-menu-custom dark-blue-0 p-2" aria-labelledby="sortDropdown">
+    <!-- Sort Criteria -->
+    <div class="mb-2">
+      <div *ngFor="let option of sortOptions" class="form-check d-flex align-items-center mb-1">
+        <input
+          class="form-check-input mt-0"
+          type="radio"
+          name="sortColumn"
+          [id]="'sortBy' + option.value"
+          [value]="option.value"
+          [(ngModel)]="tempSortColumn">
+        <label class="form-check-label text-white ms-2" [for]="'sortBy' + option.value">
+          {{ option.labelKey | translate }}
+        </label>
+      </div>
+    </div>
+
+    <hr class="text-white-50 my-1" />
+
+    <!-- Sort Order -->
+    <div class="mb-2">
+      <div class="form-check d-flex align-items-center mb-1">
+        <input
+          class="form-check-input mt-0"
+          type="radio"
+          name="sortOrder"
+          id="sortAsc"
+          value="asc"
+          [(ngModel)]="tempSortOrder">
+        <label class="form-check-label text-white ms-2" for="sortAsc">
+          {{ 'ITEMS.SORT.ASCENDING' | translate }}
+        </label>
+      </div>
+      <div class="form-check d-flex align-items-center mb-1">
+        <input
+          class="form-check-input mt-0"
+          type="radio"
+          name="sortOrder"
+          id="sortDesc"
+          value="desc"
+          [(ngModel)]="tempSortOrder">
+        <label class="form-check-label text-white ms-2" for="sortDesc">
+          {{ 'ITEMS.SORT.DESCENDING' | translate }}
+        </label>
+      </div>
+    </div>
+
+    <hr class="text-white-50 my-1" />
+
+    <!-- Action Buttons -->
+    <div class="d-flex flex-column gap-1">
+      <button type="button" class="btn btn-primary btn-sm" (click)="applySorting()">
+        {{ 'ITEMS.SORT.APPLY' | translate }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="resetSorting()">
+        {{ 'ITEMS.SORT.RESET' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

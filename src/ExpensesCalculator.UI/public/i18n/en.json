@@ -7,9 +7,9 @@
     "MANAGE": "Manage"
   },
   "SIDEBAR": {
-    "BRAND": "ExpensesCalculator",
     "GET_STARTED": "Get Started",
-    "MY_EXPENSES": "My Expenses List",
+    "MY_EXPENSES": "My Expenses",
+    "RECOMMENDATIONS": "Recommendations",
     "GITHUB": "Github"
   },
   "HOME": {
@@ -37,6 +37,8 @@
     "ERRORS": {
       "INVALID_CREDENTIALS": "Invalid username or password.",
       "REQUIRED_FIELD": "This field is required.",
+      "USERNAME_REQUIRED": "Username is required.",
+      "PASSWORD_REQUIRED": "Password is required.",
       "UNKNOWN_ERROR": "An error occurred during login."
     }
   },
@@ -51,11 +53,15 @@
     "ERRORS": {
       "USERNAME_TAKEN": "Username is already taken.",
       "PASSWORD_TOO_SHORT": "Password must be at least 6 characters long.",
+      "PASSWORD_LENGTH_REQUIRED": "Password must be at least {{length}} characters long.",
       "PASSWORD_REQUIRES_DIGIT": "Password must contain at least one digit.",
       "PASSWORD_REQUIRES_UPPERCASE": "Password must contain at least one uppercase letter.",
       "PASSWORD_REQUIRES_LOWERCASE": "Password must contain at least one lowercase letter.",
       "PASSWORD_REQUIRES_SPECIAL": "Password must contain at least one special character.",
       "INVALID_USERNAME": "Username is invalid.",
+      "USERNAME_REQUIRED": "Username is required.",
+      "PASSWORD_REQUIRED": "Password is required.",
+      "REQUIRED_FIELD": "This field is required.",
       "UNKNOWN_ERROR": "An error occurred during registration."
     }
   },
@@ -66,6 +72,7 @@
     "NO_DATA_HINT": "Try To Add New Expenses",
     "NO_SEARCH_RESULTS": "No data found for this search.",
     "SEARCH": "Search",
+    "DATE_FILTER": "Date Filter",
     "DATE": "Date",
     "LOCATION": "Location",
     "PARTICIPANTS": "Participants",
@@ -86,19 +93,20 @@
       "ITEMS_PER_PAGE": "Items per page:"
     },
     "MODAL": {
-      "ADD_TITLE": "Add Day Expenses",
-      "EDIT_TITLE": "Edit Day Expenses",
-      "DELETE_TITLE": "Delete Day Expenses",
-      "SHARE_TITLE": "Share Day Expenses",
+      "ADD_TITLE": "Add Expenses",
+      "EDIT_TITLE": "Edit Expenses",
+      "DELETE_TITLE": "Delete Expenses",
+      "SHARE_TITLE": "Share Expenses",
       "DATE_LABEL": "Date",
       "LOCATION_LABEL": "Location",
       "PARTICIPANTS_LABEL": "Participants",
       "PARTICIPANTS_PLACEHOLDER": "John, Mary, Alex",
-      "PARTICIPANTS_HINT": "*Enter participant names, separated by commas (e.g. John, Mary, Alex)",
-      "ADD_BUTTON": "Add Expenses",
-      "EDIT_BUTTON": "Edit Expenses",
-      "DELETE_BUTTON": "Delete Expenses",
-      "SHARE_BUTTON": "Share Expenses",
+      "PARTICIPANTS_HINT": "Separate names with commas (e.g. Bob, Alice, Kate)",
+      "TOTAL_SUM_LABEL": "Total Sum",
+      "ADD_BUTTON": "Add",
+      "EDIT_BUTTON": "Edit",
+      "DELETE_BUTTON": "Delete",
+      "SHARE_BUTTON": "Share",
       "SHARE_USER_LABEL": "Add Access For User"
     },
     "TOOLTIP": {
@@ -108,14 +116,19 @@
     "TOAST": {
       "SUCCESS": "Success!",
       "ERROR": "Error!",
-      "CREATE_SUCCESS": "Expenses for the selected day have been created.",
-      "CREATE_ERROR": "We couldn't create the expenses. Please check your input and try again.",
-      "EDIT_SUCCESS": "Expenses for the selected day were updated successfully.",
-      "EDIT_ERROR": "Unable to edit expenses. Please review your input and try again.",
+      "CREATE_SUCCESS": "Expenses created.",
+      "CREATE_ERROR": "Failed to create expenses.",
+      "EDIT_SUCCESS": "Expenses updated.",
+      "EDIT_ERROR": "Failed to edit expenses.",
       "DELETE_SUCCESS": "Expenses deleted successfully.",
-      "DELETE_ERROR": "Deleting expenses failed. Please try once more.",
+      "DELETE_ERROR": "Failed to delete expenses.",
       "SHARE_SUCCESS": "Expenses shared successfully.",
-      "SHARE_ERROR": "Sharing expenses failed. Please try once more."
+      "SHARE_ERROR": "Failed to share expenses."
+    },
+    "VALIDATION": {
+      "DATE_REQUIRED": "Date is required.",
+      "PARTICIPANTS_REQUIRED": "At least one participant is required.",
+      "USERNAME_REQUIRED": "Username is required."
     },
     "BACKEND_ERRORS": {
       "USER_NOT_FOUND": "User not found.",
@@ -124,6 +137,402 @@
       "ALREADY_SHARED": "This expense is already shared with this user.",
       "ALREADY_HAS_ACCESS": "This user already has access.",
       "UNKNOWN_ERROR": "An unknown error occurred."
+    },
+    "SHARE": "Share",
+    "OPEN": "Open",
+    "CALCULATE": "Calculate",
+    "EDIT": "Edit",
+    "DELETE": "Delete"
+  },
+  "CHECKS": {
+    "TITLE": "Check List",
+    "ADD": "Add Check",
+    "NO_DATA": "No Checks",
+    "NO_DATA_HINT": "Try To Add New Checks",
+    "NO_SEARCH_RESULTS": "No checks found for this search.",
+    "SEARCH": "Search",
+    "LOCATION": "Location",
+    "SUM": "Sum",
+    "PAYER": "Payer",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "SHOWING": "Showing checks from",
+    "TO": "to",
+    "FILTER": {
+      "LOCATION": "Location",
+      "PAYER": "Payer",
+      "SUM": "Sum"
+    },
+    "MODAL": {
+      "ADD_TITLE": "Add Check",
+      "EDIT_TITLE": "Edit Check",
+      "DELETE_TITLE": "Delete Check",
+      "LOCATION_LABEL": "Location",
+      "PAYER_LABEL": "Payer",
+      "SELECT_PAYER": "Select Payer",
+      "SUM_LABEL": "Total Sum",
+      "ADD_BUTTON": "Add Check",
+      "EDIT_BUTTON": "Edit Check",
+      "DELETE_BUTTON": "Delete Check"
+    },
+    "TOAST": {
+      "SUCCESS": "Success!",
+      "ERROR": "Error!",
+      "CREATE_SUCCESS": "Check created.",
+      "CREATE_ERROR": "Failed to create check.",
+      "EDIT_SUCCESS": "Check updated.",
+      "EDIT_ERROR": "Failed to edit check.",
+      "DELETE_SUCCESS": "Check deleted successfully.",
+      "DELETE_ERROR": "Failed to delete check."
+    },
+    "VALIDATION": {
+      "LOCATION_REQUIRED": "Location is required.",
+      "PAYER_REQUIRED": "Payer is required."
+    },
+    "BACKEND_ERRORS": {
+      "INVALID_DATA": "Invalid data provided.",
+      "UNAUTHORIZED": "You are not authorized to perform this action.",
+      "UNKNOWN_ERROR": "An unknown error occurred."
+    }
+  },
+  "ITEMS": {
+    "TITLE": "Item List",
+    "ADD": "Add Item",
+    "DATA": "Data",
+    "NO_ITEMS": "No items found.",
+    "NO_SEARCH_RESULTS": "No items found for this search.",
+    "SEARCH": "Search",
+    "NAME": "Name",
+    "DESCRIPTION": "Description",
+    "PRICE": "Price",
+    "AMOUNT": "Amount",
+    "TOTAL": "Total",
+    "PERSON": "person",
+    "PEOPLE": "people",
+    "TAG": "tag",
+    "TAGS": "tags",
+    "NO_TAGS": "No tags",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "SHOWING": "Showing items from",
+    "TO": "to",
+    "OF": "of",
+    "USE_ONLY_MY_ITEMS": "Use only my items",
+    "FILTER": {
+      "CAPTION": "Filter",
+      "TAG_FILTER": "Tag filter",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "PRICE": "Price",
+      "AMOUNT": "Amount",
+      "TOTAL_SUM": "Total Sum",
+      "USER_COUNT": "User Count",
+      "RATING": "Rating",
+      "TAGS": "Tags"
+    },
+    "SORT": {
+      "CAPTION": "Sort",
+      "SORT_BY": "Sort by",
+      "NAME": "Name",
+      "PRICE": "Price",
+      "AMOUNT": "Amount",
+      "TOTAL_PRICE": "Total Price",
+      "USER_COUNT": "User Count",
+      "RATING": "Rating",
+      "A_Z": "A-Z",
+      "Z_A": "Z-A",
+      "ASCENDING": "Ascending",
+      "DESCENDING": "Descending",
+      "ASC_SHORT": "asc",
+      "DESC_SHORT": "desc",
+      "RESET": "Reset",
+      "APPLY": "Apply now"
+    },
+    "PAGINATION": {
+      "PAGE": "Page",
+      "OF": "of"
+    },
+    "TOOLTIP": {
+      "USERS_TITLE": "Users:",
+      "AND_MORE": "and {{count}} more"
+    },
+    "MODAL": {
+      "ADD_TITLE": "Add Item",
+      "EDIT_TITLE": "Edit Item",
+      "DELETE_TITLE": "Delete Item",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "COMMENT": "Comment",
+      "PRICE": "Price",
+      "AMOUNT": "Amount",
+      "RATING": "Rating",
+      "TAGS": "Tags",
+      "TAG_PLACEHOLDER": "Enter tag",
+      "USERS": "Users",
+      "SELECT_USERS": "Select users",
+      "ALL_USERS": "All",
+      "ADD": "Add",
+      "SAVE": "Edit",
+      "DELETE": "Delete",
+      "RECOMMENDATIONS_INFO": "Items created here will be visible only in the Recommendations view."
+    },
+    "TOAST": {
+      "SUCCESS": "Success!",
+      "ERROR": "Error!",
+      "CREATE_SUCCESS": "Item created.",
+      "CREATE_ERROR": "Failed to create item.",
+      "EDIT_SUCCESS": "Item updated.",
+      "EDIT_ERROR": "Failed to edit item.",
+      "DELETE_SUCCESS": "Item deleted successfully.",
+      "DELETE_ERROR": "Failed to delete item."
+    },
+    "VALIDATION": {
+      "NAME_REQUIRED": "Item name is required.",
+      "PRICE_INVALID": "Price > 0",
+      "AMOUNT_INVALID": "Amount > 0",
+      "RATING_REQUIRED": "Rating is required.",
+      "USERS_REQUIRED": "At least one user is required."
+    },
+    "BACKEND_ERRORS": {
+      "INVALID_DATA": "Invalid data provided.",
+      "UNAUTHORIZED": "You are not authorized to perform this action.",
+      "UNKNOWN_ERROR": "An unknown error occurred."
+    }
+  },
+  "CALCULATIONS": {
+    "TITLE": "Expenses Calculation",
+    "NO_DATA": "No Data",
+    "NO_DATA_HINT": "Try adding new checks and items first.",
+    "TRANSACTION_LIST": "Transaction List",
+    "FULL_TRANSACTION_LIST": "Full Transaction List",
+    "SUM": "Sum",
+    "PAYER": "Payer",
+    "USERS": "Users",
+    "SUM_PER_PARTICIPANT": "Sum per participant",
+    "TOTAL_EXPENSES": "Total expenses",
+    "AND": "and",
+    "MORE": "more",
+    "BACK_TO_CHECKS": "Back to Checks"
+  },
+  "TOUR": {
+    "START_BUTTON": "Tour",
+    "ADD_EXPENSE_TITLE": "Add New Expenses",
+    "ADD_EXPENSE_CONTENT": "Click here to create a new expense entry. This is the first step before you can calculate expenses - you need to provide a date, location (optional), and list of participants. After creating, you'll be redirected to the expenses details view.",
+    "DATE_FILTER_TITLE": "Filter by Date Range",
+    "DATE_FILTER_CONTENT": "Use this date range picker to filter expenses within a specific time period. Click the calendar icon to select dates, or click the X to clear the filter.",
+    "SEARCH_FILTER_TITLE": "Search and Filter",
+    "SEARCH_FILTER_CONTENT": "Search your expenses by location or participants. Use the dropdown to switch between filter criteria.",
+    "EXPENSES_TABLE_TITLE": "Expenses Table",
+    "EXPENSES_TABLE_CONTENT": "This table shows the expenses. Click on any column header to sort your expenses by that field. The table below displays all expense rows, which you can double-click to view details.",
+    "ACTIONS_MENU_TITLE": "Actions Menu",
+    "ACTIONS_MENU_CONTENT": "Click the three dots button to access actions for each expense. You can open details, calculate expenses, edit, share with other users, or delete the expense entry.",
+    "PAGINATION_TITLE": "Pagination Controls",
+    "PAGINATION_CONTENT": "Navigate through your expenses with these controls. Change the number of items displayed per page using the dropdown on the right."
+  },
+  "TOUR_DETAILS": {
+    "BACK_BTN_TITLE": "Back to List",
+    "BACK_BTN_CONTENT": "Click this button to navigate back to the expenses list view where you can see all your expense entries.",
+    "ADD_CHECK_TITLE": "Add Check",
+    "ADD_CHECK_CONTENT": "Click this button to create a new check. Checks are used to group items by location and payer. You'll need to specify the location and select who paid.",
+    "EXPAND_CHECK_TITLE": "Expand Check",
+    "EXPAND_CHECK_CONTENT": "Click the plus icon to expand a check and view its items. Once expanded, you can add items that belong to this check.",
+    "ADD_ITEM_TITLE": "Add Item",
+    "ADD_ITEM_CONTENT": "Click this button to add items to the check. Specify the item name, price, quantity, and select which participants consumed it. The check total will update automatically.",
+    "CALCULATOR_TITLE": "Calculate Expenses",
+    "CALCULATOR_CONTENT": "Once you've added all checks and items, click this button to view the calculations showing how expenses are split among participants."
+  },
+  "TOUR_CALCULATIONS": {
+    "BACK_BTN_TITLE": "Back to Details",
+    "BACK_BTN_CONTENT": "Click this button to navigate back to the expense details view. If this calculations view is empty, you should return to the previous page and add checks with items first.",
+    "PARTICIPANT_TABS_TITLE": "Participant Tabs",
+    "PARTICIPANT_TABS_CONTENT": "Click on any participant tab to view their personal expense breakdown. You'll see all items they consumed, grouped by check, and their total expenses.",
+    "TRANSACTION_TAB_TITLE": "Transaction List",
+    "TRANSACTION_TAB_CONTENT": "Click this tab to view the optimized transaction list. This shows the minimum number of transfers needed to settle all expenses among participants."
+  },
+  "TOUR_RECOMMENDATIONS": {
+    "TAG_FILTER_TITLE": "Tag Filter",
+    "TAG_FILTER_CONTENT": "Use tags to organize and filter your items. Type a tag name and press Enter or click the + button to add it. Tags help you find items quickly by category, like #breakfast, #snacks, or #drinks.",
+    "SEARCH_FILTER_TITLE": "Search and Filter",
+    "SEARCH_FILTER_CONTENT": "Search your items by different criteria. Use the dropdown to switch between filtering by name, description, price, amount, total sum, user count, or rating. Type in the search box to find specific items.",
+    "SORT_BAR_TITLE": "Sort Options",
+    "SORT_BAR_CONTENT": "Sort your items by different attributes. Click the dropdown to choose a column (name, price, amount, total price, user count, or rating) and toggle between ascending and descending order.",
+    "ADD_ITEM_TITLE": "Add New Item",
+    "ADD_ITEM_CONTENT": "Click this button to add a new item to your recommendations. You can add items with name, description, price, amount, rating, and tags. These are your personal items that you can only access from this recommendations view.",
+    "ONLY_MY_ITEMS_TITLE": "Filter Your Items",
+    "ONLY_MY_ITEMS_CONTENT": "Toggle this checkbox to show only the items you created. When unchecked, you'll see all items from all users you've shared expenses with, giving you a broader view of available items.",
+    "ITEMS_GRID_TITLE": "Items Gallery",
+    "ITEMS_GRID_CONTENT": "Browse your item collection as cards. Each card shows the item's name, price, quantity, total cost, rating, and tags. Click the edit button on your own items to modify them, or click the arrow button on shared items to navigate to the original expense."
+  },
+  "HOME_PAGE": {
+    "HERO": {
+      "TITLE": "Share Expenses Made Simple",
+      "SUBTITLE": "Track, split, and settle group expenses effortlessly. No more awkward conversations about money.",
+      "CTA": "Get Started Free"
+    },
+    "FEATURES": {
+      "SMART_CALC": {
+        "TITLE": "Smart Calculations",
+        "DESC": "Automatic split calculations with perfect accuracy. No manual math needed."
+      },
+      "GROUP_TRACKING": {
+        "TITLE": "Group Tracking",
+        "DESC": "Track expenses with unlimited participants. Perfect for any group size."
+      },
+      "SMART_TAGS": {
+        "TITLE": "Smart Tags",
+        "DESC": "Organize expenses with custom tags. Find anything in seconds."
+      },
+      "ITEM_DISCOVERY": {
+        "TITLE": "Item Discovery",
+        "DESC": "Search and browse all your items across every expense."
+      }
+    },
+    "STEPS": {
+      "TITLE": "Split Expenses in 3 Simple Steps",
+      "SUBTITLE": "From chaos to clarity in minutes",
+      "STEP1": {
+        "TITLE": "Add Your Expenses",
+        "DESC": "Enter the details of your shared expenses. Include location, amount, and who paid."
+      },
+      "STEP2": {
+        "TITLE": "Split Among Friends",
+        "DESC": "Choose who participated in each expense. Our algorithm calculates fair splits automatically."
+      },
+      "STEP3": {
+        "TITLE": "Settle Up",
+        "DESC": "See exactly who owes whom. Clear reports make settlement simple and fair."
+      }
+    },
+    "TABS": {
+      "TITLE": "Everything You Need for Shared Expenses",
+      "SUBTITLE": "Powerful features designed for real-world situations",
+      "BTN_EXPENSES": "Track Expenses",
+      "BTN_SPLIT": "Smart Splits",
+      "BTN_CALCULATE": "Auto Calculate",
+      "BTN_TAGS": "Organize & Filter",
+      "BTN_RECOMMENDATIONS": "Smart Insights",
+      "EXPENSES": {
+        "TITLE": "Track Every Expense",
+        "DESC": "Keep detailed records of all shared expenses. From coffee runs to vacation costs, nothing slips through the cracks.",
+        "FEAT1": "Unlimited expense entries",
+        "FEAT2": "Add location and notes",
+        "FEAT3": "Complete expense history",
+        "FEAT4": "Search and filter anytime"
+      },
+      "SPLIT": {
+        "TITLE": "Fair & Flexible Splits",
+        "DESC": "Split expenses exactly how you want. Equal splits or by consumption - you decide.",
+        "FEAT1": "Equal split option",
+        "FEAT2": "By person consumption",
+        "FEAT3": "Exclude participants easily",
+        "FEAT4": "Flexible participation tracking"
+      },
+      "CALCULATE": {
+        "TITLE": "Automatic Calculations",
+        "DESC": "Let our smart algorithms do the math. Get instant, accurate totals and per-person breakdowns.",
+        "FEAT1": "Real-time calculations",
+        "FEAT2": "Per-person totals",
+        "FEAT3": "Zero math errors",
+        "FEAT4": "Instant sum updates"
+      },
+      "TAGS": {
+        "TITLE": "Organize with Tags",
+        "DESC": "Create custom tags to categorize expenses. Filter by location, payer, or amount instantly.",
+        "FEAT1": "Custom tag creation",
+        "FEAT2": "Multi-tag support",
+        "FEAT3": "Advanced filtering",
+        "FEAT4": "Quick search"
+      },
+      "RECOMMENDATIONS": {
+        "TITLE": "Smart Recommendations",
+        "DESC": "Browse and search all your items across every expense. Find what you're looking for with powerful filters and sorting.",
+        "FEAT1": "Search across all expenses",
+        "FEAT2": "Sort by rating, price, or popularity",
+        "FEAT3": "Filter by tags and categories",
+        "FEAT4": "Navigate to original expense"
+      }
+    },
+    "USE_CASES": {
+      "TITLE": "Perfect for Every Situation",
+      "SUBTITLE": "From dinners to vacations - manage any shared expense with ease",
+      "RESTAURANT": {
+        "TITLE": "Restaurant with Friends",
+        "DESC": "Split the bill fairly after a group dinner. Track who ordered what, divide shared appetizers, and calculate tips automatically.",
+        "EX1": "4 friends, 1 restaurant",
+        "EX2": "Split appetizers & drinks",
+        "EX3": "Fair tip distribution"
+      },
+      "VACATION": {
+        "TITLE": "Group Vacation",
+        "DESC": "Track all trip expenses from hotels to activities. See who paid for what and settle up at the end without the hassle.",
+        "EX1": "Multi-day tracking",
+        "EX2": "Hotel, food, activities",
+        "EX3": "Final settlement report"
+      },
+      "ROOMMATE": {
+        "TITLE": "Roommate Expenses",
+        "DESC": "Manage shared household costs like groceries, utilities, and cleaning supplies. Keep track of monthly expenses effortlessly.",
+        "EX1": "Monthly utilities & rent",
+        "EX2": "Shared groceries",
+        "EX3": "Household items"
+      },
+      "EVENTS": {
+        "TITLE": "Events & Parties",
+        "DESC": "Organize group events and split costs for decorations, food, and venues. Perfect for birthdays, weddings, or celebrations.",
+        "EX1": "Venue & catering costs",
+        "EX2": "Decorations & supplies",
+        "EX3": "Gift contributions"
+      },
+      "ROAD_TRIP": {
+        "TITLE": "Road Trip Adventures",
+        "DESC": "Track gas, tolls, food, and accommodation during road trips. Split costs fairly based on who participated in each segment.",
+        "EX1": "Gas & tolls tracking",
+        "EX2": "Food stops & snacks",
+        "EX3": "Lodging costs"
+      },
+      "TEAM": {
+        "TITLE": "Team Outings",
+        "DESC": "Manage work team lunches and outings. Track who attended, what they ordered, and handle reimbursements easily.",
+        "EX1": "Team lunch orders",
+        "EX2": "Coffee runs",
+        "EX3": "Reimbursement tracking"
+      }
+    },
+    "PROBLEM_SOLUTION": {
+      "TITLE": "Stop the Expense Tracking Nightmare",
+      "SUBTITLE": "Turn chaos into clarity with smart expense management",
+      "OLD_WAY": "The Old Way",
+      "NEW_WAY": "The Better Way",
+      "PROBLEMS": {
+        "P1_TITLE": "Endless Manual Calculations",
+        "P1_DESC": "Spending hours with calculator and spreadsheets trying to figure out who owes what. Math errors lead to arguments and awkward conversations.",
+        "P2_TITLE": "Lost in Message Threads",
+        "P2_DESC": "Digging through endless group chats to find who paid for dinner last week. Receipts lost, memories faded, confusion everywhere.",
+        "P3_TITLE": "Unfair Splits",
+        "P3_DESC": "Someone always ends up paying more. Splitting equally when people ordered different amounts feels wrong but calculating fairly is too complicated.",
+        "P4_TITLE": "Settlement Day Chaos",
+        "P4_DESC": "End of trip or month arrives and nobody knows the exact amounts. Multiple payment apps, partial payments, and confusion about who settled what.",
+        "P5_TITLE": "Can't Find Past Items",
+        "P5_DESC": "Looking for that great restaurant you visited last month? No way to search across all your expenses or remember which items were highly rated.",
+        "P6_TITLE": "No Clear Overview",
+        "P6_DESC": "Hard to see the big picture. Who spent the most? What's the total? No quick way to understand your group's spending without manual number crunching."
+      },
+      "SOLUTIONS": {
+        "S1_TITLE": "Automatic Calculations",
+        "S1_DESC": "Enter expenses once and get instant, accurate calculations. Fair splits, exact totals, and clear breakdowns. No math required, no errors possible.",
+        "S2_TITLE": "Everything in One Place",
+        "S2_DESC": "All expenses organized by date, location, and payer. Search anything instantly. Complete history at your fingertips, accessible anytime, anywhere.",
+        "S3_TITLE": "Perfect Fairness",
+        "S3_DESC": "Smart algorithms ensure everyone pays their exact share. Track who consumed what, split shared items proportionally, handle complex scenarios effortlessly.",
+        "S4_TITLE": "Clear Settlement Reports",
+        "S4_DESC": "See exactly who owes whom with one click. Complete transparency, detailed breakdowns, and smart insights about payment flows.",
+        "S5_TITLE": "Universal Item Search",
+        "S5_DESC": "Search and browse all your items across every expense. Filter by tags, sort by rating or price, and navigate back to the original expense instantly.",
+        "S6_TITLE": "Complete Visibility",
+        "S6_DESC": "See totals, per-person spending, and detailed breakdowns at a glance. Understand your group's expenses instantly with clear, comprehensive reports."
+      },
+      "CTA_TITLE": "Ready to Solve Your Expense Tracking Problems?",
+      "CTA_BUTTON": "Try It Free Now"
     }
   }
 }
