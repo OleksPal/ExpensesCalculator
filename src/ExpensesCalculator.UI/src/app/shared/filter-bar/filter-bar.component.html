@@ -26,9 +26,9 @@
     <!-- Search Input -->
     <div class="input-group input-group-primary" style="width: 280px;">
         <span class="input-group-text bi bi-search bg-transparent text-white" id="search-addon"></span>
-        <input [(ngModel)]="filterText"
+        <input [(ngModel)]="localFilterText"
                (input)="onFilterInput()"
-               name="filterText"
+               name="localFilterText"
                type="search"
                class="form-control bg-transparent text-white"
                [placeholder]="placeholderKey | translate"

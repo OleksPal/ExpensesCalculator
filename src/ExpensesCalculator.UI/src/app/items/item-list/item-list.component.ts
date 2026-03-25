@@ -6,8 +6,8 @@ import { ModalWindowComponent } from '../../shared/modal-window/modal-window.com
 import { SortBarComponent, SortOption } from '../../shared/sort-bar/sort-bar.component';
 import { FilterBarComponent, FilterOption } from '../../shared/filter-bar/filter-bar.component';
 import { ValidationErrors, parseValidationErrors } from '../../shared/models/validation-errors.model';
-import { ItemsService, Item } from '../../services/items.service';
-import { CheckSumUpdateService } from '../../services/check-sum-update.service';
+import { ItemsService, Item, ItemResponse, DeleteItemResponse } from '../../services/items.service';
+import { DayExpensesTotalSumUpdateService } from '../../services/day-expenses-total-sum-update.service';
 import { ToastService } from '../../services/toast.service';
 import { TooltipService } from '../../services/tooltip.service';
 import { FormValidationService } from '../../services/form-validation.service';
@@ -26,8 +26,14 @@ declare var bootstrap: any;
 })
 export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() checkId!: string;
+  @Input() dayExpensesId!: string;
   @Input() users: string[] = [];
+  @Input() items?: Item[]; // Optional: if provided, use these instead of loading
+  @Input() isLoading?: boolean; // Optional: external loading state
+  @Input() highlightedItemId?: string;
+  @Input() disableTooltipManagement: boolean = false; // When true, parent handles tooltips
   @Output() checkSumUpdated = new EventEmitter<{ checkId: string, newSum: number }>();
+  @Output() itemsChanged = new EventEmitter<string>(); // Emit when items are modified (checkId)
 
   // Data properties
   itemsList: Item[] = [];
@@ -49,7 +55,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   // Form properties
   id = '';
   name = '';
-  description = '';
+  comment = '';
   price = 0;
   amount = 1;
   rating = 0;
@@ -89,7 +95,8 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   ];
 
   // UI state properties
-  isLoading = false;
+  internalLoading = false;
+  private viewInitialized = false;
 
   // Subscription for language changes
   private langChangeSub!: Subscription;
@@ -97,7 +104,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   private filterTextSubscription!: Subscription;
 
   // Inject services using inject() for better SSR compatibility
-  private checkSumUpdateService = inject(CheckSumUpdateService);
+  private dayExpensesTotalSumUpdateService = inject(DayExpensesTotalSumUpdateService);
 
   constructor(
     private itemsService: ItemsService,
@@ -116,26 +123,43 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
       this.applyLocalFiltering();
     });
 
-    if (this.checkId) {
+    // If items are provided, use them; otherwise load them
+    if (this.items && this.items.length > 0) {
+      this.itemsList = this.items;
+      this.applyLocalFiltering();
+    } else if (this.checkId && !this.items) {
       this.loadItems();
     }
   }
 
+  get loading(): boolean {
+    return this.isLoading !== undefined ? this.isLoading : this.internalLoading;
+  }
+
   ngAfterViewInit(): void {
-    this.initializeTooltips();
+    this.viewInitialized = true;
+    if (!this.disableTooltipManagement) {
+      this.initializeTooltips();
+    }
 
     // Re-initialize tooltips when language changes
     this.langChangeSub = this.translate.onLangChange.subscribe(() => {
-      this.destroyTooltips();
-      setTimeout(() => {
-        this.initializeTooltips();
-      }, 0);
+      if (!this.disableTooltipManagement) {
+        this.destroyTooltips();
+        setTimeout(() => {
+          this.initializeTooltips();
+        }, 100);
+      }
     });
   }
 
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['checkId'] && !changes['checkId'].firstChange) {
+    // If items are provided and changed, use them
+    if (changes['items'] && !changes['items'].firstChange && this.items) {
+      this.itemsList = this.items;
+      this.applyLocalFiltering();
+    } else if (changes['checkId'] && !changes['checkId'].firstChange && !this.items) {
       this.loadItems();
     }
   }
@@ -162,19 +186,19 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   loadItems(): void {
     if (!this.checkId) return;
 
-    this.isLoading = true;
+    this.internalLoading = true;
     this.itemsService.getAllCheckItems(this.checkId).subscribe({
       next: (data) => {
         this.itemsList = data;
         this.applyLocalFiltering();
-        this.isLoading = false;
+        this.internalLoading = false;
 
         // Re-initialize tooltips after data loads
-        setTimeout(() => this.initializeTooltips(), 0);
+        this.reinitializeTooltipsAfterDelay();
       },
       error: (err) => {
         console.error('Error loading items:', err);
-        this.isLoading = false;
+        this.internalLoading = false;
       }
     });
   }
@@ -184,7 +208,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     if (item) {
       this.id = item.id;
       this.name = item.name;
-      this.description = item.description || '';
+      this.comment = item.comment || '';
       this.price = item.price;
       this.amount = item.amount;
       this.rating = item.rating;
@@ -220,7 +244,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         if (this.filterCriteria === 'Name') {
           return item.name.toLowerCase().includes(searchTerm);
         } else if (this.filterCriteria === 'Description') {
-          return (item.description || '').toLowerCase().includes(searchTerm);
+          return (item.comment || '').toLowerCase().includes(searchTerm);
         } else if (this.filterCriteria === 'Price') {
           return item.price.toString().includes(searchTerm);
         } else if (this.filterCriteria === 'Amount') {
@@ -294,6 +318,16 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   // Pagination methods
   updatePagination(): void {
     this.totalPages = Math.ceil(this.filteredItemsList.length / this.itemsPerPage);
+
+    // If we have a highlighted item, switch to the page where it's located
+    if (this.highlightedItemId) {
+      const itemIndex = this.filteredItemsList.findIndex(item => item.id === this.highlightedItemId);
+      if (itemIndex !== -1) {
+        const itemPage = Math.ceil((itemIndex + 1) / this.itemsPerPage);
+        this.currentPage = itemPage;
+      }
+    }
+
     if (this.currentPage > this.totalPages && this.totalPages > 0) {
       this.currentPage = this.totalPages;
     }
@@ -307,13 +341,34 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.paginatedItemsList = this.filteredItemsList.slice(startIndex, endIndex);
+
+    // Scroll to highlighted item if present
+    if (this.highlightedItemId) {
+      setTimeout(() => this.scrollToHighlightedItem(), 100);
+    }
+
+    // Reinitialize tooltips after updating displayed items
+    this.reinitializeTooltipsAfterDelay();
+  }
+
+  scrollToHighlightedItem(): void {
+    if (!this.highlightedItemId) return;
+
+    const itemElement = document.querySelector(`.highlighted-item`);
+    if (itemElement) {
+      itemElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Remove highlight after animation completes (2s * 3 iterations = 6s)
+      setTimeout(() => {
+        this.highlightedItemId = undefined;
+      }, 6000);
+    }
   }
 
   goToNextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.updatePaginatedItems();
-      this.reinitializeTooltipsAfterDelay();
     }
   }
 
@@ -321,7 +376,6 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     if (this.currentPage > 1) {
       this.currentPage--;
       this.updatePaginatedItems();
-      this.reinitializeTooltipsAfterDelay();
     }
   }
 
@@ -329,15 +383,18 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePaginatedItems();
-      this.reinitializeTooltipsAfterDelay();
     }
   }
 
   private reinitializeTooltipsAfterDelay(): void {
+    if (!this.viewInitialized || this.disableTooltipManagement) {
+      return;
+    }
+
     setTimeout(() => {
       this.destroyTooltips();
       this.initializeTooltips();
-    }, 0);
+    }, 100);
   }
 
   // Row expansion methods
@@ -404,7 +461,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
   clearFormData(): void {
     this.id = '';
     this.name = '';
-    this.description = '';
+    this.comment = '';
     this.price = 0;
     this.amount = 1;
     this.rating = 0;
@@ -484,7 +541,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     const newItem: Item = {
       id: '00000000-0000-0000-0000-000000000000',
       name: this.name,
-      description: this.description,
+      comment: this.comment,
       price: this.price,
       amount: this.amount,
       rating: this.rating,
@@ -494,10 +551,17 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     };
 
     this.itemsService.createItem(newItem).subscribe({
-      next: (newCheckSum: number) => {
+      next: (response: ItemResponse) => {
         this.hideModal();
-        this.loadItems();
-        this.checkSumUpdateService.emitCheckSumUpdate(this.checkId, newCheckSum);
+        // Emit check sum update
+        this.checkSumUpdated.emit({ checkId: this.checkId, newSum: response.checkTotalSum });
+        // If items are provided from parent, emit event; otherwise reload
+        if (this.items !== undefined) {
+          this.itemsChanged.emit(this.checkId);
+        } else {
+          this.loadItems();
+        }
+        this.dayExpensesTotalSumUpdateService.emitDayExpensesTotalSumUpdate(this.dayExpensesId, response.dayExpensesTotalSum);
         this.toastService.success(
           this.translate.instant('ITEMS.TOAST.SUCCESS'),
           this.translate.instant('ITEMS.TOAST.CREATE_SUCCESS')
@@ -524,7 +588,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     const updatedItem: Item = {
       id: this.id,
       name: this.name,
-      description: this.description,
+      comment: this.comment,
       price: this.price,
       amount: this.amount,
       rating: this.rating,
@@ -534,10 +598,17 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     };
 
     this.itemsService.editItem(updatedItem).subscribe({
-      next: (newCheckSum: number) => {
+      next: (response: ItemResponse) => {
         this.hideModal();
-        this.loadItems();
-        this.checkSumUpdateService.emitCheckSumUpdate(this.checkId, newCheckSum);
+        // Emit check sum update
+        this.checkSumUpdated.emit({ checkId: this.checkId, newSum: response.checkTotalSum });
+        // If items are provided from parent, emit event; otherwise reload
+        if (this.items !== undefined) {
+          this.itemsChanged.emit(this.checkId);
+        } else {
+          this.loadItems();
+        }
+        this.dayExpensesTotalSumUpdateService.emitDayExpensesTotalSumUpdate(this.dayExpensesId, response.dayExpensesTotalSum);
         this.toastService.success(
           this.translate.instant('ITEMS.TOAST.SUCCESS'),
           this.translate.instant('ITEMS.TOAST.EDIT_SUCCESS')
@@ -559,10 +630,22 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
   deleteItem(): void {
     this.itemsService.deleteItem(this.id).subscribe({
-      next: (newCheckSum: number) => {
+      next: (response: DeleteItemResponse) => {
+        // Remove the item from the local list
+        const index = this.itemsList.findIndex(i => i.id === this.id);
+        if (index !== -1) {
+          this.itemsList.splice(index, 1);
+          this.applyLocalFiltering();
+        }
+
         this.hideModal();
-        this.loadItems();
-        this.checkSumUpdateService.emitCheckSumUpdate(this.checkId, newCheckSum);
+        // Emit check sum update
+        this.checkSumUpdated.emit({ checkId: this.checkId, newSum: response.checkTotalSum });
+        // If items are provided from parent, emit event
+        if (this.items !== undefined) {
+          this.itemsChanged.emit(this.checkId);
+        }
+        this.dayExpensesTotalSumUpdateService.emitDayExpensesTotalSumUpdate(this.dayExpensesId, response.dayExpensesTotalSum);
         this.toastService.success(
           this.translate.instant('ITEMS.TOAST.SUCCESS'),
           this.translate.instant('ITEMS.TOAST.DELETE_SUCCESS')
@@ -618,6 +701,11 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     const item = this.itemsList.find(i => i.id === id);
     const users = item?.users || [];
     return this.tooltipService.generateUsersTooltip(users, 3);
+  }
+
+  getCommentTooltipContent(id: string): string {
+    const item = this.itemsList.find(i => i.id === id);
+    return item?.comment || '';
   }
 
   // Pagination display helpers

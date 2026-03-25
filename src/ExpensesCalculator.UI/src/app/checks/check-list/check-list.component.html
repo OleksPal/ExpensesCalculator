@@ -103,26 +103,17 @@
                         <td class="text-white">{{ check.payer || '-' }}</td>
                         <td class="text-nowrap text-white">{{ check.totalSum | currency:'UAH':'₴' }}</td>
                         <td>
-                            <div class="dropdown ps-2">
-                                <button class="btn btn-outline-primary text-white" type="button"
-                                    [id]="'actionsDropdown' + check.id" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots-vertical"></i>
+                            <div class="d-flex gap-2 justify-content-end pe-3">
+                                <button class="btn btn-sm btn-outline-warning text-white btn-action-edit" type="button"
+                                    (click)="openModal('edit', check.id)"
+                                    title="{{ 'CHECKS.EDIT' | translate }}">
+                                    <i class="bi bi-pencil"></i>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-custom dark-blue-0"
-                                    [attr.aria-labelledby]="'actionsDropdown' + check.id">
-                                    <li>
-                                        <a class="dropdown-item text-white" href="javascript:void(0)"
-                                            (click)="openModal('edit', check.id)">
-                                            <i class="bi bi-pencil me-2"></i>{{ 'CHECKS.EDIT' | translate }}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item text-white" href="javascript:void(0)"
-                                            (click)="openModal('delete', check.id)">
-                                            <i class="bi bi-trash me-2"></i>{{ 'CHECKS.DELETE' | translate }}
-                                        </a>
-                                    </li>
-                                </ul>
+                                <button class="btn btn-sm btn-outline-danger text-white btn-action-delete" type="button"
+                                    (click)="openModal('delete', check.id)"
+                                    title="{{ 'CHECKS.DELETE' | translate }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -130,7 +121,17 @@
                         <td colspan="5" class="p-0" style="background: #0d1739 !important;">
                             <div class="collapse" [id]="'collapse' + check.id">
                                 <div class="p-3">
-                                    <app-item-list [checkId]="check.id" [users]="participants"></app-item-list>
+                                    <app-item-list
+                                        [checkId]="check.id"
+                                        [dayExpensesId]="dayExpensesId"
+                                        [users]="participants"
+                                        [items]="getItemsForCheck(check.id)"
+                                        [isLoading]="isCheckItemsLoading(check.id)"
+                                        [highlightedItemId]="highlightedItemId"
+                                        [disableTooltipManagement]="true"
+                                        (itemsChanged)="loadItemsForCheck($event)"
+                                        (checkSumUpdated)="onCheckSumUpdated($event)">
+                                    </app-item-list>
                                 </div>
                             </div>
                         </td>

@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalWindowComponent } from "../../shared/modal-window/modal-window.component";
 import { ValidationErrors, parseValidationErrors } from '../../shared/models/validation-errors.model';
-import { ExpensesService, DayExpenses } from '../../services/expenses.service';
+import { ExpensesService, DayExpenses, DayExpensesDetails } from '../../services/expenses.service';
+import { Check } from '../../services/checks.service';
 import { CheckListComponent } from '../../checks/check-list/check-list.component';
 import { ToastService } from '../../services/toast.service';
 import { TooltipService } from '../../services/tooltip.service';
@@ -40,12 +41,14 @@ export class DayExpensesDetailsComponent implements OnInit, AfterViewInit, OnDes
 
   // Day expenses data
   dayExpenses: DayExpenses | null = null;
+  checks: Check[] = [];
   id = '';
   date = '';
   location = '';
   participants = '';
   totalSum = 0;
   scrollToCheckId?: string;
+  scrollToItemId?: string;
 
   // Share functionality
   newUserWithAccess = '';
@@ -77,9 +80,10 @@ export class DayExpensesDetailsComponent implements OnInit, AfterViewInit, OnDes
     // Get the day expenses ID from route params
     this.id = this.route.snapshot.paramMap.get('id') || '';
 
-    // Get checkId from query params for scrolling
+    // Get checkId and itemId from query params for scrolling
     this.route.queryParams.subscribe(params => {
       this.scrollToCheckId = params['checkId'] || undefined;
+      this.scrollToItemId = params['itemId'] || undefined;
     });
 
     // Set current locale based on translation service
@@ -129,10 +133,11 @@ export class DayExpensesDetailsComponent implements OnInit, AfterViewInit, OnDes
   // Data loading
   loadDayExpenses() {
     this.isLoading = true;
-    this.expensesService.getDayExpenses(this.id).subscribe({
+    this.expensesService.getDayExpensesDetails(this.id).subscribe({
       next: (data) => {
         // Store the full object for display
         this.dayExpenses = data;
+        this.checks = data.checks;
 
         // Also store form-friendly versions for editing
         this.date = (new Date(data.date)).toISOString().substring(0, 10);
@@ -250,13 +255,22 @@ export class DayExpensesDetailsComponent implements OnInit, AfterViewInit, OnDes
     const participantsList = this.participants.split(',').map(p => p.trim());
 
     this.expensesService.editDayExpenses(this.id, this.date, this.location, participantsList).subscribe({
-      next: () => {
+      next: (updatedDay) => {
+        // Update local data with returned values
+        this.dayExpenses = updatedDay;
+        this.date = (new Date(updatedDay.date)).toISOString().substring(0, 10);
+        this.location = updatedDay.location;
+        this.participants = updatedDay.participants.join(', ');
+        this.totalSum = updatedDay.totalSum;
+
         this.hideModal();
-        this.loadDayExpenses();
         this.toastService.success(
           this.translate.instant('EXPENSES.TOAST.SUCCESS'),
           this.translate.instant('EXPENSES.TOAST.EDIT_SUCCESS')
         );
+
+        // Re-initialize tooltips after data updates
+        setTimeout(() => this.tooltipService.initialize({ html: true }), 0);
       },
       error: error => {
         this.formErrors = parseValidationErrors(error);
@@ -387,14 +401,32 @@ export class DayExpensesDetailsComponent implements OnInit, AfterViewInit, OnDes
 
   // Handle checks loaded event - re-initialize tour when checks data changes
   onChecksLoaded(): void {
-    // Add a small delay to ensure DOM is fully updated with tour anchors
-    setTimeout(() => this.initializeTour(), 100);
+    // Reload day expenses to get updated checks array
+    this.expensesService.getDayExpensesDetails(this.id).subscribe({
+      next: (data) => {
+        this.checks = data.checks;
+        this.totalSum = data.totalSum;
+
+        // Update dayExpenses object if it exists
+        if (this.dayExpenses) {
+          this.dayExpenses.totalSum = data.totalSum;
+        }
+
+        // Re-initialize tour after checks are updated
+        setTimeout(() => this.initializeTour(), 100);
+      },
+      error: (err) => {
+        console.error('Error reloading day expenses for tour update:', err);
+        // Still try to initialize tour even if reload fails
+        setTimeout(() => this.initializeTour(), 100);
+      }
+    });
   }
 
   // Tour
   initializeTour() {
-    // Check if checks exist by looking for the expand button anchor in DOM
-    const checksExist = !!document.querySelector('[touranchor="expand-check-btn"]');
+    // Check if checks exist by checking the checks array
+    const checksExist = this.checks && this.checks.length > 0;
 
     const tourSteps: any[] = [];
 
@@ -418,6 +450,10 @@ export class DayExpensesDetailsComponent implements OnInit, AfterViewInit, OnDes
 
     // Add workflow steps only if checks exist
     if (checksExist) {
+      // Get the first check's ID to construct the dynamic add-item-btn anchor
+      const firstCheckId = this.checks[0].id;
+      const addItemBtnAnchorId = `add-item-btn-${firstCheckId}`;
+
       tourSteps.push(
         {
           anchorId: 'expand-check-btn',
@@ -427,7 +463,7 @@ export class DayExpensesDetailsComponent implements OnInit, AfterViewInit, OnDes
           enableBackdrop: true
         },
         {
-          anchorId: 'add-item-btn',
+          anchorId: addItemBtnAnchorId,
           content: this.translate.instant('TOUR_DETAILS.ADD_ITEM_CONTENT'),
           title: this.translate.instant('TOUR_DETAILS.ADD_ITEM_TITLE'),
           placement: 'right',

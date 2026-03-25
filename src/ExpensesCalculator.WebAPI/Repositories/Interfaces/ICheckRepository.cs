@@ -4,5 +4,5 @@ namespace ExpensesCalculator.WebAPI.Repositories.Interfaces;
 
 public interface ICheckRepository : IGenericRepository<Check>
 {
-    Task<ICollection<Check>> GetAllDayChecks(Guid dayExpensesId);
+    Task<Check[]> GetAllDayChecks(Guid dayExpensesId);
 }

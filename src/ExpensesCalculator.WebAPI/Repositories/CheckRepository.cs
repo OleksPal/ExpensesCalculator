@@ -9,10 +9,11 @@ public class CheckRepository : GenericRepository<Check>, ICheckRepository
 {
     public CheckRepository(ExpensesContext context) : base(context) { }
 
-    public async Task<ICollection<Check>> GetAllDayChecks(Guid dayExpensesId)
+    public async Task<Check[]> GetAllDayChecks(Guid dayExpensesId)
     {
         return await _context.Checks
+            .AsNoTracking()
             .Where(c => c.DayExpensesId == dayExpensesId)
-            .ToListAsync();
+            .ToArrayAsync();
     }
 }

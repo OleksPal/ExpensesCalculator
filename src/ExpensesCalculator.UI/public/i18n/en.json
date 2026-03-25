@@ -13,19 +13,6 @@
     "GITHUB": "Github"
   },
   "HOME": {
-    "WELCOME": "Welcome to ExpensesCalculator",
-    "DESCRIPTION": "Distribute expenses among party participants based on their consumption.",
-    "ABOUT": "About this page",
-    "ABOUT_DESCRIPTION": "This page is including some instructions what you can do on this website",
-    "STEP_1": "1. Select the \"My expenses list\" tab.",
-    "STEP_2": "2. Click the \"Add expenses\" button and enter the required data.",
-    "STEP_3": "3. Click the button with a list image, to enter data about the items to be calculated.",
-    "STEP_4": "4. On the next page, add checks, which are used to group items by who paid for them.",
-    "STEP_5": "5. Open the appropriate check and add the items of this check.",
-    "STEP_6": "6. Use the edit and delete buttons to change data if it was entered incorrectly.",
-    "STEP_7": "7. Click the button with a calculator image, to calculate the expenses between the participants.",
-    "STEP_8": "8. Switch between tabs to see how much every participant spent on the party.",
-    "STEP_9": "9. On the \"Transaction list\" tab you can see how much money each participant owes to the people who paid for the party.",
     "COPYRIGHT": "© 2024-2026 ExpensesCalculator"
   },
   "LOGIN": {
@@ -78,12 +65,9 @@
     "PARTICIPANTS": "Participants",
     "TOTAL_SUM": "Total Sum",
     "PEOPLE": "people",
-    "ALL": "All",
     "FILTER": {
-      "ALL": "All",
       "LOCATION": "Location",
-      "PARTICIPANTS": "Participants",
-      "TOTAL_SUM": "Total Sum"
+      "PARTICIPANTS": "Participants"
     },
     "PAGINATION": {
       "SHOWING_PAGE": "Showing page",
@@ -122,8 +106,7 @@
       "EDIT_ERROR": "Failed to edit expenses.",
       "DELETE_SUCCESS": "Expenses deleted successfully.",
       "DELETE_ERROR": "Failed to delete expenses.",
-      "SHARE_SUCCESS": "Expenses shared successfully.",
-      "SHARE_ERROR": "Failed to share expenses."
+      "SHARE_SUCCESS": "Expenses shared successfully."
     },
     "VALIDATION": {
       "DATE_REQUIRED": "Date is required.",
@@ -196,24 +179,16 @@
     }
   },
   "ITEMS": {
-    "TITLE": "Item List",
     "ADD": "Add Item",
     "DATA": "Data",
     "NO_ITEMS": "No items found.",
+    "NO_ITEMS_HINT": "Add items to see personalized recommendations",
     "NO_SEARCH_RESULTS": "No items found for this search.",
     "SEARCH": "Search",
-    "NAME": "Name",
-    "DESCRIPTION": "Description",
-    "PRICE": "Price",
-    "AMOUNT": "Amount",
-    "TOTAL": "Total",
+    "TAG_FILTER_PLACEHOLDER": "Add tag to filter...",
     "PERSON": "person",
     "PEOPLE": "people",
-    "TAG": "tag",
-    "TAGS": "tags",
     "NO_TAGS": "No tags",
-    "EDIT": "Edit",
-    "DELETE": "Delete",
     "SHOWING": "Showing items from",
     "TO": "to",
     "OF": "of",
@@ -232,26 +207,18 @@
     },
     "SORT": {
       "CAPTION": "Sort",
-      "SORT_BY": "Sort by",
       "NAME": "Name",
       "PRICE": "Price",
       "AMOUNT": "Amount",
       "TOTAL_PRICE": "Total Price",
       "USER_COUNT": "User Count",
       "RATING": "Rating",
-      "A_Z": "A-Z",
-      "Z_A": "Z-A",
       "ASCENDING": "Ascending",
       "DESCENDING": "Descending",
-      "ASC_SHORT": "asc",
-      "DESC_SHORT": "desc",
       "RESET": "Reset",
       "APPLY": "Apply now"
     },
-    "PAGINATION": {
-      "PAGE": "Page",
-      "OF": "of"
-    },
+    "PAGINATION": {},
     "TOOLTIP": {
       "USERS_TITLE": "Users:",
       "AND_MORE": "and {{count}} more"
@@ -261,7 +228,6 @@
       "EDIT_TITLE": "Edit Item",
       "DELETE_TITLE": "Delete Item",
       "NAME": "Name",
-      "DESCRIPTION": "Description",
       "COMMENT": "Comment",
       "PRICE": "Price",
       "AMOUNT": "Amount",
@@ -307,15 +273,10 @@
     "FULL_TRANSACTION_LIST": "Full Transaction List",
     "SUM": "Sum",
     "PAYER": "Payer",
-    "USERS": "Users",
     "SUM_PER_PARTICIPANT": "Sum per participant",
-    "TOTAL_EXPENSES": "Total expenses",
-    "AND": "and",
-    "MORE": "more",
-    "BACK_TO_CHECKS": "Back to Checks"
+    "TOTAL_EXPENSES": "Total expenses"
   },
   "TOUR": {
-    "START_BUTTON": "Tour",
     "ADD_EXPENSE_TITLE": "Add New Expenses",
     "ADD_EXPENSE_CONTENT": "Click here to create a new expense entry. This is the first step before you can calculate expenses - you need to provide a date, location (optional), and list of participants. After creating, you'll be redirected to the expenses details view.",
     "DATE_FILTER_TITLE": "Filter by Date Range",
@@ -361,7 +322,7 @@
     "ONLY_MY_ITEMS_TITLE": "Filter Your Items",
     "ONLY_MY_ITEMS_CONTENT": "Toggle this checkbox to show only the items you created. When unchecked, you'll see all items from all users you've shared expenses with, giving you a broader view of available items.",
     "ITEMS_GRID_TITLE": "Items Gallery",
-    "ITEMS_GRID_CONTENT": "Browse your item collection as cards. Each card shows the item's name, price, quantity, total cost, rating, and tags. Click the edit button on your own items to modify them, or click the arrow button on shared items to navigate to the original expense."
+    "ITEMS_GRID_CONTENT": "Browse your item collection as cards. Each card shows the item's name, price, quantity, total cost, rating, and tags. Click the edit button on your own items to modify them, or click the cloud button on shared items to navigate to the original expense."
   },
   "HOME_PAGE": {
     "HERO": {

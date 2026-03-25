@@ -364,3 +364,20 @@ FodyWeavers.xsd
 /Expenses.db
 /Expenses.db-shm
 /Expenses.db-wal
+
+# Secrets and Sensitive Configuration
+.env
+.env.local
+.env.*.local
+appsettings.*.local.json
+secrets.json
+**/Properties/launchSettings.json
+
+# User Secrets (ASP.NET Core)
+[Uu]ser[Ss]ecrets/
+
+# Certificates and Keys
+*.pfx
+*.p12
+*.key
+*.pem

@@ -3,7 +3,7 @@
     <div class="card border-primary" style="background-color: #0a1330;">
         <div class="card-body">
             <!-- Loading Indicator -->
-            <div *ngIf="isLoading" class="text-center text-white py-4">
+            <div *ngIf="loading" class="text-center text-white py-4">
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
@@ -16,7 +16,7 @@
                         <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
                     </small>
                     <button class="btn btn-outline-primary text-white" (click)="openModal('add')"
-                        [disabled]="isLoading" tourAnchor="add-item-btn">
+                        [disabled]="loading" [tourAnchor]="'add-item-btn-' + checkId">
                         <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.ADD' | translate }}
                     </button>
                 </div>
@@ -52,9 +52,9 @@
             </div>
 
             <!-- No Items Message -->
-            <div *ngIf="!isLoading && itemsList.length === 0" class="text-white text-center py-4">
+            <div *ngIf="!loading && itemsList.length === 0" class="text-white text-center py-4">
                 <h5>{{ 'ITEMS.NO_ITEMS' | translate }}</h5>
-                <button class="btn btn-outline-primary text-white mt-3" (click)="openModal('add')" tourAnchor="add-item-btn">
+                <button class="btn btn-outline-primary text-white mt-3" (click)="openModal('add')" [tourAnchor]="'add-item-btn-' + checkId">
                     <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.ADD' | translate }}
                 </button>
             </div>
@@ -77,40 +77,26 @@
                 <div class="row g-3 flex-grow-1">
                     <div *ngFor="let item of paginatedItemsList; let i = index" class="col-md-3">
                         <div class="card border-primary h-100 item-card"
+                            [class.highlighted-item]="item.id === highlightedItemId"
                             style="background-color: #0d1a3d; cursor: pointer;" (dblclick)="openModal('edit', item.id)">
                             <div class="card-body text-white p-2">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <h5 class="card-title mb-0"
-                                        style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: calc(100% - 2rem);">
-                                        <i class="bi bi-box-seam me-2"></i>{{ item.name || '-' }}
-                                        <i *ngIf="item.description" class="bi bi-chat-left-text ms-2"
-                                            style="font-size: 0.75rem; cursor: pointer;" data-bs-toggle="tooltip"
-                                            data-bs-placement="top" data-bs-html="true"
-                                            data-bs-custom-class="custom-tooltip"
-                                            [attr.data-bs-title]="item.description"></i>
+                                        style="font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: calc(100% - 2rem);">
+                                        <i class="bi bi-box-seam"></i>
+                                        {{ item.name || '-' }}
                                     </h5>
-                                    <div class="dropdown" (click)="$event.stopPropagation()">
-                                        <button class="btn btn-outline-primary text-white" type="button"
-                                            [id]="'actionsDropdown' + item.id" data-bs-toggle="dropdown"
-                                            aria-expanded="false"
-                                            style="padding: 0; font-size: 0.9rem; width: 1.3rem; height: 1.3rem; line-height: 1; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-three-dots-vertical"></i>
+                                    <div class="d-flex gap-1" (click)="$event.stopPropagation()">
+                                        <button class="btn btn-outline-warning text-white btn-action-edit" type="button"
+                                            (click)="openModal('edit', item.id)"
+                                            style="padding: 0; font-size: 0.85rem; width: 1.5rem; height: 1.5rem; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-pencil"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-custom dark-blue-0"
-                                            [attr.aria-labelledby]="'actionsDropdown' + item.id">
-                                            <li>
-                                                <a class="dropdown-item text-white" href="javascript:void(0)"
-                                                    (click)="openModal('edit', item.id)">
-                                                    <i class="bi bi-pencil me-2"></i>{{ 'ITEMS.EDIT' | translate }}
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-white" href="javascript:void(0)"
-                                                    (click)="openModal('delete', item.id)">
-                                                    <i class="bi bi-trash me-2"></i>{{ 'ITEMS.DELETE' | translate }}
-                                                </a>
-                                            </li>
-                                        </ul>
+                                        <button class="btn btn-outline-danger text-white btn-action-delete" type="button"
+                                            (click)="openModal('delete', item.id)"
+                                            style="padding: 0; font-size: 0.85rem; width: 1.5rem; height: 1.5rem; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -126,12 +112,8 @@
                                 <div class="d-flex align-items-center justify-content-between mt-2 mb-0 flex-nowrap"
                                     style="font-size: 0.8rem;">
                                     <div *ngIf="item.users && item.users.length > 0" style="white-space: nowrap;">
-                                        <label class="mb-0" data-bs-toggle="tooltip" data-bs-placement="top"
-                                            data-bs-html="true" data-bs-custom-class="custom-tooltip"
-                                            [attr.data-bs-title]="getUsersTooltipContent(item.id)">
-                                            <i class="bi bi-people-fill me-1"></i>{{ item.users.length || 0 }} {{
-                                            (item.users.length === 1 ? 'ITEMS.PERSON' : 'ITEMS.PEOPLE') | translate }}
-                                        </label>
+                                        <i class="bi bi-people-fill me-1"></i>{{ item.users.length || 0 }} {{
+                                        (item.users.length === 1 ? 'ITEMS.PERSON' : 'ITEMS.PEOPLE') | translate }}
                                     </div>
                                     <div style="white-space: nowrap;">
                                         <i class="bi bi-star-fill me-1" style="color: #ffc107;"></i>{{ item.rating }}/10
@@ -201,9 +183,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <label class="control-label mb-0"><i class="bi bi-chat-text me-1"></i>{{ 'ITEMS.MODAL.COMMENT' |
                         translate }}</label>
-                    <small class="text-white" style="font-size: 0.75rem;">{{ description.length }}/120</small>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ comment.length }}/120</small>
                 </div>
-                <textarea [(ngModel)]="description" name="description" class="form-control" rows="3" maxlength="120"
+                <textarea [(ngModel)]="comment" name="comment" class="form-control" rows="3" maxlength="120"
                     style="resize: none;"></textarea>
             </div>
             <div class="row mb-2">
@@ -343,9 +325,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <label class="control-label mb-0"><i class="bi bi-chat-text me-1"></i>{{ 'ITEMS.MODAL.COMMENT' |
                         translate }}</label>
-                    <small class="text-white" style="font-size: 0.75rem;">{{ description.length }}/120</small>
+                    <small class="text-white" style="font-size: 0.75rem;">{{ comment.length }}/120</small>
                 </div>
-                <textarea [(ngModel)]="description" name="description" class="form-control" rows="3" maxlength="120"
+                <textarea [(ngModel)]="comment" name="comment" class="form-control" rows="3" maxlength="120"
                     style="resize: none;"></textarea>
             </div>
             <div class="row mb-2">
@@ -477,7 +459,7 @@
             <div class="form-group mb-3">
                 <i class="bi bi-chat-text mx-1"></i>
                 <label class="control-label">{{ 'ITEMS.MODAL.COMMENT' | translate }}</label>
-                <textarea [value]="description" class="form-control" rows="3" disabled></textarea>
+                <textarea [value]="comment" class="form-control" rows="3" disabled></textarea>
             </div>
             <div class="row mb-3">
                 <div class="col-3">

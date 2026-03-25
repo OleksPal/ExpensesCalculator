@@ -60,11 +60,13 @@ export class DateRangeService {
 
       onReady: (selectedDates, dateStr, inst) => {
         if (inst.altInput) {
-          inst.altInput.style.width = '180px';
+          // Add Bootstrap classes for proper styling
+          inst.altInput.classList.add('form-control', 'form-control-sm', 'bg-transparent', 'text-white', 'border-primary', 'text-center');
+
+          // Set height and remove outline/shadow to match design
           inst.altInput.style.height = '37px';
           inst.altInput.style.outline = 'none';
           inst.altInput.style.boxShadow = 'none';
-          inst.altInput.style.color = 'white';
           inst.altInput.style.cursor = 'pointer';
           inst.altInput.value = 'All';
         }
@@ -147,6 +149,14 @@ export class DateRangeService {
       const startDate = new Date(fromDate);
       const endDate = new Date(toDate);
       instance.setDate([startDate, endDate], true);
+
+      // Manually update altInput to ensure it displays the formatted dates
+      if (instance.altInput && instance.formatDate) {
+        const formattedStart = instance.formatDate(startDate, instance.config.altFormat);
+        const formattedEnd = instance.formatDate(endDate, instance.config.altFormat);
+        const separator = instance.config.locale.rangeSeparator || ' - ';
+        instance.altInput.value = `${formattedStart}${separator}${formattedEnd}`;
+      }
     } catch (error) {
       console.error('Error setting flatpickr dates:', error);
     } finally {
@@ -174,19 +184,17 @@ export class DateRangeService {
   }
 
   /**
-   * Parse date from various formats to YYYY-MM-DD string
+   * Clear a Flatpickr date range instance and reset display
    */
-  parseDate(date: any): string {
-    if (typeof date === 'string') {
-      return date; // Already a string
+  clearDateRange(instance: any): void {
+    if (!instance) return;
+
+    instance.clear();
+
+    // Reset the altInput to show "All" after clearing
+    if (instance.altInput) {
+      instance.altInput.value = 'All';
     }
-    // If it's an object with year, month, day properties
-    if (date.year && date.month && date.day) {
-      const month = String(date.month).padStart(2, '0');
-      const day = String(date.day).padStart(2, '0');
-      return `${date.year}-${month}-${day}`;
-    }
-    return date.toString();
   }
 
   /**

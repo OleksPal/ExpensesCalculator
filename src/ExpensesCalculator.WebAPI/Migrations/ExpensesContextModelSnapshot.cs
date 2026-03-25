@@ -57,7 +57,8 @@ namespace ExpensesCalculator.WebAPI.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.PrimitiveCollection<string>("Participants")
                         .IsRequired()
@@ -66,6 +67,10 @@ namespace ExpensesCalculator.WebAPI.Migrations
                     b.PrimitiveCollection<string>("PeopleWithAccess")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalSum")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -84,7 +89,7 @@ namespace ExpensesCalculator.WebAPI.Migrations
                     b.Property<Guid>("CheckId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -92,6 +97,7 @@ namespace ExpensesCalculator.WebAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Rating")
@@ -148,7 +154,8 @@ namespace ExpensesCalculator.WebAPI.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 

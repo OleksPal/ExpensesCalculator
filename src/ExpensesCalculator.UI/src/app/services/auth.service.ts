@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { AuthResponse, TokenService } from './token.service';
 import { catchError, switchMap, tap, throwError } from 'rxjs';
 import { CanActivate, Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7054/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   public userName = '';
 

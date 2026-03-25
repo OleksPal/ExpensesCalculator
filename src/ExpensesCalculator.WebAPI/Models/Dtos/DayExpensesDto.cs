@@ -18,9 +18,14 @@ public class DayExpensesResponseDto
 {
     public Guid Id { get; set; }
     public DateOnly Date { get; set; }
-    public ICollection<string> Participants { get; set; }
+    public string[] Participants { get; set; }
     public string? Location { get; set; }
     public decimal TotalSum { get; set; }
+}
+
+public class DayExpensesDetailsResponseDto : DayExpensesResponseDto
+{
+    public CheckDto[] Checks { get; set; }
 }
 
 public class CreateDayExpensesRequestDto
@@ -30,7 +35,7 @@ public class CreateDayExpensesRequestDto
 
     [Required(ErrorMessage = "Participants are required.")]
     [MinLength(1, ErrorMessage = "At least one participant is required.")]
-    public ICollection<string> Participants { get; set; }
+    public List<string> Participants { get; set; }
 
     public string? Location { get; set; }
 }
@@ -45,7 +50,7 @@ public class EditDayExpensesRequestDto
 
     [Required(ErrorMessage = "Participants are required.")]
     [MinLength(1, ErrorMessage = "At least one participant is required.")]
-    public ICollection<string> Participants { get; set; }
+    public List<string> Participants { get; set; }
 
     public string? Location { get; set; }
 }
@@ -59,9 +64,8 @@ public record ShareDayExpensesResponseDto(bool IsSuccess, string Error);
 public class DayExpensesCalculationsDto
 {
     public Guid DayExpensesId { get; set; }
-    public IEnumerable<string> Participants { get; set; }
-    public IEnumerable<Check> Checks { get; set; }
+    public string[] Participants { get; set; }
     public ICollection<DayExpensesCalculation> DayExpensesCalculations { get; set; }
-    public ICollection<Transaction> AllUsersTrasactions { get; set; }
+    public ICollection<Transaction> AllUsersTransactions { get; set; }
     public ICollection<Transaction> OptimizedUserTransactions { get; set; }
 }

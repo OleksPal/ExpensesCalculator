@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Check } from './checks.service';
+import { environment } from '../../environments/environment';
 
 export interface DayExpenses {
   id: string;
@@ -9,6 +11,10 @@ export interface DayExpenses {
   participants: string[];
   peopleWithAccess: string[];
   totalSum: number;
+}
+
+export interface DayExpensesDetails extends DayExpenses {
+  checks: Check[];
 }
 export interface PagedDayExpensesResult {
   items: DayExpenses[];
@@ -71,7 +77,7 @@ export interface DayExpensesCalculationsDto {
   totalSum: number;
   checks: { id: string; location: string; payer: string; dayExpensesId: string; }[];
   dayExpensesCalculations: DayExpensesCalculation[];
-  allUsersTrasactions: Transaction[];
+  allUsersTransactions: Transaction[];
   optimizedUserTransactions: Transaction[];
 }
 
@@ -79,7 +85,7 @@ export interface DayExpensesCalculationsDto {
   providedIn: 'root'
 })
 export class ExpensesService {
-  private apiUrl = 'https://localhost:7054/api/';
+  private apiUrl = `${environment.apiUrl}/`;
 
   constructor(private http: HttpClient) { }
 
@@ -100,8 +106,8 @@ export class ExpensesService {
     return this.http.get<PagedDayExpensesResult>(`${this.apiUrl}DayExpenses`, { params })
   }
 
-  getDayExpenses(id: string): Observable<DayExpenses> {
-    return this.http.get<DayExpenses>(`${this.apiUrl}DayExpenses/${id}`)
+  getDayExpensesDetails(id: string): Observable<DayExpensesDetails> {
+    return this.http.get<DayExpensesDetails>(`${this.apiUrl}DayExpenses/${id}/details`)
   }
 
   createDayExpenses(date: string, location: string, participants: string[]) {
@@ -111,7 +117,7 @@ export class ExpensesService {
       participants: participants
     }
 
-    return this.http.post<void>(`${this.apiUrl}DayExpenses`, body);
+    return this.http.post<DayExpenses>(`${this.apiUrl}DayExpenses`, body);
   }
 
   editDayExpenses(id: string, date: string, location: string, participants: string[]) {
@@ -122,7 +128,7 @@ export class ExpensesService {
       participants: participants
     }
 
-    return this.http.put<void>(`${this.apiUrl}DayExpenses`, body);
+    return this.http.put<DayExpenses>(`${this.apiUrl}DayExpenses`, body);
   }
 
   deleteDayExpenses(id: string) {   

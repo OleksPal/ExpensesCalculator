@@ -185,3 +185,21 @@ td {
   background-color: #aaaaaa;
 }
 
+/* Highlighted item animation */
+.highlighted-item {
+  border: 2px solid #ffc107 !important;
+  animation: highlightPulse 2s ease-in-out 3;
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    border-color: #ffc107;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
+  }
+  50% {
+    border-color: #ffeb3b;
+    box-shadow: 0 0 30px rgba(255, 235, 59, 0.8);
+  }
+}
+

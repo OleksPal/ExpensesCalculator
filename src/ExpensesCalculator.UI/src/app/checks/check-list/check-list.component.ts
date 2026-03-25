@@ -1,17 +1,16 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ModalWindowComponent } from '../../shared/modal-window/modal-window.component';
 import { ValidationErrors, parseValidationErrors } from '../../shared/models/validation-errors.model';
-import { ChecksService, Check } from '../../services/checks.service';
+import { ChecksService, Check, DeleteCheckResponse } from '../../services/checks.service';
 import { ItemListComponent } from '../../items/item-list/item-list.component';
-import { CheckSumUpdateService } from '../../services/check-sum-update.service';
+import { ItemsService, Item } from '../../services/items.service';
 import { DayExpensesTotalSumUpdateService } from '../../services/day-expenses-total-sum-update.service';
 import { ToastService } from '../../services/toast.service';
 import { FormValidationService } from '../../services/form-validation.service';
 import { FilterBarComponent, FilterOption } from '../../shared/filter-bar/filter-bar.component';
-import { Subscription } from 'rxjs';
 import { TourAnchorNgBootstrapDirective } from 'ngx-ui-tour-ng-bootstrap';
 
 declare var bootstrap: any;
@@ -23,16 +22,20 @@ declare var bootstrap: any;
   templateUrl: './check-list.component.html',
   styleUrl: './check-list.component.css'
 })
-export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
+export class CheckListComponent implements OnInit, OnChanges {
   @Input() dayExpensesId!: string;
   @Input() participants: string[] = [];
+  @Input() checks?: Check[]; // Optional: if provided, use these instead of loading
   @Input() scrollToCheckId?: string;
+  @Input() scrollToItemId?: string;
   @Output() checksLoaded = new EventEmitter<void>();
 
   // Data properties
   checksList: Check[] = [];
   filteredChecksList: Check[] = [];
   expandedCheckIds: Set<string> = new Set();
+  checkItemsMap: Map<string, Item[]> = new Map(); // Store items per check
+  checkLoadingMap: Map<string, boolean> = new Map(); // Track loading state per check
 
   // Modal properties
   modalInstance: any;
@@ -63,18 +66,19 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
   // UI state properties
   isLoading = false;
 
-  // Subscription for check sum updates
-  private checkSumUpdateSub?: Subscription;
-
   // Scroll to check flag
   private shouldScrollToCheck = false;
 
+  // Scroll to item flag and highlighted item ID
+  private shouldScrollToItem = false;
+  highlightedItemId?: string;
+
   // Inject services using inject() for better SSR compatibility
-  private checkSumUpdateService = inject(CheckSumUpdateService);
   private dayExpensesTotalSumUpdateService = inject(DayExpensesTotalSumUpdateService);
 
   constructor(
     private checksService: ChecksService,
+    private itemsService: ItemsService,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
@@ -82,7 +86,18 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (this.dayExpensesId) {
+    // If checks are provided, use them; otherwise load them
+    if (this.checks !== undefined) {
+      this.checksList = this.checks;
+      this.applyLocalFiltering();
+      this.checksLoaded.emit();
+
+      // Handle scrolling after checks are set
+      if (this.scrollToCheckId) {
+        this.shouldScrollToCheck = true;
+        setTimeout(() => this.scrollToCheck(this.scrollToCheckId!), 100);
+      }
+    } else if (this.dayExpensesId) {
       this.loadChecks();
     }
 
@@ -91,23 +106,23 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
       this.shouldScrollToCheck = true;
     }
 
-    // Subscribe to check sum updates
-    this.checkSumUpdateSub = this.checkSumUpdateService.checkSumUpdates.subscribe(
-      (update) => this.onCheckSumUpdated(update)
-    );
+    // Set highlighted item ID if provided (check scroll will handle item visibility)
+    if (this.scrollToItemId) {
+      this.highlightedItemId = this.scrollToItemId;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['dayExpensesId'] && !changes['dayExpensesId'].firstChange) {
+    // If checks are provided and changed, use them
+    if (changes['checks'] && !changes['checks'].firstChange && this.checks !== undefined) {
+      this.checksList = this.checks;
+      this.applyLocalFiltering();
+      // Don't emit checksLoaded here to avoid infinite loop when parent updates checks
+    } else if (changes['dayExpensesId'] && !changes['dayExpensesId'].firstChange && this.checks === undefined) {
       this.loadChecks();
     }
   }
 
-  ngOnDestroy(): void {
-    if (this.checkSumUpdateSub) {
-      this.checkSumUpdateSub.unsubscribe();
-    }
-  }
 
   // Data loading methods
   loadChecks(): void {
@@ -206,8 +221,88 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
         bsCollapse.hide();
       } else {
         this.expandedCheckIds.add(id);
+
+        // Listen for the collapse shown event to reinitialize tooltips
+        collapseElement.addEventListener('shown.bs.collapse', () => {
+          // Give Angular time to render the items, then reinitialize tooltips
+          // Use longer delay to ensure items are fully loaded and rendered
+          setTimeout(() => {
+            const tooltipElements = collapseElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipElements.forEach((el: any) => {
+              // Dispose existing tooltip if any
+              const existingTooltip = bootstrap.Tooltip.getInstance(el);
+              if (existingTooltip) existingTooltip.dispose();
+              // Initialize new tooltip with explicit configuration
+              new bootstrap.Tooltip(el, {
+                html: true,
+                trigger: 'hover',
+                container: 'body',
+                placement: 'top'
+              });
+            });
+          }, 300);
+        }, { once: true }); // Use once: true to auto-remove listener after firing
+
         bsCollapse.show();
+
+        // Load items if not already loaded
+        if (!this.checkItemsMap.has(id)) {
+          this.loadItemsForCheck(id);
+        }
       }
+    }
+  }
+
+  loadItemsForCheck(checkId: string): void {
+    // Set loading state
+    this.checkLoadingMap.set(checkId, true);
+
+    this.itemsService.getAllCheckItems(checkId).subscribe({
+      next: (items) => {
+        this.checkItemsMap.set(checkId, items);
+        this.checkLoadingMap.set(checkId, false);
+
+        // Force change detection to ensure DOM is updated
+        this.cdr.detectChanges();
+
+        // Reinitialize tooltips after items are loaded and rendered
+        setTimeout(() => {
+          const collapseElement = document.getElementById('collapse' + checkId);
+          if (collapseElement && collapseElement.classList.contains('show')) {
+            const tooltipElements = collapseElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipElements.forEach((el: any) => {
+              const existingTooltip = bootstrap.Tooltip.getInstance(el);
+              if (existingTooltip) existingTooltip.dispose();
+              new bootstrap.Tooltip(el, {
+                html: true,
+                trigger: 'hover',
+                container: 'body',
+                placement: 'top'
+              });
+            });
+          }
+        }, 200);
+      },
+      error: (err) => {
+        console.error('Error loading items for check:', err);
+        this.checkLoadingMap.set(checkId, false);
+      }
+    });
+  }
+
+  getItemsForCheck(checkId: string): Item[] {
+    return this.checkItemsMap.get(checkId) || [];
+  }
+
+  isCheckItemsLoading(checkId: string): boolean {
+    return this.checkLoadingMap.get(checkId) || false;
+  }
+
+  onCheckSumUpdated(event: { checkId: string, newSum: number }): void {
+    const check = this.checksList.find(c => c.id === event.checkId);
+    if (check) {
+      check.totalSum = event.newSum;
+      this.cdr.detectChanges();
     }
   }
 
@@ -280,9 +375,15 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
     this.formValidated = true;
 
     this.checksService.createCheck(this.location, this.payer, this.dayExpensesId).subscribe({
-      next: () => {
+      next: (createdCheck) => {
+        // Add the new check to the list
+        this.checksList.push(createdCheck);
+        this.applyLocalFiltering();
+
+        // Emit event to parent to re-initialize tour with updated step count
+        this.checksLoaded.emit();
+
         this.hideModal();
-        this.loadChecks();
         this.toastService.success(
           this.translate.instant('CHECKS.TOAST.SUCCESS'),
           this.translate.instant('CHECKS.TOAST.CREATE_SUCCESS')
@@ -306,10 +407,16 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.validateCheckForm()) return;
     this.formValidated = true;
 
-    this.checksService.editCheck(this.id, this.location, this.payer, this.dayExpensesId).subscribe({
-      next: () => {
+    this.checksService.editCheck(this.id, this.location, this.payer).subscribe({
+      next: (updatedCheck) => {
+        // Update the check in the local list
+        const index = this.checksList.findIndex(c => c.id === this.id);
+        if (index !== -1) {
+          this.checksList[index] = updatedCheck;
+          this.applyLocalFiltering();
+        }
+
         this.hideModal();
-        this.loadChecks();
         this.toastService.success(
           this.translate.instant('CHECKS.TOAST.SUCCESS'),
           this.translate.instant('CHECKS.TOAST.EDIT_SUCCESS')
@@ -331,9 +438,24 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
 
   deleteCheck(): void {
     this.checksService.deleteCheck(this.id).subscribe({
-      next: () => {
+      next: (response: DeleteCheckResponse) => {
+        // Remove the check from the local list
+        const index = this.checksList.findIndex(c => c.id === this.id);
+        if (index !== -1) {
+          this.checksList.splice(index, 1);
+          // Also remove cached items for this check
+          this.checkItemsMap.delete(this.id);
+          this.checkLoadingMap.delete(this.id);
+          this.applyLocalFiltering();
+
+          // Emit day expenses total sum from backend response
+          this.dayExpensesTotalSumUpdateService.emitDayExpensesTotalSumUpdate(this.dayExpensesId, response.dayExpensesTotalSum);
+
+          // Emit event to parent to re-initialize tour with updated step count
+          this.checksLoaded.emit();
+        }
+
         this.hideModal();
-        this.loadChecks();
         this.toastService.success(
           this.translate.instant('CHECKS.TOAST.SUCCESS'),
           this.translate.instant('CHECKS.TOAST.DELETE_SUCCESS')
@@ -380,21 +502,6 @@ export class CheckListComponent implements OnInit, OnChanges, OnDestroy {
     return this.sortOrder === 'asc' ? 'bi bi-arrow-up ps-1' : 'bi bi-arrow-down ps-1';
   }
 
-  // Handle check sum updates from item-list component
-  onCheckSumUpdated(event: { checkId: string, newSum: number }): void {
-    const check = this.checksList.find(c => c.id === event.checkId);
-    if (check) {
-      check.totalSum = event.newSum;
-      // Re-apply filtering and sorting to update the display
-      this.applyLocalFiltering();
-      // Manually trigger change detection
-      this.cdr.detectChanges();
-
-      // Calculate and emit day expenses total sum
-      const dayExpensesTotalSum = this.checksList.reduce((sum, c) => sum + c.totalSum, 0);
-      this.dayExpensesTotalSumUpdateService.emitDayExpensesTotalSumUpdate(this.dayExpensesId, dayExpensesTotalSum);
-    }
-  }
 
   // Scroll to specific check
   private scrollToCheck(checkId: string): void {

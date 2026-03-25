@@ -40,9 +40,6 @@ public class EditCheckRequestDto
     [Required(ErrorMessage = "Payer is required.")]
     [MinLength(1, ErrorMessage = "Payer should contain at least one symbol.")]
     public string Payer { get; set; }
-
-    public byte[]? Photo { get; set; } = null;
-
-    [Required(ErrorMessage = "DayExpensesId is required.")]
-    public Guid DayExpensesId { get; set; }
 }
+
+public record DeleteCheckResponse(decimal DayExpensesTotalSum);

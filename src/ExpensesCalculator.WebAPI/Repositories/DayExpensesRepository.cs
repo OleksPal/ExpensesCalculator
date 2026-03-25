@@ -13,18 +13,13 @@ public class DayExpensesRepository : IDayExpensesRepository
     public DayExpensesRepository(ExpensesContext context)
     {
         _context = context;
-    }    
+    }
 
     public async Task<PagedResultWithDateRangeDto<DayExpenses>> GetAll(string userName, AllDayExpensesRequestDto request)
     {
-        if (request.PageSize <= 0 || request.PageSize > 100)
-            request.PageSize = 10;
-
-        if (request.PageNumber <= 0)
-            request.PageNumber = 1;
-
+        // Filter out dummy DayExpenses used for recommendation items (identified by Location = "EXPENSES_CALCULATOR_RECOMMENDATIONS")
         var query = _context.Days
-            .Where(day => day.PeopleWithAccess.Contains(userName));
+            .Where(day => day.PeopleWithAccess.Contains(userName) && day.Location != "EXPENSES_CALCULATOR_RECOMMENDATIONS");
 
         query = ApplyTextFilter(query, request.FilterCriteria, request.FilterText);
         query = ApplySorting(query, request.SortColumn, request.SortOrder);        
@@ -42,19 +37,19 @@ public class DayExpensesRepository : IDayExpensesRepository
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .AsNoTracking()
-            .ToListAsync();
+            .ToArrayAsync();
 
         if (totalCount > 0)
         {
+            var baseQuery = _context.Days
+                .Where(day => day.PeopleWithAccess.Contains(userName) && day.Location != "EXPENSES_CALCULATOR_RECOMMENDATIONS");
+            baseQuery = ApplyTextFilter(baseQuery, request.FilterCriteria, request.FilterText);
+
             if (!request.FromDate.HasValue)
-                request.FromDate = await _context.Days
-                    .Where(day => day.PeopleWithAccess.Contains(userName))
-                    .MinAsync(day => day.Date);
+                request.FromDate = await baseQuery.MinAsync(day => day.Date);
 
             if (!request.ToDate.HasValue)
-                request.ToDate = await _context.Days
-                    .Where(day => day.PeopleWithAccess.Contains(userName))
-                    .MaxAsync(day => day.Date);
+                request.ToDate = await baseQuery.MaxAsync(day => day.Date);
         }
 
         return new PagedResultWithDateRangeDto<DayExpenses>
@@ -64,6 +59,39 @@ public class DayExpensesRepository : IDayExpensesRepository
             FromDate = request.FromDate,
             ToDate = request.ToDate
         };
+    }   
+
+    public async Task<DayExpenses?> GetById(Guid id, string userName)
+    {
+        return await _context.Days
+            .AsNoTracking()
+            .FirstOrDefaultAsync(day => day.Id == id && day.PeopleWithAccess.Contains(userName));
+    }
+
+    public async Task<DayExpenses?> GetByIdInternal(Guid id)
+    {
+        return await _context.Days
+            .AsNoTracking()
+            .FirstOrDefaultAsync(day => day.Id == id);
+    }
+
+    public async Task<Guid> Insert(DayExpenses dayExpenses)
+    {
+        var insertedDay = await _context.Days.AddAsync(dayExpenses);
+        await _context.SaveChangesAsync();
+        return insertedDay.Entity.Id;
+    }
+
+    public async Task Update(DayExpenses dayExpenses)
+    {
+        _context.Days.Update(dayExpenses);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task Delete(DayExpenses dayExpenses)
+    {
+        _context.Days.Remove(dayExpenses);
+        await _context.SaveChangesAsync();
     }
 
     private static IQueryable<DayExpenses> ApplyTextFilter(IQueryable<DayExpenses> query, string? filterCriteria, string? filterText)
@@ -82,7 +110,7 @@ public class DayExpensesRepository : IDayExpensesRepository
 
             "participants" => query.Where(day =>
                 day.Participants.Any(p => p.ToLower().Contains(normalizedText)) ||
-                day.Participants.Count.ToString() == normalizedText),
+                day.Participants.Length.ToString() == normalizedText),
 
             _ => query
         };
@@ -104,39 +132,14 @@ public class DayExpensesRepository : IDayExpensesRepository
                 : query.OrderByDescending(day => day.Location),
 
             "participants" => isAscending
-                ? query.OrderBy(day => day.Participants.Count)
-                : query.OrderByDescending(day => day.Participants.Count),
+                ? query.OrderBy(day => day.Participants.Length)
+                : query.OrderByDescending(day => day.Participants.Length),
+
+            "totalsum" => isAscending
+                ? query.OrderBy(day => day.TotalSum)
+                : query.OrderByDescending(day => day.TotalSum),
 
             _ => query.OrderByDescending(day => day.Date)
         };
-    }
-
-    public async Task<DayExpenses> GetById(Guid id, string userName)
-    {
-        return await _context.Days.FirstOrDefaultAsync(day => day.Id == id && day.PeopleWithAccess.Contains(userName));
-    }
-
-    public async Task<Guid> Insert(DayExpenses dayExpenses)
-    {
-        var insertedDay = await _context.Days.AddAsync(dayExpenses);
-        await _context.SaveChangesAsync();
-        return insertedDay.Entity.Id;
-    }
-
-    public async Task Update(DayExpenses dayExpenses)
-    {
-        _context.Days.Update(dayExpenses);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task Delete(Guid id, string userName)
-    {
-        var dayExpenses = await _context.Days.FirstOrDefaultAsync(day => day.Id == id && day.PeopleWithAccess.Contains(userName));
-
-        if (dayExpenses is not null)
-        {
-            _context.Days.Remove(dayExpenses);
-            await _context.SaveChangesAsync();
-        }
     }
 }

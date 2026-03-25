@@ -6,8 +6,9 @@ namespace ExpensesCalculator.WebAPI.Repositories.Interfaces;
 public interface IDayExpensesRepository
 {
     Task<PagedResultWithDateRangeDto<DayExpenses>> GetAll(string userName, AllDayExpensesRequestDto allDayExpensesRequestDto);
-    Task<DayExpenses> GetById(Guid id, string userName);
-    Task<Guid> Insert(DayExpenses obj);
-    Task Update(DayExpenses obj);
-    Task Delete(Guid id, string userName);
+    Task<DayExpenses?> GetById(Guid id, string userName);
+    Task<DayExpenses?> GetByIdInternal(Guid id);
+    Task<Guid> Insert(DayExpenses dayExpenses);
+    Task Update(DayExpenses dayExpenses);
+    Task Delete(DayExpenses dayExpenses);
 }

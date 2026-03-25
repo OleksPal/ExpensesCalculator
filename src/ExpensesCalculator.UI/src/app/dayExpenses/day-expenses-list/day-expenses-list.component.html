@@ -11,7 +11,7 @@
                     <i class="bi bi-question-circle"></i>
                 </button>
             </div>
-            <div *ngIf="isLoading" class="spinner-border" role="status"></div>
+            <div class="spinner-border" [class.invisible]="!isLoading" role="status"></div>
         </div>
 
         <button *ngIf="showAddExpenseButton()" class="btn btn-outline-primary text-white" tourAnchor="add-expense-btn" (click)="openModal('add', '')">

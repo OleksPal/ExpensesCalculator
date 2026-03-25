@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Item {
   id: string;
   name: string;
-  description?: string | null;
+  comment?: string | null;
   price: number;
   amount: number;
   rating: number;
@@ -31,13 +32,33 @@ export interface ItemsRequest {
   pageNumber?: number;
   pageSize?: number;
   onlyMyItems?: boolean;
+  tags?: string[];
+}
+
+export interface ItemResponse {
+  id?: string;
+  name?: string;
+  comment?: string;
+  price?: number;
+  amount?: number;
+  rating?: number;
+  tags?: string[];
+  users?: string[];
+  checkId: string;
+  checkTotalSum: number;
+  dayExpensesTotalSum: number;
+}
+
+export interface DeleteItemResponse {
+  checkTotalSum: number;
+  dayExpensesTotalSum: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemsService {
-  private apiUrl = 'https://localhost:7054/api/';
+  private apiUrl = `${environment.apiUrl}/`;
 
   constructor(private http: HttpClient) { }
 
@@ -54,6 +75,12 @@ export class ItemsService {
     if (request.filterCriteria) params = params.set('filterCriteria', request.filterCriteria);
     if (request.pageNumber) params = params.set('pageNumber', request.pageNumber.toString());
     if (request.pageSize) params = params.set('pageSize', request.pageSize.toString());
+    if (request.onlyMyItems !== undefined) params = params.set('isOnlyMyItems', request.onlyMyItems.toString());
+    if (request.tags && request.tags.length > 0) {
+      request.tags.forEach(tag => {
+        params = params.append('tags', tag);
+      });
+    }
 
     return this.http.get<PagedResult<Item>>(`${this.apiUrl}Recommendations`, { params });
   }
@@ -63,15 +90,15 @@ export class ItemsService {
   }
 
   createItem(item: Item) {
-    return this.http.post<number>(`${this.apiUrl}Items`, item);
+    return this.http.post<ItemResponse>(`${this.apiUrl}Items`, item);
   }
 
   editItem(item: Item) {
-    return this.http.put<number>(`${this.apiUrl}Items`, item);
+    return this.http.put<ItemResponse>(`${this.apiUrl}Items`, item);
   }
 
   deleteItem(id: string) {
-    return this.http.delete<number>(`${this.apiUrl}Items?id=${id}`);
+    return this.http.delete<DeleteItemResponse>(`${this.apiUrl}Items/${id}`);
   }
 
   updateItemRatingAndTags(id: string, rating: number, tags: string[]) {
@@ -80,5 +107,18 @@ export class ItemsService {
 
   getAllDistinctTags(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}Recommendations/tags`);
+  }
+
+  // Recommendation-specific methods
+  createRecommendationItem(item: { name: string; comment?: string; price: number; amount: number; rating: number; tags: string[] }) {
+    return this.http.post(`${this.apiUrl}Recommendations`, item);
+  }
+
+  editRecommendationItem(item: { id: string; name: string; comment?: string; price: number; amount: number; rating: number; tags: string[] }) {
+    return this.http.put(`${this.apiUrl}Recommendations`, item);
+  }
+
+  deleteRecommendationItem(id: string) {
+    return this.http.delete(`${this.apiUrl}Recommendations/${id}`);
   }
 }

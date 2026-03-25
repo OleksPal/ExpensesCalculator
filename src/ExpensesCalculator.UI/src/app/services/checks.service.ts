@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Check {
   id: string;
@@ -11,20 +12,20 @@ export interface Check {
   totalSum: number;
 }
 
+export interface DeleteCheckResponse {
+  dayExpensesTotalSum: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ChecksService {
-  private apiUrl = 'https://localhost:7054/api/';
+  private apiUrl = `${environment.apiUrl}/`;
 
   constructor(private http: HttpClient) { }
 
   getAllDayExpensesChecks(dayExpensesId: string): Observable<Check[]> {
     return this.http.get<Check[]>(`${this.apiUrl}Checks/day-expenses/${dayExpensesId}`);
-  }
-
-  getCheck(id: string): Observable<Check> {
-    return this.http.get<Check>(`${this.apiUrl}Checks/${id}`);
   }
 
   createCheck(location: string, payer: string, dayExpensesId: string) {
@@ -34,21 +35,20 @@ export class ChecksService {
       dayExpensesId: dayExpensesId
     };
 
-    return this.http.post<void>(`${this.apiUrl}Checks`, body);
+    return this.http.post<Check>(`${this.apiUrl}Checks`, body);
   }
 
-  editCheck(id: string, location: string, payer: string, dayExpensesId: string) {
+  editCheck(id: string, location: string, payer: string) {
     const body = {
       id: id,
       location: location,
-      payer: payer,
-      dayExpensesId: dayExpensesId
+      payer: payer
     };
 
-    return this.http.put<void>(`${this.apiUrl}Checks`, body);
+    return this.http.put<Check>(`${this.apiUrl}Checks`, body);
   }
 
   deleteCheck(id: string) {
-    return this.http.delete<void>(`${this.apiUrl}Checks/${id}`);
+    return this.http.delete<DeleteCheckResponse>(`${this.apiUrl}Checks/${id}`);
   }
 }

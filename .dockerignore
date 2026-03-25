@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.github/
+
+# Documentation
+*.md
+docs/
+README.md
+
+# IDE
+.vs/
+.vscode/
+.claude/
+*.user
+*.suo
+
+# Build outputs
+**/bin/
+**/obj/
+**/out/
+**/logs/
+
+# Frontend
+**/node_modules/
+**/dist/
+**/.angular/
+
+# Tests
+tests/
+**/*.Test/
+**/*.Tests/
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+*.mdf
+*.ldf

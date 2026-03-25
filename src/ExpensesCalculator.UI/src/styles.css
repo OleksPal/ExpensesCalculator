@@ -175,3 +175,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .popover .card-text {
   margin-bottom: 0.25rem !important;
 }
+
+/* Action Buttons - Edit and Delete */
+.btn-action-edit:hover {
+  background-color: #d4a017;
+  border-color: #d4a017;
+}
+
+.btn-action-delete:hover {
+  background-color: #b52a3a;
+  border-color: #b52a3a;
+}

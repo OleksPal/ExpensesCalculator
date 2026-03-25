@@ -10,19 +10,67 @@ public class ItemRepository : GenericRepository<Item>, IItemRepository
 {
     public ItemRepository(ExpensesContext context) : base(context) { }
 
-    public async Task<ICollection<Item>> GetAllCheckItems(Guid checkId)
+    public async Task<Item[]> GetAllCheckItems(Guid checkId)
     {
-        return await _context.Items.Where(i => i.CheckId == checkId).ToListAsync();
+        return await _context.Items
+            .AsNoTracking()
+            .Where(i => i.CheckId == checkId)
+            .ToArrayAsync();
     }
 
-    public async Task<PagedResultDto<Item>> GetAllUserItems(string userName, AllDayExpensesRequestDto request)
+    public async Task<PagedResultDto<RecommendationItemDto>> GetAllItemsForRecommendations(string userName, AllItemsRequestDto request)
     {
-        // Get all items where the user has access through DayExpenses
-        var query = from item in _context.Items
-                    join check in _context.Checks on item.CheckId equals check.Id
-                    join day in _context.Days on check.DayExpensesId equals day.Id
-                    where day.PeopleWithAccess.Contains(userName)
-                    select item;
+        var userId = await GetUserIdAsync(userName);
+
+        if (userId == Guid.Empty)
+        {
+            return new PagedResultDto<RecommendationItemDto>
+            {
+                Items = Array.Empty<RecommendationItemDto>(),
+                TotalPages = 0,
+                TotalCount = 0
+            };
+        }
+
+        // Get user's personal recommendation check ID in a single query
+        var userCheckId = await _context.Checks
+            .Where(c => c.DayExpensesId == userId)
+            .Select(c => c.Id)
+            .FirstOrDefaultAsync();
+
+        IQueryable<Item> queryUserItems;
+
+        if (request.IsOnlyMyItems)
+        {
+            // Only user's personal recommendation items
+            queryUserItems = _context.Items.Where(i => i.CheckId == userCheckId);
+        }
+        else
+        {
+            // Get all check IDs from accessible day expenses (excluding dummy records) + user's personal check
+            // Combined in a single query with Join
+            var accessibleCheckIds = await _context.Days
+                .Where(d => d.PeopleWithAccess.Contains(userName) && d.Location != "EXPENSES_CALCULATOR_RECOMMENDATIONS")
+                .Join(_context.Checks,
+                    day => day.Id,
+                    check => check.DayExpensesId,
+                    (day, check) => check.Id)
+                .ToArrayAsync();
+
+            // Include items from both user's personal check AND accessible checks
+            queryUserItems = _context.Items
+                .Where(i => i.CheckId == userCheckId || accessibleCheckIds.Contains(i.CheckId));
+        }
+
+        // Apply tag filtering if tags array is provided
+        if (request.Tags != null && request.Tags.Length > 0)
+        {
+            foreach (var tag in request.Tags)
+            {
+                var tagLower = tag.ToLower().Trim();
+                queryUserItems = queryUserItems.Where(i => i.Tags.Any(t => t.ToLower() == tagLower));
+            }
+        }
 
         // Apply filtering
         if (!string.IsNullOrWhiteSpace(request.FilterText))
@@ -36,159 +84,154 @@ public class ItemRepository : GenericRepository<Item>, IItemRepository
                 foreach (var searchTag in searchTags)
                 {
                     var tag = searchTag.Trim().ToLower();
-                    query = query.Where(i => i.Tags.Any(t => t.ToLower().Contains(tag)));
+                    queryUserItems = queryUserItems.Where(i => i.Tags.Any(t => t.ToLower().Contains(tag)));
                 }
             }
             else
             {
-                query = request.FilterCriteria?.ToLower() switch
+                queryUserItems = request.FilterCriteria?.ToLower() switch
                 {
-                    "name" => query.Where(i => i.Name.ToLower().Contains(filterText)),
-                    "description" => query.Where(i => i.Description != null && i.Description.ToLower().Contains(filterText)),
-                    "price" => query.Where(i => i.Price.ToString().Contains(filterText)),
-                    "amount" => query.Where(i => i.Amount.ToString().Contains(filterText)),
-                    "rating" => query.Where(i => i.Rating.ToString().Contains(filterText)),
-                    _ => query.Where(i => i.Name.ToLower().Contains(filterText))
+                    "name" => queryUserItems.Where(i => i.Name.ToLower().Contains(filterText)),
+                    "description" => queryUserItems.Where(i => i.Comment != null && i.Comment.ToLower().Contains(filterText)),
+                    "price" => queryUserItems.Where(i => i.Price.ToString().Contains(filterText)),
+                    "amount" => queryUserItems.Where(i => i.Amount.ToString().Contains(filterText)),
+                    "rating" => queryUserItems.Where(i => i.Rating.ToString().Contains(filterText)),
+                    _ => queryUserItems.Where(i => i.Name.ToLower().Contains(filterText))
                 };
             }
         }
 
         // Count total items before pagination
-        var totalCount = await query.CountAsync();
+        var totalCount = await queryUserItems.CountAsync();
 
         // Apply sorting
         var isAscending = request.SortOrder?.ToLower() == "asc";
-        query = request.SortColumn?.ToLower() switch
+        queryUserItems = request.SortColumn?.ToLower() switch
         {
-            "price" => isAscending ? query.OrderBy(i => i.Price) : query.OrderByDescending(i => i.Price),
-            "amount" => isAscending ? query.OrderBy(i => i.Amount) : query.OrderByDescending(i => i.Amount),
-            "rating" => isAscending ? query.OrderBy(i => i.Rating) : query.OrderByDescending(i => i.Rating),
-            "totalprice" => isAscending ? query.OrderBy(i => i.Price * i.Amount) : query.OrderByDescending(i => i.Price * i.Amount),
-            "usercount" => isAscending ? query.OrderBy(i => i.Users.Count) : query.OrderByDescending(i => i.Users.Count),
-            _ => isAscending ? query.OrderBy(i => i.Name) : query.OrderByDescending(i => i.Name)
-        };
-
-        // Apply pagination
-        var pageNumber = request.PageNumber > 0 ? request.PageNumber : 1;
-        var pageSize = request.PageSize > 0 ? request.PageSize : 10;
-        var items = await query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-        return new PagedResultDto<Item>
-        {
-            Items = items,
-            TotalPages = totalPages,
-            TotalCount = totalCount
-        };
-    }
-
-    public async Task<RecommendationsPagedResultDto<RecommendationItemDto>> GetAllItemsForRecommendations(string userName, AllDayExpensesRequestDto request)
-    {
-        // Get all items - simple SELECT * FROM Items
-        var query = _context.Items.AsQueryable();
-
-        // Apply filtering
-        if (!string.IsNullOrWhiteSpace(request.FilterText))
-        {
-            var filterText = request.FilterText.ToLower().Trim();
-
-            if (request.FilterCriteria?.ToLower() == "tags")
-            {
-                // Handle pipe-separated tags with AND logic
-                var searchTags = filterText.Split('|', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var searchTag in searchTags)
-                {
-                    var tag = searchTag.Trim().ToLower();
-                    query = query.Where(i => i.Tags.Any(t => t.ToLower().Contains(tag)));
-                }
-            }
-            else
-            {
-                query = request.FilterCriteria?.ToLower() switch
-                {
-                    "name" => query.Where(i => i.Name.ToLower().Contains(filterText)),
-                    "description" => query.Where(i => i.Description != null && i.Description.ToLower().Contains(filterText)),
-                    "price" => query.Where(i => i.Price.ToString().Contains(filterText)),
-                    "amount" => query.Where(i => i.Amount.ToString().Contains(filterText)),
-                    "rating" => query.Where(i => i.Rating.ToString().Contains(filterText)),
-                    _ => query.Where(i => i.Name.ToLower().Contains(filterText))
-                };
-            }
-        }
-
-        // Count total items before pagination
-        var totalCount = await query.CountAsync();
-
-        // Apply sorting
-        var isAscending = request.SortOrder?.ToLower() == "asc";
-        query = request.SortColumn?.ToLower() switch
-        {
-            "price" => isAscending ? query.OrderBy(i => i.Price) : query.OrderByDescending(i => i.Price),
-            "amount" => isAscending ? query.OrderBy(i => i.Amount) : query.OrderByDescending(i => i.Amount),
-            "rating" => isAscending ? query.OrderBy(i => i.Rating) : query.OrderByDescending(i => i.Rating),
-            "totalprice" => isAscending ? query.OrderBy(i => i.Price * i.Amount) : query.OrderByDescending(i => i.Price * i.Amount),
-            "usercount" => isAscending ? query.OrderBy(i => i.Users.Count) : query.OrderByDescending(i => i.Users.Count),
-            _ => isAscending ? query.OrderBy(i => i.Name) : query.OrderByDescending(i => i.Name)
+            "price" => isAscending ? queryUserItems.OrderBy(i => i.Price) : queryUserItems.OrderByDescending(i => i.Price),
+            "amount" => isAscending ? queryUserItems.OrderBy(i => i.Amount) : queryUserItems.OrderByDescending(i => i.Amount),
+            "rating" => isAscending ? queryUserItems.OrderBy(i => i.Rating) : queryUserItems.OrderByDescending(i => i.Rating),
+            "totalprice" => isAscending ? queryUserItems.OrderBy(i => i.Price * i.Amount) : queryUserItems.OrderByDescending(i => i.Price * i.Amount),
+            "usercount" => isAscending ? queryUserItems.OrderBy(i => i.Users.Count) : queryUserItems.OrderByDescending(i => i.Users.Count),
+            _ => isAscending ? queryUserItems.OrderBy(i => i.Name) : queryUserItems.OrderByDescending(i => i.Name)
         };
 
         // Apply pagination and project to DTO
         var pageNumber = request.PageNumber > 0 ? request.PageNumber : 1;
         var pageSize = request.PageSize > 0 ? request.PageSize : 10;
-        var items = await query
+        var items = await queryUserItems
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(item => new RecommendationItemDto
+            .Join(_context.Checks,
+                item => item.CheckId,
+                check => check.Id,
+                (item, check) => new { Item = item, Check = check })
+            .Select(joined => new RecommendationItemDto
             {
-                Id = item.Id,
-                Name = item.Name,
-                Description = item.Description,
-                Price = item.Price,
-                Amount = item.Amount,
-                Rating = item.Rating,
-                Tags = item.Tags,
-                Users = item.Users,
-                CheckId = item.CheckId,
-                CanEdit = true // hardcore for now
+                Id = joined.Item.Id,
+                Name = joined.Item.Name,
+                Comment = joined.Item.Comment,
+                Price = joined.Item.Price,
+                Amount = joined.Item.Amount,
+                Rating = joined.Item.Rating,
+                Tags = joined.Item.Tags,
+                Users = joined.Item.Users,
+                CheckId = joined.Item.CheckId,
+                DayExpensesId = joined.Check.DayExpensesId,
+                CanEdit = joined.Item.CheckId == userCheckId
             })
             .ToListAsync();
 
-        items.ForEach(i => i.DayExpensesId = GetCheckDayExpensesId(i.CheckId));
-
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
-        return new RecommendationsPagedResultDto<RecommendationItemDto>
+        return new PagedResultDto<RecommendationItemDto>
         {
-            Items = items,
+            Items = items.ToArray(),
             TotalPages = totalPages,
-            TotalCount = totalCount,
-            CurrentUserId = GetUserId(userName)
+            TotalCount = totalCount
         };
     }
 
-    public async Task<ICollection<string>> GetAllDistinctTags()
+    public async Task<string[]> GetAllDistinctTags(string userName)
     {
-        var allTags = await _context.Items
-            .SelectMany(i => i.Tags)
+        // Get accessible day IDs first (small result set) - filter early to reduce join size
+        var accessibleDayIds = await _context.Days
+            .AsNoTracking()
+            .Where(d => d.PeopleWithAccess.Contains(userName))
+            .Select(d => d.Id)
+            .ToArrayAsync();
+
+        // Then get tags only from items in those days
+        return await _context.Items
+            .AsNoTracking()
+            .Join(_context.Checks,
+                item => item.CheckId,
+                check => check.Id,
+                (item, check) => new { item.Tags, check.DayExpensesId })
+            .Where(ic => accessibleDayIds.Contains(ic.DayExpensesId))
+            .SelectMany(x => x.Tags)
             .Distinct()
             .OrderBy(t => t)
-            .ToListAsync();
-
-        return allTags;
+            .ToArrayAsync();
     }
 
-    private Guid GetCheckDayExpensesId(Guid checkId)
+    public async Task<Guid> GetUserIdByUsername(string userName)
     {
-        var check = _context.Checks.Find(checkId);
-        return check?.DayExpensesId ?? Guid.Empty;
-    }
-
-    private Guid GetUserId(string userName)
-    {
-        var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
+        var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.UserName == userName);
         return user?.Id ?? Guid.Empty;
+    }
+
+    public async Task<Guid> GetOrCreateRecommendationCheckId(string userName)
+    {
+        var userId = await GetUserIdByUsername(userName);
+
+        if (userId == Guid.Empty)
+            throw new KeyNotFoundException($"User {userName} not found");
+
+        // Find or create recommendation DayExpenses with Id = userId
+        var dayExpenses = await _context.Days
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == userId);
+
+        if (dayExpenses == null)
+        {
+            dayExpenses = new DayExpenses
+            {
+                Id = userId,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Participants = new[] { userName },
+                PeopleWithAccess = new[] { userName },
+                Location = "EXPENSES_CALCULATOR_RECOMMENDATIONS",
+                TotalSum = 0
+            };
+            await _context.Days.AddAsync(dayExpenses);
+            await _context.SaveChangesAsync();
+        }
+
+        // Find or create Check for this DayExpenses
+        var check = await _context.Checks
+            .FirstOrDefaultAsync(c => c.DayExpensesId == userId);
+
+        if (check == null)
+        {
+            check = new Check
+            {
+                Id = Guid.NewGuid(),
+                Location = "EXPENSES_CALCULATOR_RECOMMENDATIONS",
+                Payer = userName,
+                DayExpensesId = userId
+            };
+            await _context.Checks.AddAsync(check);
+            await _context.SaveChangesAsync();
+        }
+
+        return check.Id;
+    }
+
+    private async Task<Guid> GetUserIdAsync(string userName)
+    {
+        return await GetUserIdByUsername(userName);
     }
 }

@@ -1,7 +1,8 @@
 ﻿using ExpensesCalculator.WebAPI.Data;
 using ExpensesCalculator.WebAPI.Models;
-using ExpensesCalculator.WebAPI.Models.Dtos;
-using ExpensesCalculator.WebAPI.Services;
+using ExpensesCalculator.WebAPI.Models.Dtos.Auth;
+using ExpensesCalculator.WebAPI.Services.Auth;
+using ExpensesCalculator.WebAPI.Services.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -114,8 +115,12 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(RefreshRequest request)
     {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
         var token = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Token == request.RefreshToken);
+            .FirstOrDefaultAsync(t => t.Token == request.RefreshToken && t.UserId.ToString() == userId);
 
         if (token != null)
         {

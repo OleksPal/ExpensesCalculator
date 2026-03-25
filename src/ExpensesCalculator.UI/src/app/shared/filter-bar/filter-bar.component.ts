@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -15,7 +15,7 @@ export interface FilterOption {
   templateUrl: './filter-bar.component.html',
   styleUrl: './filter-bar.component.css'
 })
-export class FilterBarComponent {
+export class FilterBarComponent implements OnChanges {
   @Input() filterOptions: FilterOption[] = [];
   @Input() selectedCriteria: string = '';
   @Input() filterText: string = '';
@@ -23,6 +23,17 @@ export class FilterBarComponent {
 
   @Output() criteriaChange = new EventEmitter<string>();
   @Output() filterTextChange = new EventEmitter<string>();
+
+  localFilterText: string = '';
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Sync from parent on first load or when parent explicitly clears the filter
+    if (changes['filterText']) {
+      if (changes['filterText'].firstChange || this.filterText !== this.localFilterText) {
+        this.localFilterText = this.filterText;
+      }
+    }
+  }
 
   get selectedCriteriaLabel(): string {
     const option = this.filterOptions.find(opt => opt.value === this.selectedCriteria);
@@ -38,6 +49,6 @@ export class FilterBarComponent {
   }
 
   onFilterInput(): void {
-    this.filterTextChange.emit(this.filterText);
+    this.filterTextChange.emit(this.localFilterText);
   }
 }

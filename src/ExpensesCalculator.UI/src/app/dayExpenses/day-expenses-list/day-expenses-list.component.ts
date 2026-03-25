@@ -35,6 +35,7 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
   private langChangeSub!: Subscription;
   private filterTextSubject = new Subject<string>();
   private filterTextSubscription!: Subscription;
+  private hasLoadedOnce = false;
 
   ngAfterViewInit() {
     this.tryInitializeFlatpickr();
@@ -65,10 +66,15 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
         onChange: (dates: Date[]) => {
           this.fromDate = this.dateRangeService.formatDate(dates[0]);
           this.toDate = this.dateRangeService.formatDate(dates[1]);
+
+          // Destroy and reinitialize to ensure clean state with new dates
+          this.dateRangeService.destroy(this.flatpickrInstance);
+          this.flatpickrInstance = null;
+          this.flatpickrInitialized = false;
+
           this.loadExpenses();
         }
       },
-      
       this.settingDatesFromApiWrapper
     );
 
@@ -108,6 +114,14 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
 
   clearDateRange(): void {
     if (this.flatpickrInstance) {
+      // Destroy and reinitialize to ensure clean state
+      this.dateRangeService.destroy(this.flatpickrInstance);
+      this.flatpickrInstance = null;
+      this.flatpickrInitialized = false;
+
+      // Reset date variables and reload
+      this.fromDate = '';
+      this.toDate = '';
       this.currentPage = 1;
       this.loadExpenses('', '');
     }
@@ -229,22 +243,20 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
       next: (data) => {
         this.expensesList = data.items;
         this.totalPages = data.totalPages;
+
         this.fromDate = this.parseDateOnly(data.fromDate);
         this.toDate = this.parseDateOnly(data.toDate);
 
-        // Initialize flatpickr
+        // Initialize flatpickr on first load or after clear
         if (!this.flatpickrInitialized) {
           setTimeout(() => {
             this.tryInitializeFlatpickr();
 
-            // Set the initial dates in flatpickr
+            // Set the dates in flatpickr after initialization
             if (this.fromDate && this.toDate) {
               this.setFlatpickrDates(this.fromDate, this.toDate);
             }
           }, 100);
-        }
-        else {
-          this.setFlatpickrDates(this.fromDate, this.toDate);
         }
 
         // Re-initialize tooltips after data loads
@@ -254,6 +266,7 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
         this.initializeTour();
 
         this.isLoading = false;
+        this.hasLoadedOnce = true;
       },
       error: (err) => {
         console.error('Error day expenses list:', err);
@@ -483,13 +496,12 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
     let participantsList = this.participants.split(',').map(p => p.trim())
 
     this.expensesService.createDayExpenses(this.date, this.location, participantsList).subscribe({
-      next: (createdDayId: any) => {
+      next: (createdDay) => {
         this.hideModal();
-        this.loadExpenses('', '');
         this.toastService.success(
           this.translate.instant('EXPENSES.TOAST.SUCCESS'),
           this.translate.instant('EXPENSES.TOAST.CREATE_SUCCESS'));
-        this.router.navigate(['day-expenses-details', createdDayId]);
+        this.router.navigate(['day-expenses-details', createdDay.id]);
       },
       error: error => {
         this.formErrors = parseValidationErrors(error);
@@ -511,12 +523,20 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
     let participantsList = this.participants.split(',').map(p => p.trim())
 
     this.expensesService.editDayExpenses(this.id, this.date, this.location, participantsList).subscribe({
-      next: () => {
+      next: (updatedDay) => {
+        // Update the item in the local list
+        const index = this.expensesList.findIndex(e => e.id === this.id);
+        if (index !== -1) {
+          this.expensesList[index] = updatedDay;
+        }
+
         this.hideModal();
-        this.loadExpenses('', '');
         this.toastService.success(
           this.translate.instant('EXPENSES.TOAST.SUCCESS'),
           this.translate.instant('EXPENSES.TOAST.EDIT_SUCCESS'));
+
+        // Re-initialize tooltips after data updates
+        setTimeout(() => this.tooltipService.initialize(), 0);
       },
       error: error => {
         this.formErrors = parseValidationErrors(error);
@@ -534,9 +554,26 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
   deleteDayExpenses() {
     this.expensesService.deleteDayExpenses(this.id).subscribe({
       next: () => {
+        // Remove the item from the local list
+        const index = this.expensesList.findIndex(e => e.id === this.id);
+        if (index !== -1) {
+          this.expensesList.splice(index, 1);
+        }
+
+        // If the current page is now empty and we're not on page 1, go to previous page
+        if (this.expensesList.length === 0 && this.currentPage > 1) {
+          this.currentPage--;
+          this.loadExpenses();
+        } else if (this.expensesList.length === 0) {
+          // If we're on page 1 and it's empty, clear filters to show "no data" view
+          this.filterText = '';
+          this.fromDate = '';
+          this.toDate = '';
+          this.currentPage = 1;
+          this.totalPages = 0;
+        }
+
         this.hideModal();
-        this.currentPage = 1;
-        this.loadExpenses('', '');
         this.toastService.success(
           this.translate.instant('EXPENSES.TOAST.SUCCESS'),
           this.translate.instant('EXPENSES.TOAST.DELETE_SUCCESS'));
@@ -616,7 +653,9 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   showFilterControls(): boolean {
-    return !this.isLoading && !this.showNoDataMessage();
+    // Hide filter controls during initial load only, keep visible during subsequent loads
+    const hideOnInitialLoad = !this.hasLoadedOnce && this.isLoading;
+    return !hideOnInitialLoad && !this.showNoDataMessage();
   }
 
   showAddExpenseButton(): boolean {

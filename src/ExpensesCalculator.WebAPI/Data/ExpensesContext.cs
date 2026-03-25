@@ -15,7 +15,11 @@ namespace ExpensesCalculator.WebAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);       
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.UserName)
+                .HasMaxLength(256);
 
             modelBuilder.Entity<Item>()
                 .Property(e => e.Users)
@@ -36,6 +40,18 @@ namespace ExpensesCalculator.WebAPI.Data
             modelBuilder.Entity<DayExpenses>()
                 .Property(e => e.PeopleWithAccess)
                 .HasColumnType("nvarchar(max)");
+
+            modelBuilder.Entity<DayExpenses>()
+                .Property(e => e.Location)
+                .HasMaxLength(256);
+
+            modelBuilder.Entity<Item>()
+                .Property(e => e.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<DayExpenses>()
+                .Property(e => e.TotalSum)
+                .HasPrecision(18, 2);
         }
     }
 }

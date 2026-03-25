@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -8,7 +8,6 @@ import { FilterBarComponent, FilterOption } from '../../shared/filter-bar/filter
 import { SortBarComponent, SortOption } from '../../shared/sort-bar/sort-bar.component';
 import { ValidationErrors, parseValidationErrors } from '../../shared/models/validation-errors.model';
 import { ItemsService, Item } from '../../services/items.service';
-import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -20,7 +19,6 @@ declare var bootstrap: any;
   selector: 'app-recommendations',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ModalWindowComponent, FilterBarComponent, SortBarComponent, TranslatePipe, TourAnchorNgBootstrapDirective, TourStepTemplateComponent],
-  providers: [DatePipe],
   templateUrl: './recommendations.component.html',
   styleUrl: './recommendations.component.css'
 })
@@ -44,7 +42,7 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
   // Form properties
   id = '';
   name = '';
-  description = '';
+  comment = '';
   price = 0;
   amount = 1;
   rating = 0;
@@ -98,8 +96,6 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
   // UI state properties
   isLoading = false;
 
-  dayExpensesId = '00000000-0000-0000-0000-000000000000'; // Empty Guid for recommendations
-  currentUserId = '00000000-0000-0000-0000-000000000000'; // Current user ID from API
   onlyMyItems = false; // Filter to show only current user's items
 
   // Subscription for language changes
@@ -143,8 +139,6 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
   constructor(
     private itemsService: ItemsService,
     private translate: TranslateService,
-    private datePipe: DatePipe,
-    private authService: AuthService,
     private toastService: ToastService,
     public tourService: TourService
   ) {}
@@ -221,6 +215,7 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
       sortOrder: this.sortOrder,
       filterText: this.actualFilterText || undefined,
       filterCriteria: this.actualFilterCriteria || undefined,
+      tags: this.filterTags.length > 0 ? this.filterTags : undefined,
       pageNumber: this.currentPage,
       pageSize: this.itemsPerPage,
       onlyMyItems: this.onlyMyItems
@@ -233,10 +228,6 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
         this.paginatedItemsList = data.items;
         this.totalPages = data.totalPages;
         this.totalCount = data.totalCount;
-        // Store the current user ID from API response
-        if (data.currentUserId) {
-          this.currentUserId = data.currentUserId;
-        }
         this.isLoading = false;
         setTimeout(() => {
           this.initializeTooltips();
@@ -255,7 +246,7 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
     if (item) {
       this.id = item.id;
       this.name = item.name;
-      this.description = item.description || '';
+      this.comment = item.comment || '';
       this.price = item.price;
       this.amount = item.amount;
       this.rating = item.rating;
@@ -294,20 +285,15 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
     if (text !== undefined) {
       this.filterText = text;
     }
-    // Update actual filter state only if not using tag filter
-    if (this.filterTags.length === 0) {
-      this.actualFilterText = this.filterText;
-      this.actualFilterCriteria = this.filterCriteria;
-    }
+    // Text filter and tag filter are now independent
+    this.actualFilterText = this.filterText;
+    this.actualFilterCriteria = this.filterCriteria;
     this.filterTextSubject.next(this.filterText);
   }
 
   changeFilterCriteria(criteria: string): void {
     this.filterCriteria = criteria;
-    // Update actual filter state only if not using tag filter
-    if (this.filterTags.length === 0) {
-      this.actualFilterCriteria = criteria;
-    }
+    this.actualFilterCriteria = criteria;
     this.onFilterChange();
   }
 
@@ -410,7 +396,7 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
   private clearFormData(): void {
     this.id = '';
     this.name = '';
-    this.description = '';
+    this.comment = '';
     this.price = 0;
     this.amount = 1;
     this.rating = 0;
@@ -481,15 +467,7 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   applyTagFilter(): void {
-    if (this.filterTags.length > 0) {
-      // Set internal filter state for backend
-      this.actualFilterCriteria = 'Tags';
-      this.actualFilterText = this.filterTags.join('|');
-    } else {
-      // Restore regular filter state when no tags
-      this.actualFilterCriteria = this.filterCriteria;
-      this.actualFilterText = this.filterText;
-    }
+    // Tags are now sent as a separate array parameter, so just reload items
     this.currentPage = 1;
     this.loadItems();
   }
@@ -543,22 +521,19 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
     if (!this.validateItemForm()) return;
     this.formValidated = true;
 
-    const newItem: Item = {
-      id: '00000000-0000-0000-0000-000000000000',
+    const newItem = {
       name: this.name,
-      description: this.description,
+      comment: this.comment,
       price: this.price,
       amount: this.amount,
       rating: this.rating,
-      tags: this.tags,
-      users: [this.authService.userName],
-      checkId: this.currentUserId,
-      dayExpensesId: this.dayExpensesId
+      tags: this.tags
     };
 
-    this.itemsService.createItem(newItem).subscribe({
+    this.itemsService.createRecommendationItem(newItem).subscribe({
       next: () => {
         this.hideModal();
+        // Reload items to get fresh data from server
         this.loadItems();
         this.toastService.success(
           this.translate.instant('ITEMS.TOAST.SUCCESS'),
@@ -580,26 +555,23 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   editItem(): void {
-    // Full edit for items in recommendations where checkId === currentUserId
     if (!this.validateItemForm()) return;
     this.formValidated = true;
 
-    const updatedItem: Item = {
+    const updatedItem = {
       id: this.id,
       name: this.name,
-      description: this.description,
+      comment: this.comment,
       price: this.price,
       amount: this.amount,
       rating: this.rating,
-      tags: this.tags,
-      users: [this.authService.userName],
-      checkId: this.currentUserId,
-      dayExpensesId: this.dayExpensesId
+      tags: this.tags
     };
 
-    this.itemsService.editItem(updatedItem).subscribe({
+    this.itemsService.editRecommendationItem(updatedItem).subscribe({
       next: () => {
         this.hideModal();
+        // Reload items to get fresh data from server
         this.loadItems();
         this.toastService.success(
           this.translate.instant('ITEMS.TOAST.SUCCESS'),
@@ -621,9 +593,10 @@ export class RecommendationsComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   deleteItem(): void {
-    this.itemsService.deleteItem(this.id).subscribe({
+    this.itemsService.deleteRecommendationItem(this.id).subscribe({
       next: () => {
         this.hideModal();
+        // Reload items to get fresh data from server
         this.loadItems();
         this.toastService.success(
           this.translate.instant('ITEMS.TOAST.SUCCESS'),
