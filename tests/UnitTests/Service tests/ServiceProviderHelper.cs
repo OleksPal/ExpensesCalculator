@@ -2,6 +2,7 @@
 using ExpensesCalculator.Repositories;
 using ExpensesCalculator.Repositories.Interfaces;
 using ExpensesCalculator.Services;
+using ExpensesCalculator.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

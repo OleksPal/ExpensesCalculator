@@ -1,5 +1,5 @@
 using ExpensesCalculator.Models;
-using ExpensesCalculator.Services;
+using ExpensesCalculator.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExpensesCalculator.UnitTests
@@ -48,7 +48,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetCheckByIdThatDoesNotExists()
         {
-            var check = await _checkService.GetCheckById(0);
+            var check = await _checkService.GetById(0);
 
             Assert.Null(check);
         }
@@ -56,7 +56,7 @@ namespace ExpensesCalculator.UnitTests
         [Fact]
         public async void GetCheckByIdThatExists()
         {
-            var check = await _checkService.GetCheckById(1);
+            var check = await _checkService.GetById(1);
 
             Assert.Equal("Shop1", check.Location);
         }
@@ -115,7 +115,7 @@ namespace ExpensesCalculator.UnitTests
             var checkToAdd = _checkDefaultObject;
 
             await _checkService.AddCheck(checkToAdd);
-            var addedDayExpenses = await _checkService.GetCheckById(checkToAdd.Id);
+            var addedDayExpenses = await _checkService.GetById(checkToAdd.Id);
 
             Assert.Equal(checkToAdd.Id, addedDayExpenses.Id);
         }
@@ -137,11 +137,11 @@ namespace ExpensesCalculator.UnitTests
         {
             var checkToAdd = _checkDefaultObject;
             await _checkService.AddCheck(checkToAdd);
-            var checkToEdit = await _checkService.GetCheckById(checkToAdd.Id);
+            var checkToEdit = await _checkService.GetById(checkToAdd.Id);
 
             checkToEdit.Location = "Shop10";
             await _checkService.EditCheck(checkToEdit);
-            var editedCheck = await _checkService.GetCheckById(checkToAdd.Id);
+            var editedCheck = await _checkService.GetById(checkToAdd.Id);
 
             Assert.Equal("Shop10", editedCheck.Location);
         }
@@ -161,10 +161,10 @@ namespace ExpensesCalculator.UnitTests
         {
             var checkToAdd = _checkDefaultObject;
             await _checkService.AddCheck(checkToAdd);
-            var checkToDelete = await _checkService.GetCheckById(checkToAdd.Id);
+            var checkToDelete = await _checkService.GetById(checkToAdd.Id);
 
             await _checkService.DeleteCheck(checkToDelete.Id);
-            var deletedCheck = await _checkService.GetCheckById(checkToAdd.Id);
+            var deletedCheck = await _checkService.GetById(checkToAdd.Id);
 
             Assert.Null(deletedCheck);
         }

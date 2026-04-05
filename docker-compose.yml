@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: expensescalculator-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - expenses-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${SA_PASSWORD} -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expensescalculator-app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=Expenses;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - Jwt__Issuer=ExpensesApi
+      - Jwt__Audience=ExpensesClient
+      - Cors__AllowedOrigins__0=http://localhost:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - expenses-network
+
+volumes:
+  sqlserver-data:
+
+networks:
+  expenses-network:
+    driver: bridge
