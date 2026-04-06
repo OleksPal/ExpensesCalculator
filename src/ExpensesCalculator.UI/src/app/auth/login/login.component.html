@@ -1,0 +1,32 @@
+<div class="rounded mt-5 mx-5 mb-4 col-10 col-sm-8 mx-auto dark-blue-1">
+    <div class="container-fluid p-3 text-white">
+        <div class="d-flex align-items-center justify-content-between">
+            <h1>{{ 'LOGIN.TITLE' | translate }}</h1>
+            <div *ngIf="isLoading" class="spinner-border" role="status"></div>
+        </div>        
+        <div class="row">
+            <form (ngSubmit)="login()">
+                <h3 class="mb-0">{{ 'LOGIN.SUBTITLE' | translate }}</h3>
+                <hr />
+                <div class="form-floating mb-3">
+                    <input [(ngModel)]="userName" name="userName" class="form-control" [class.is-invalid]="fieldErrors['userName']" [class.is-valid]="formValidated && !fieldErrors['userName'] && userName.trim()" />
+                    <label class="form-label text-black">{{ 'LOGIN.USERNAME' | translate }}</label>
+                    <div class="invalid-feedback" *ngIf="fieldErrors['userName']">{{ fieldErrors['userName'] }}</div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input [(ngModel)]="password" name="password" type="password" class="form-control" [class.is-invalid]="fieldErrors['password']" [class.is-valid]="formValidated && !fieldErrors['password'] && password" />
+                    <label class="form-label text-black">{{ 'LOGIN.PASSWORD' | translate }}</label>
+                    <div class="invalid-feedback" *ngIf="fieldErrors['password']">{{ fieldErrors['password'] }}</div>
+                </div>
+                <div>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">{{ 'LOGIN.SUBMIT' | translate }}</button>
+                </div>
+                <div class="pt-3">
+                    <!-- <p>
+                        <a id="forgot-password">Forgot your password?</a>
+                    </p> -->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,140 @@
+.dark-blue-0 {
+    background: #080f27;
+}
+
+.dark-blue-1 {
+    background: #0b1739;
+}
+
+.row-odd > td {
+    background: #0a1330 !important;
+}
+
+.row-even > td {
+    background: #0b1739 !important;
+}
+
+th {
+    cursor: pointer;
+    user-select: none;
+}
+
+td {
+    vertical-align: middle !important;
+}
+
+.table tr > *:nth-child(1) {
+    padding-left: 20px;
+}
+
+/* Override table-responsive overflow to prevent scrollbar issues with dropdowns */
+.fix-table-height {
+  overflow: visible !important;
+}
+
+/* Fix table layout to prevent column width recalculation on collapse */
+.fix-table-height .table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Ensure dropdowns are positioned above other content */
+.dropdown-menu {
+  z-index: 1050;
+}
+
+.location-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-menu-custom {
+  min-width: unset !important;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+.table thead th {
+  background-color: #0b1739;
+  border-bottom: 2px solid #080f27;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #080f27;
+}
+
+.table tbody tr:hover {
+  background-color: #0d1a3d !important;
+}
+
+/* Blue border input group */
+.input-group-primary .form-control,
+.input-group-primary .input-group-text {
+  border-color: #0d6efd;
+}
+
+.input-group-primary .form-control {
+  color: white;
+  background-color: transparent;
+}
+
+.input-group-primary .form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  background-color: transparent;
+  color: white;
+}
+
+.input-group-primary .input-group-text {
+  background-color: transparent;
+  color: white;
+}
+
+.input-group-primary .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: black;
+}
+
+.toast-dark {
+  background-color: #1a2332;
+  color: white;
+}
+
+.toast-dark .toast-header {
+  background-color: #0d1520;
+  color: white;
+  border-bottom: 1px solid #2a3952;
+}
+
+.toast-dark .toast-header.bg-success {
+  background-color: #198754;
+}
+
+.toast-dark .toast-header.bg-danger {
+  background-color: #dc3545;
+}
+
+.toast-dark .toast-body {
+  background-color: #1a2332;
+}
+
+/* Button hover effect */
+.btn-outline-primary:hover {
+  background-color: #1f429d !important;
+  color: white;
+}
+
+.btn-outline-primary:active {
+  background-color: #1f429d !important;
+  color: white;
+}

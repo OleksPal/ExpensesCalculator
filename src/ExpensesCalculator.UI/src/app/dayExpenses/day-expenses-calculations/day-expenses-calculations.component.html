@@ -1,0 +1,158 @@
+<tour-step-template></tour-step-template>
+
+<div class="rounded mt-4 mb-5 ms-sm-4 me-sm-4 dark-blue-1">
+    <div class="container-fluid px-3 py-2 text-white">
+        <div class="d-flex align-items-center justify-content-between mt-2 mb-3">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-primary text-white px-4 me-3" (click)="navigateBack()" tourAnchor="back-to-details-btn">
+                    <i class="bi bi-arrow-left" style="transform: scaleX(2); display: inline-block;"></i>
+                </button>
+                <h4 class="mb-0">
+                    <i class="bi bi-calculator me-2"></i>{{ 'CALCULATIONS.TITLE' | translate }}
+                </h4>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button *ngIf="!isLoading && calculationsData" class="btn btn-sm btn-outline-primary text-white" (click)="startTour()" title="Start tour">
+                    <i class="bi bi-question-circle"></i>
+                </button>
+                <div *ngIf="isLoading" class="spinner-border" role="status"></div>
+            </div>
+        </div>
+
+        <!-- No Data -->
+        <div *ngIf="!isLoading && (!calculationsData || !calculationsData.dayExpensesCalculations || calculationsData.dayExpensesCalculations.length === 0)"
+            class="text-white text-center pt-4 pb-5">
+            <h2>{{ 'CALCULATIONS.NO_DATA' | translate }}</h2>
+            <h5 class="pt-3">{{ 'CALCULATIONS.NO_DATA_HINT' | translate }}</h5>
+        </div>
+
+        <!-- Tabs and Content -->
+        <div *ngIf="calculationsData && calculationsData.dayExpensesCalculations && calculationsData.dayExpensesCalculations.length > 0" class="mb-3">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation rounded-top border border-primary d-flex flex-wrap" style="background: #0a1330;">
+                <ng-container *ngFor="let participant of calculationsData.participants; let i = index">
+                    <button *ngIf="i !== 0" class="tab-btn text-white px-3 py-2"
+                        [class.active]="activeTab === participant" (click)="setActiveTab(participant)">
+                        <i class="bi bi-person-fill me-1"></i>{{ participant }}
+                    </button>
+                    <button *ngIf="i === 0" class="tab-btn text-white px-3 py-2"
+                        [class.active]="activeTab === participant" (click)="setActiveTab(participant)"
+                        tourAnchor="participant-tabs">
+                        <i class="bi bi-person-fill me-1"></i>{{ participant }}
+                    </button>
+                </ng-container>
+                <button class="tab-btn text-white px-3 py-2" [class.active]="activeTab === 'transactionList'"
+                    (click)="setActiveTab('transactionList')" tourAnchor="transaction-list-tab">
+                    <i class="bi bi-credit-card-fill me-1"></i>{{ 'CALCULATIONS.TRANSACTION_LIST' | translate }}
+                </button>
+            </div>
+
+            <!-- Participant Tab Content -->
+            <div *ngFor="let participant of calculationsData.participants"
+                class="tab-content rounded-bottom border border-primary border-top-0 p-3"
+                [hidden]="activeTab !== participant">
+                <ng-container *ngIf="getCalculationForUser(participant) as userCalc">
+                    <div *ngFor="let checkCalc of userCalc.checkCalculations">
+                        <div *ngIf="checkCalc.items && checkCalc.items.length > 0">
+                            <!-- Check Header -->
+                            <div class="d-flex align-items-center mb-2">
+                                <span style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-html="true"
+                                    [attr.data-bs-title]="getCheckTooltip(checkCalc.items, checkCalc.check.payer)">
+                                    <i class="bi bi-cart me-2"></i>
+                                    <span class="fw-bold">{{ checkCalc.check.location }}</span>
+                                </span>
+                            </div>
+
+                            <!-- Items List -->
+                            <ul class="list-unstyled ms-3">
+                                <li *ngFor="let itemCalc of checkCalc.items" class="mb-1">
+                                    <i class="bi bi-box me-1"></i>
+                                    <span>{{ itemCalc.item.name }}:</span>
+                                    <span class="ms-1">{{ itemCalc.item.price * itemCalc.item.amount | currency:'UAH':'₴' }}</span>
+                                    <span class="mx-1">/</span>
+                                    <span class="text-muted text-white"
+                                        style="cursor: pointer; color: white !important;" data-bs-toggle="tooltip"
+                                        data-bs-html="true"
+                                        [attr.data-bs-title]="getItemUsersTooltip(itemCalc.item.users)">
+                                        <i class="bi bi-people-fill me-1"></i>{{ itemCalc.item.users.length }}
+                                    </span>
+                                    <span class="mx-1">=</span>
+                                    <span class="text-warning fw-bold">{{ itemCalc.pricePerUser | currency:'UAH':'₴' }}</span>
+                                </li>
+                            </ul>
+
+                            <!-- Sum per participant -->
+                            <div>
+                                <i class="bi bi-coin me-1"></i>
+                                <span>{{ 'CALCULATIONS.SUM_PER_PARTICIPANT' | translate }}:</span>
+                                <span class="text-warning fw-bold ms-1">{{ checkCalc.sumPerParticipant | currency:'UAH':'₴' }}</span>
+                            </div>
+
+                            <hr class="my-3" style="border-color: #6c757d; opacity: 1;" />
+                        </div>
+                    </div>
+
+                    <!-- Total expenses current participant -->
+                    <div>
+                        <i class="bi bi-wallet2 me-1"></i>
+                        <span>{{ 'CALCULATIONS.TOTAL_EXPENSES' | translate }}:</span>
+                        <span class="text-warning fw-bold ms-1">{{ getTotalForUser(participant) | currency:'UAH':'₴' }}</span>
+                    </div>
+
+                </ng-container>
+            </div>
+
+            <!-- Transaction List Tab Content -->
+            <div class="tab-content rounded-bottom border border-primary border-top-0 p-3"
+                [hidden]="activeTab !== 'transactionList'">
+                <!-- Optimized Transactions -->
+                <div class="mb-2">
+                    <div class="mb-2">
+                        <i class="bi bi-cash-stack me-1"></i>
+                        <span class="fw-bold">{{ 'CALCULATIONS.TRANSACTION_LIST' | translate }}:</span>
+                    </div>
+                    <ul class="list-unstyled ms-3 mb-0">
+                        <li *ngFor="let transaction of calculationsData.optimizedUserTransactions" class="mb-1">
+                            <i class="bi bi-person-fill me-1"></i>{{ transaction.subjects.sender }}
+                            <span class="text-warning fw-bold mx-1">({{ transaction.transferAmount | currency:'UAH':'₴'
+                                }})</span>
+                            <span class="mx-1">→</span>
+                            <i class="bi bi-person-fill me-1"></i>{{ transaction.subjects.recipient }}
+                        </li>
+                    </ul>
+                </div>
+
+                <hr class="my-3" style="border-color: #6c757d; opacity: 1;" />
+
+                <!-- Full Transaction List (Collapsible) -->
+                <div>
+                    <div class="d-flex align-items-center mb-2" style="cursor: pointer;" data-bs-toggle="collapse"
+                        data-bs-target="#fullTransactionList" aria-expanded="false" aria-controls="fullTransactionList"
+                        (click)="toggleFullTransactionList()">
+                        <span class="me-2" style="user-select: none;">
+                            <i class="bi" [class.bi-chevron-right]="!showFullTransactionList"
+                                [class.bi-chevron-down]="showFullTransactionList">
+                            </i>
+                        </span>
+                        <i class="bi bi-cash-stack me-1"></i>
+                        <span class="fw-bold">{{ 'CALCULATIONS.FULL_TRANSACTION_LIST' | translate }}:</span>
+                    </div>
+
+                    <div class="collapse" id="fullTransactionList">
+                        <ul class="list-unstyled ms-3 mb-0">
+                            <li *ngFor="let transaction of calculationsData.allUsersTransactions" class="mb-1">
+                                <i class="bi bi-cart me-1"></i>{{ transaction.checkName }}:
+                                <i class="bi bi-person-fill ms-2 me-1"></i>{{ transaction.subjects.sender }}
+                                <span class="text-warning fw-bold mx-1">({{ transaction.transferAmount | currency:'UAH':'₴' }})</span>
+                                <span class="mx-1">→</span>
+                                <i class="bi bi-person-fill me-1"></i>{{ transaction.subjects.recipient }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

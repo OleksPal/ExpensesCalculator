@@ -1,0 +1,9 @@
+/* Toast component styles */
+
+.toast:not(.show) {
+  display: none;
+}
+
+.toast.show {
+  display: block;
+}

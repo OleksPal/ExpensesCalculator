@@ -1,0 +1,27 @@
+<div class="rounded mt-5 mx-5 mb-4 col-10 col-sm-8 mx-auto dark-blue-1">
+    <div class="container-fluid p-3 text-white">
+        <h1>{{ 'REGISTER.TITLE' | translate }}</h1>
+        <div class="row">
+            <form (ngSubmit)="register()">
+                <h3>{{ 'REGISTER.SUBTITLE' | translate }}</h3>
+                <hr />
+                <div class="form-floating mb-3">
+                    <input [(ngModel)]="userName" name="userName" class="form-control" [class.is-invalid]="fieldErrors['userName']" [class.is-valid]="formValidated && !fieldErrors['userName'] && userName.trim()" />
+                    <label class="form-label text-black">{{ 'REGISTER.USERNAME' | translate }}</label>
+                    <div class="invalid-feedback" *ngIf="fieldErrors['userName']">{{ fieldErrors['userName'] }}</div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input [(ngModel)]="password" name="password" type="password" class="form-control" [class.is-invalid]="fieldErrors['password']" [class.is-valid]="formValidated && !fieldErrors['password'] && password" />
+                    <label class="form-label text-black">{{ 'REGISTER.PASSWORD' | translate }}</label>
+                    <div class="invalid-feedback" *ngIf="fieldErrors['password']" [innerHTML]="fieldErrors['password']"></div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" class="form-control" [class.is-invalid]="fieldErrors['confirmPassword']" [class.is-valid]="formValidated && !fieldErrors['confirmPassword'] && confirmPassword && password === confirmPassword" />
+                    <label class="form-label text-black">{{ 'REGISTER.CONFIRM_PASSWORD' | translate }}</label>
+                    <div class="invalid-feedback" *ngIf="fieldErrors['confirmPassword']">{{ fieldErrors['confirmPassword'] }}</div>
+                </div>
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">{{ 'REGISTER.SUBMIT' | translate }}</button>
+            </form>
+        </div>
+    </div>
+</div>

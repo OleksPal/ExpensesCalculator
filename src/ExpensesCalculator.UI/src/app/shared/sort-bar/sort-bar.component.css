@@ -1,0 +1,45 @@
+/* Sort bar component styles */
+
+/* Ensure dropdown is positioned relative to button */
+.sort-dropdown {
+  position: relative;
+}
+
+/* Match dropdown menu width to button */
+.sort-dropdown .dropdown-menu {
+  min-width: 100%;
+  width: max-content;
+}
+
+/* Dropdown menu custom dark theme */
+.dropdown-menu-custom {
+  background-color: #080f27;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Horizontal divider */
+hr {
+  opacity: 0.25;
+}
+
+/* Button styling */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
