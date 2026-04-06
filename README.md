@@ -37,7 +37,7 @@ The application goes beyond simple split-the-bill calculators by allowing you to
 - **Item Discovery** - Get smart recommendations based on your expense history
 
 ## Demo
-Try it live: https://expensescalculator.azurewebsites.net
+Try it live: [link](https://expenses-webapp.lemonsea-26df2de3.australiaeast.azurecontainerapps.io)
 
 ## Screenshots
 
