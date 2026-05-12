@@ -1,4 +1,4 @@
-# ExpensesCalculator
+# ExpenseTracker
 
 [![.NET](https://github.com/OleksPal/ExpensesCalculator/actions/workflows/dotnet.yml/badge.svg)](https://github.com/OleksPal/ExpensesCalculator/actions/workflows/dotnet.yml)
 
