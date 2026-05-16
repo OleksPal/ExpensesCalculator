@@ -1,10 +1,10 @@
 <tour-step-template></tour-step-template>
 
-<div class="rounded mt-4 mb-5 ms-sm-4 me-sm-4 dark-blue-1">
+<div class="rounded mt-4 mb-5 mx-3 ms-sm-4 me-sm-4 dark-blue-1">
     <div *ngIf="!isLoading && dayExpenses" class="container-fluid p-3 text-white">
 
         <div class="d-flex align-items-center justify-content-between mb-3">
-            <button class="btn btn-outline-primary text-white px-4" (click)="navigateToList()" tourAnchor="back-btn">
+            <button id="backButton" class="btn btn-outline-primary text-white px-4" (click)="navigateToList()" tourAnchor="back-btn">
                 <i class="bi bi-arrow-left" style="transform: scaleX(2); display: inline-block;"></i>
             </button>
 

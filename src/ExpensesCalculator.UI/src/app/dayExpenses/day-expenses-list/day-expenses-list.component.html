@@ -1,17 +1,17 @@
 <tour-step-template></tour-step-template>
 
-<div class="rounded mt-4 mb-5 ms-sm-4 me-sm-4 dark-blue-1">
-    <div class="container-fluid px-3 pt-2 text-white">
+<div class="rounded mt-4 mb-5 mx-3 ms-sm-4 me-sm-4 dark-blue-1">
+    <div class="container-fluid px-2 px-sm-3 pt-2 text-white">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-2">
-                <h4 class="mt-1 mb-4">
+                <h4 class="mt-1 mb-3 mb-sm-4">
                     <i class="bi bi-list-nested me-1"></i>{{ 'EXPENSES.TITLE' | translate }}
                 </h4>
-                <button class="btn btn-sm btn-outline-primary text-white mb-3" (click)="startTour()" title="Start tour">
+                <button class="btn btn-sm btn-outline-primary text-white mb-3 mb-sm-3" (click)="startTour()" title="Start tour">
                     <i class="bi bi-question-circle"></i>
                 </button>
             </div>
-            <div class="spinner-border" [class.invisible]="!isLoading" role="status"></div>
+            <div class="spinner-border mt-1 mb-3 mb-sm-4" [class.invisible]="!isLoading" role="status"></div>
         </div>
 
         <button *ngIf="showAddExpenseButton()" class="btn btn-outline-primary text-white" tourAnchor="add-expense-btn" (click)="openModal('add', '')">
@@ -28,11 +28,11 @@
             <i class="bi bi-plus-circle me-1"></i>{{ 'EXPENSES.ADD' | translate }}
         </button>
     </div>
-    <div *ngIf="showFilterControls()" class="d-flex justify-content-end pb-lg-2 px-2 mt-3 mb-2">
+    <div *ngIf="showFilterControls()" class="d-flex justify-content-start justify-content-lg-end pb-lg-2 mt-3 mb-2">
         <div class="col-12">
-            <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch align-items-lg-center justify-content-lg-between">
+            <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch align-items-lg-center justify-content-lg-between px-2 px-sm-3">
                 <!-- LEFT SIDE: Date range -->
-                <div class="d-flex flex-column ms-2" tourAnchor="date-range-filter">
+                <div class="d-flex flex-column" tourAnchor="date-range-filter">
                     <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
                         <i class="bi bi-calendar-range me-1"></i>{{ 'EXPENSES.DATE_FILTER' | translate }}
                     </small>
@@ -80,7 +80,8 @@
     <div *ngIf="showNoSearchResults()" class="text-white text-center py-4">
         <h3>{{ 'EXPENSES.NO_SEARCH_RESULTS' | translate }}</h3>
     </div>
-    <div *ngIf="expensesList.length > 0" class="table-responsive fix-table-height">
+    <!-- Table view for larger screens -->
+    <div *ngIf="expensesList.length > 0" class="table-responsive fix-table-height d-none d-sm-block">
         <table class="table table-borderless text-white mb-0" id="daysTable">
             <thead tourAnchor="expenses-table">
                 <tr>
@@ -94,12 +95,12 @@
                         {{ 'EXPENSES.LOCATION' | translate }}
                         <i [ngClass]="getIconOrderClass('location')"></i>
                     </th>
-                    <th class="text-nowrap bg-transparent text-white" width="25%" (click)="sortExpenses('participants')">
+                    <th class="text-nowrap bg-transparent text-white d-none d-sm-table-cell" width="25%" (click)="sortExpenses('participants')">
                         <i class="bi bi-people-fill pe-1"></i>
                         {{ 'EXPENSES.PARTICIPANTS' | translate }}
                         <i [ngClass]="getIconOrderClass('participants')"></i>
                     </th>
-                    <th class="text-nowrap bg-transparent text-white" width="20%" (click)="sortExpenses('totalSum')">
+                    <th class="text-nowrap bg-transparent text-white d-none d-sm-table-cell" width="20%" (click)="sortExpenses('totalSum')">
                         <i class="bi bi-cash-stack pe-1"></i>
                         {{ 'EXPENSES.TOTAL_SUM' | translate }}
                         <i [ngClass]="getIconOrderClass('totalSum')"></i>
@@ -115,7 +116,7 @@
                     <td class="text-white location-cell">
                         {{ day.location || '-' }}
                     </td>
-                    <td>
+                    <td class="d-none d-sm-table-cell">
                         <label
                             class="text-nowrap text-white"
                             style="cursor: pointer;"
@@ -126,7 +127,7 @@
                             {{ day.participants.length }} {{ 'EXPENSES.PEOPLE' | translate }}
                         </label>
                     </td>
-                    <td class="text-nowrap" class="text-white">
+                    <td class="text-nowrap text-white d-none d-sm-table-cell">
                         {{ day.totalSum | currency:'UAH':'₴' }}
                     </td>
                     <td>
@@ -170,6 +171,129 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Sort controls for small screens -->
+    <div *ngIf="expensesList.length > 0" class="d-block d-sm-none mb-2 px-2" tourAnchor="sort-controls">
+        <div class="d-flex flex-column">
+            <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
+            </small>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('date')">
+                    <i class="bi bi-calendar-event me-1"></i>{{ 'EXPENSES.DATE' | translate }}
+                    <i [ngClass]="getIconOrderClass('date')"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('location')">
+                    <i class="bi bi-geo-alt-fill me-1"></i>{{ 'EXPENSES.LOCATION' | translate }}
+                    <i [ngClass]="getIconOrderClass('location')"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('participants')">
+                    <i class="bi bi-people-fill me-1"></i>{{ 'EXPENSES.PARTICIPANTS' | translate }}
+                    <i [ngClass]="getIconOrderClass('participants')"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('totalSum')">
+                    <i class="bi bi-cash-stack me-1"></i>{{ 'EXPENSES.TOTAL_SUM' | translate }}
+                    <i [ngClass]="getIconOrderClass('totalSum')"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data label for small screens -->
+    <div *ngIf="expensesList.length > 0" class="d-block d-sm-none px-2">
+        <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+            <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
+        </small>
+    </div>
+
+    <!-- Accordion view for small screens -->
+    <div *ngIf="expensesList.length > 0" class="accordion d-block d-sm-none" id="expensesAccordion" tourAnchor="expenses-accordion">
+        <div *ngFor="let day of expensesList; let i = index" class="accordion-item bg-transparent border-0">
+            <h2 class="accordion-header" [id]="'heading' + day.id">
+                <button class="accordion-button collapsed bg-transparent text-white border-bottom border-primary"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        [attr.data-bs-target]="'#collapse' + day.id"
+                        aria-expanded="false"
+                        [attr.aria-controls]="'collapse' + day.id"
+                        style="padding: 0.75rem 0.5rem;">
+                    <div class="d-flex justify-content-between align-items-center w-100 me-2">
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold mb-2" style="font-size: 0.8rem;">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                {{ day.date | date:'EEE, MMM dd, yyyy':'':currentLocale | titlecase }}
+                            </span>
+                            <span class="text-white-50" style="font-size: 0.9rem;">
+                                <i class="bi bi-geo-alt-fill me-1"></i>
+                                {{ day.location || '-' }}
+                            </span>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+            <div [id]="'collapse' + day.id"
+                 class="accordion-collapse collapse"
+                 [attr.aria-labelledby]="'heading' + day.id"
+                 data-bs-parent="#expensesAccordion">
+                <div class="accordion-body bg-transparent text-white" style="padding: 0.75rem 0.5rem;">
+                    <div class="d-flex flex-column gap-2">
+                        <!-- Participants -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="font-size: 0.85rem;">
+                                <i class="bi bi-people-fill me-1"></i>
+                                {{ 'EXPENSES.PARTICIPANTS' | translate }}:
+                            </span>
+                            <label class="text-white"
+                                   style="cursor: pointer; font-size: 0.85rem;"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-html="true"
+                                   [attr.data-bs-title]="getTooltipContent(day.id)">
+                                {{ day.participants.length }} {{ 'EXPENSES.PEOPLE' | translate }}
+                            </label>
+                        </div>
+
+                        <!-- Total Sum -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="font-size: 0.85rem;">
+                                <i class="bi bi-cash-stack me-1"></i>
+                                {{ 'EXPENSES.TOTAL_SUM' | translate }}:
+                            </span>
+                            <span class="fw-bold" style="font-size: 0.85rem;">
+                                {{ day.totalSum | currency:'UAH':'₴' }}
+                            </span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-primary text-white flex-fill"
+                                    (click)="openDetails(day.id)">
+                                <i class="bi bi-eye me-1"></i>{{ 'EXPENSES.OPEN' | translate }}
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary text-white flex-fill"
+                                    (click)="navigateToCalculations(day.id)">
+                                <i class="bi bi-calculator me-1"></i>{{ 'EXPENSES.CALCULATE' | translate }}
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-primary text-white flex-fill"
+                                    (click)="openModal('edit', day.id)">
+                                <i class="bi bi-pencil me-1"></i>{{ 'EXPENSES.EDIT' | translate }}
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary text-white flex-fill"
+                                    (click)="openModal('share', day.id)">
+                                <i class="bi bi-share me-1"></i>{{ 'EXPENSES.SHARE' | translate }}
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger text-white flex-fill"
+                                    (click)="openModal('delete', day.id)">
+                                <i class="bi bi-trash me-1"></i>{{ 'EXPENSES.DELETE' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <hr class="w-100 my-0" style="border-color: #080f27; opacity: 1;" />
 
     <!-- Pagination -->

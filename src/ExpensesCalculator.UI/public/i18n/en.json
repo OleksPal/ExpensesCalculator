@@ -287,6 +287,10 @@
     "EXPENSES_TABLE_CONTENT": "This table shows the expenses. Click on any column header to sort your expenses by that field. The table below displays all expense rows, which you can double-click to view details.",
     "ACTIONS_MENU_TITLE": "Actions Menu",
     "ACTIONS_MENU_CONTENT": "Click the three dots button to access actions for each expense. You can open details, calculate expenses, edit, share with other users, or delete the expense entry.",
+    "SORT_CONTROLS_TITLE": "Sort Controls",
+    "SORT_CONTROLS_CONTENT": "Use these buttons to sort your expenses. Click any button to sort by that field (Date, Location, Participants, or Total Sum). Click again to toggle between ascending and descending order.",
+    "EXPENSES_ACCORDION_TITLE": "Expenses List",
+    "EXPENSES_ACCORDION_CONTENT": "This accordion shows all your expenses. Each row displays the date and location. Click the arrow to expand and view participants, total sum, and action buttons to manage the expense.",
     "PAGINATION_TITLE": "Pagination Controls",
     "PAGINATION_CONTENT": "Navigate through your expenses with these controls. Change the number of items displayed per page using the dropdown on the right."
   },

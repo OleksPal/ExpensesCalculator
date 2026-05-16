@@ -664,6 +664,7 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
 
   initializeTour() {
     const tourSteps: any[] = [];
+    const isSmallScreen = window.innerWidth < 576;
 
     // If there's no data, show only the "Add Expense" step
     if (this.expensesList.length === 0) {
@@ -675,7 +676,7 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
         enableBackdrop: true
       });
     } else {
-      // If there's data, show the full tour
+      // Common steps for all screen sizes
       tourSteps.push(
         {
           anchorId: 'add-expense-btn',
@@ -695,34 +696,66 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
           anchorId: 'search-filter',
           content: this.translate.instant('TOUR.SEARCH_FILTER_CONTENT'),
           title: this.translate.instant('TOUR.SEARCH_FILTER_TITLE'),
-          placement: 'left',
-          enableBackdrop: true
-        },
-        {
-          // Highlights the table header only (tourAnchor on <thead>)
-          anchorId: 'expenses-table',
-          content: this.translate.instant('TOUR.EXPENSES_TABLE_CONTENT'),
-          title: this.translate.instant('TOUR.EXPENSES_TABLE_TITLE'),
-          placement: 'bottom',
-          enableBackdrop: true
-        },
-        {
-          // Highlights the actions menu column
-          anchorId: 'actions-menu',
-          content: this.translate.instant('TOUR.ACTIONS_MENU_CONTENT'),
-          title: this.translate.instant('TOUR.ACTIONS_MENU_TITLE'),
-          placement: 'left',
-          enableBackdrop: true
-        },
-        {
-          // Highlights pagination controls
-          anchorId: 'pagination',
-          content: this.translate.instant('TOUR.PAGINATION_CONTENT'),
-          title: this.translate.instant('TOUR.PAGINATION_TITLE'),
           placement: 'top',
           enableBackdrop: true
         }
       );
+
+      // Different steps for small vs large screens
+      if (isSmallScreen) {
+        // Steps for small screens (accordion view)
+        tourSteps.push(
+          {
+            anchorId: 'sort-controls',
+            content: this.translate.instant('TOUR.SORT_CONTROLS_CONTENT'),
+            title: this.translate.instant('TOUR.SORT_CONTROLS_TITLE'),
+            placement: 'bottom',
+            enableBackdrop: true
+          },
+          {
+            anchorId: 'expenses-accordion',
+            content: this.translate.instant('TOUR.EXPENSES_ACCORDION_CONTENT'),
+            title: this.translate.instant('TOUR.EXPENSES_ACCORDION_TITLE'),
+            placement: 'bottom',
+            enableBackdrop: true
+          },
+          {
+            anchorId: 'pagination',
+            content: this.translate.instant('TOUR.PAGINATION_CONTENT'),
+            title: this.translate.instant('TOUR.PAGINATION_TITLE'),
+            placement: 'top',
+            enableBackdrop: true
+          }
+        );
+      } else {
+        // Steps for large screens (table view)
+        tourSteps.push(
+          {
+            // Highlights the table header only (tourAnchor on <thead>)
+            anchorId: 'expenses-table',
+            content: this.translate.instant('TOUR.EXPENSES_TABLE_CONTENT'),
+            title: this.translate.instant('TOUR.EXPENSES_TABLE_TITLE'),
+            placement: 'bottom',
+            enableBackdrop: true
+          },
+          {
+            // Highlights the actions menu column
+            anchorId: 'actions-menu',
+            content: this.translate.instant('TOUR.ACTIONS_MENU_CONTENT'),
+            title: this.translate.instant('TOUR.ACTIONS_MENU_TITLE'),
+            placement: 'left',
+            enableBackdrop: true
+          },
+          {
+            // Highlights pagination controls
+            anchorId: 'pagination',
+            content: this.translate.instant('TOUR.PAGINATION_CONTENT'),
+            title: this.translate.instant('TOUR.PAGINATION_TITLE'),
+            placement: 'top',
+            enableBackdrop: true
+          }
+        );
+      }
     }
 
     this.tourService.initialize(tourSteps);
