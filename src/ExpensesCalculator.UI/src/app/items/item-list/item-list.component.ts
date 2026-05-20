@@ -373,7 +373,7 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
 
     const itemElement = document.querySelector(`.highlighted-item`);
     if (itemElement) {
-      itemElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      itemElement.scrollIntoView({ behavior: 'auto', block: 'center' });
 
       // Remove highlight after animation completes (2s * 3 iterations = 6s)
       setTimeout(() => {

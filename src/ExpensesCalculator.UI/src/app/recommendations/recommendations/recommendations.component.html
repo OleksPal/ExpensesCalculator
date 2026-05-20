@@ -1,88 +1,95 @@
 <tour-step-template></tour-step-template>
 
-<div class="rounded my-4 ms-sm-4 me-sm-4 dark-blue-1">
+<div class="rounded my-4 mx-3 ms-sm-4 me-sm-4 dark-blue-1">
     <div class="container-fluid px-3 pt-2 text-white">
         <!-- Title with Loading Indicator -->
-        <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center justify-content-between mb-3 mb-md-0">
             <div class="d-flex align-items-center gap-2">
-                <h4 class="mt-1 mb-4">
+                <h4 class="mt-1 mb-0 mb-md-4">
                     <i class="bi bi-lightbulb me-1"></i>{{ 'SIDEBAR.RECOMMENDATIONS' | translate }}
                 </h4>
-                <button *ngIf="!isLoading" class="btn btn-sm btn-outline-primary text-white mb-3" (click)="startTour()" title="Start tour">
+                <button *ngIf="!isLoading" class="btn btn-sm btn-outline-primary text-white mb-0 mb-md-4" (click)="startTour()" title="Start tour">
                     <i class="bi bi-question-circle"></i>
                 </button>
             </div>
             <div *ngIf="isLoading" class="spinner-border" role="status"></div>
         </div>
 
+        <!-- Add Button -->
+        <button class="btn btn-outline-primary text-white mb-3" (click)="openModal('add')" [disabled]="isLoading" tourAnchor="add-item-btn">
+            <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.ADD' | translate }}
+        </button>
+
         <!-- Tag Filter Section and Filter/Sort Controls -->
-        <div class="d-flex justify-content-between align-items-end mb-3">
-            <!-- Tag Filter Group -->
-            <div class="d-flex flex-column" tourAnchor="tag-filter">
-                <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
-                    <i class="bi bi-tags me-1"></i>{{ 'ITEMS.FILTER.TAG_FILTER' | translate }}
-                </small>
-                <div class="position-relative" style="width: 400px;">
-                    <div class="input-group">
-                        <span class="input-group-text bi bi-tags bg-transparent text-white border-primary"></span>
-                        <input [(ngModel)]="tagFilterInput" name="tagFilterInput"
-                            class="form-control bg-transparent text-white border-primary"
-                            [placeholder]="'ITEMS.TAG_FILTER_PLACEHOLDER' | translate" (input)="onTagInputChange()"
-                            (keydown.enter)="addFilterTag(); $event.preventDefault()" [disabled]="isLoading" />
-                        <button type="button" class="btn btn-outline-primary text-white" (click)="addFilterTag()"
-                            [disabled]="isLoading">
-                            <i class="bi bi-plus"></i>
-                        </button>
-                    </div>
-                    <!-- Tag Suggestions Dropdown -->
-                    <div *ngIf="showTagSuggestions" class="position-absolute w-100 mt-1" style="z-index: 1000;">
-                        <ul class="list-group">
-                            <li *ngFor="let tag of filteredTagSuggestions"
-                                class="list-group-item list-group-item-action bg-dark text-white border-primary"
-                                style="cursor: pointer;" (click)="selectTagSuggestion(tag)">
+        <div class="d-flex justify-content-start justify-content-lg-end pb-lg-2">
+            <div class="col-12">
+                <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch align-items-lg-end justify-content-lg-between px-0">
+                    <!-- Tag Filter Group -->
+                    <div class="d-flex flex-column" style="flex: 0 0 auto; max-width: 100%;" tourAnchor="tag-filter">
+                        <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                            <i class="bi bi-tags me-1"></i>{{ 'ITEMS.FILTER.TAG_FILTER' | translate }}
+                        </small>
+                        <div class="position-relative" style="min-width: 300px;">
+                            <div class="input-group">
+                                <span class="input-group-text bi bi-tags bg-transparent text-white border-primary"></span>
+                                <input [(ngModel)]="tagFilterInput" name="tagFilterInput"
+                                    class="form-control bg-transparent text-white border-primary"
+                                    [placeholder]="'ITEMS.TAG_FILTER_PLACEHOLDER' | translate" (input)="onTagInputChange()"
+                                    (keydown.enter)="addFilterTag(); $event.preventDefault()" [disabled]="isLoading" />
+                                <button type="button" class="btn btn-outline-primary text-white" (click)="addFilterTag()"
+                                    [disabled]="isLoading">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <!-- Tag Suggestions Dropdown -->
+                            <div *ngIf="showTagSuggestions" class="position-absolute w-100 mt-1" style="z-index: 1000;">
+                                <ul class="list-group">
+                                    <li *ngFor="let tag of filteredTagSuggestions"
+                                        class="list-group-item list-group-item-action bg-dark text-white border-primary"
+                                        style="cursor: pointer;" (click)="selectTagSuggestion(tag)">
+                                        #{{ tag }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Tag Badges Display (shown below tag input on small screens only) -->
+                        <div *ngIf="filterTags.length > 0" class="d-block d-lg-none mt-2 scrollbar-dark" style="max-height: 60px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+                            <span *ngFor="let tag of filterTags" class="badge border border-primary text-white fw-normal me-2 mb-2"
+                                style="font-size: 0.9rem; display: inline-block; cursor: pointer;">
                                 #{{ tag }}
-                            </li>
-                        </ul>
+                                <i class="bi bi-x ms-1" (click)="removeFilterTag(tag)"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Search and Sort Group -->
+                    <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch">
+                        <!-- Filter Group -->
+                        <div class="d-flex flex-column" tourAnchor="search-filter">
+                            <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                                <i class="bi bi-funnel me-1"></i>{{ 'ITEMS.FILTER.CAPTION' | translate }}
+                            </small>
+                            <app-filter-bar [filterOptions]="filterOptions" [selectedCriteria]="filterCriteria"
+                                [filterText]="filterText" [placeholderKey]="'ITEMS.SEARCH'"
+                                (criteriaChange)="changeFilterCriteria($event)" (filterTextChange)="onFilterChange($event)">
+                            </app-filter-bar>
+                        </div>
+
+                        <!-- Sort Group -->
+                        <div class="d-flex flex-column" tourAnchor="sort-bar">
+                            <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                                <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
+                            </small>
+                            <app-sort-bar [sortOptions]="sortOptions" [selectedColumn]="sortColumn" [selectedOrder]="sortOrder"
+                                (sortChange)="onSortChange($event)">
+                            </app-sort-bar>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Search and Sort Group -->
-            <div class="d-flex gap-3 align-items-end">
-                <!-- Filter Group -->
-                <div class="d-flex flex-column" tourAnchor="search-filter">
-                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
-                        <i class="bi bi-funnel me-1"></i>{{ 'ITEMS.FILTER.CAPTION' | translate }}
-                    </small>
-                    <app-filter-bar [filterOptions]="filterOptions" [selectedCriteria]="filterCriteria"
-                        [filterText]="filterText" [placeholderKey]="'ITEMS.SEARCH'"
-                        (criteriaChange)="changeFilterCriteria($event)" (filterTextChange)="onFilterChange($event)">
-                    </app-filter-bar>
-                </div>
-
-                <!-- Sort Group -->
-                <div class="d-flex flex-column" tourAnchor="sort-bar">
-                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
-                        <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
-                    </small>
-                    <app-sort-bar [sortOptions]="sortOptions" [selectedColumn]="sortColumn" [selectedOrder]="sortOrder"
-                        (sortChange)="onSortChange($event)">
-                    </app-sort-bar>
-                </div>
-            </div>
-        </div>
-
-        <!-- Add Button, Tag Badges and Checkbox in same row -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <!-- Add Button -->
-            <button class="btn btn-outline-primary text-white" (click)="openModal('add')" [disabled]="isLoading" tourAnchor="add-item-btn">
-                <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.ADD' | translate }}
-            </button>
-
-            <!-- Tag Badges Display -->
-            <div class="flex-grow-1 mx-3">
-                <div *ngIf="filterTags.length > 0" class="scrollbar-dark"
-                    style="max-height: 60px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+                <!-- Tag Badges Display (shown below all controls on large screens only) -->
+                <div *ngIf="filterTags.length > 0" class="d-none d-lg-block mt-2 scrollbar-dark" style="max-height: 60px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
                     <span *ngFor="let tag of filterTags" class="badge border border-primary text-white fw-normal me-2 mb-2"
                         style="font-size: 0.9rem; display: inline-block; cursor: pointer;">
                         #{{ tag }}
@@ -90,8 +97,10 @@
                     </span>
                 </div>
             </div>
+        </div>
 
-            <!-- Checkbox -->
+        <!-- Checkbox -->
+        <div class="d-flex justify-content-start justify-content-lg-end mt-2 mb-3">
             <div class="form-check text-nowrap" tourAnchor="only-my-items">
                 <input type="checkbox" class="form-check-input" id="useOnlyMyItems"
                     [(ngModel)]="onlyMyItems" (change)="onOnlyMyItemsChange()">
