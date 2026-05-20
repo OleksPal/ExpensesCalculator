@@ -21,7 +21,7 @@
         <hr class="w-100 my-3" style="border-color: #080f27; opacity: 1;" />
 
     </div>
-    <div *ngIf="showNoDataMessage()" class="text-white text-center pt-4 pb-5">
+    <div *ngIf="showNoDataMessage()" class="no-data-section text-white text-center pt-4 pb-5">
         <h2>{{ 'EXPENSES.NO_DATA' | translate }}</h2>
         <h5 class="pt-3">{{ 'EXPENSES.NO_DATA_HINT' | translate }}</h5>
         <button class="btn btn-outline-primary text-white mt-4" tourAnchor="add-expense-btn" (click)="openModal('add', '')">

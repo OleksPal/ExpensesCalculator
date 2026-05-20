@@ -203,6 +203,15 @@ tr .dropdown {
     min-width: 100% !important;
     width: 100% !important;
   }
+
+  /* Reduce no data text size for small screens */
+  .no-data-section h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .no-data-section h5 {
+    font-size: 0.85rem !important;
+  }
 }
 
 /* Accordion styles for small screens */
