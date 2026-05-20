@@ -11,6 +11,7 @@ import { DayExpensesTotalSumUpdateService } from '../../services/day-expenses-to
 import { ToastService } from '../../services/toast.service';
 import { FormValidationService } from '../../services/form-validation.service';
 import { FilterBarComponent, FilterOption } from '../../shared/filter-bar/filter-bar.component';
+import { SortBarComponent, SortOption } from '../../shared/sort-bar/sort-bar.component';
 import { TourAnchorNgBootstrapDirective } from 'ngx-ui-tour-ng-bootstrap';
 
 declare var bootstrap: any;
@@ -18,7 +19,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-check-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalWindowComponent, TranslatePipe, ItemListComponent, FilterBarComponent, TourAnchorNgBootstrapDirective],
+  imports: [CommonModule, FormsModule, ModalWindowComponent, TranslatePipe, ItemListComponent, FilterBarComponent, SortBarComponent, TourAnchorNgBootstrapDirective],
   templateUrl: './check-list.component.html',
   styleUrl: './check-list.component.css'
 })
@@ -62,6 +63,11 @@ export class CheckListComponent implements OnInit, OnChanges {
   ];
   sortColumn: 'location' | 'totalSum' | 'payer' = 'totalSum';
   sortOrder: 'asc' | 'desc' = 'desc';
+  sortOptions: SortOption[] = [
+    { value: 'location', labelKey: 'CHECKS.LOCATION' },
+    { value: 'payer', labelKey: 'CHECKS.PAYER' },
+    { value: 'totalSum', labelKey: 'CHECKS.SUM' }
+  ];
 
   // UI state properties
   isLoading = false;
@@ -169,6 +175,12 @@ export class CheckListComponent implements OnInit, OnChanges {
       this.sortColumn = column;
       this.sortOrder = 'asc';
     }
+    this.applyLocalSorting();
+  }
+
+  onSortChange(event: { column: string; order: 'asc' | 'desc' }): void {
+    this.sortColumn = event.column as 'location' | 'totalSum' | 'payer';
+    this.sortOrder = event.order;
     this.applyLocalSorting();
   }
 

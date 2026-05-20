@@ -203,3 +203,24 @@ td {
   }
 }
 
+/* Component-specific responsive styles */
+@media (max-width: 576px) {
+  /* Card sizing for small screens */
+  .card-body {
+    padding: 0.5rem !important;
+  }
+
+  .card-title {
+    font-size: 0.85rem !important;
+  }
+
+  .card-body small {
+    font-size: 0.65rem !important;
+  }
+
+  /* Pagination info text sizing */
+  .pagination-info {
+    font-size: 0.8rem !important;
+  }
+}
+

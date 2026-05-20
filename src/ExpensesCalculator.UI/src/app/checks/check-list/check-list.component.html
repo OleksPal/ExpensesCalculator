@@ -23,11 +23,11 @@
     <div *ngIf="checksList.length > 0" class="d-flex justify-content-end pb-lg-2 px-2 my-3">
         <div class="col-12">
             <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch align-items-lg-center justify-content-lg-between">
-                <div class="d-flex flex-column ms-2">
-                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                <div class="d-flex flex-column ms-md-2 align-self-start align-self-lg-center">
+                    <small class="text-white-50 mb-1 d-none d-sm-block" style="font-size: 0.7rem;">
                         <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
                     </small>
-                    <button class="btn btn-outline-primary text-white" (click)="openModal('add', '')" tourAnchor="add-check-btn">
+                    <button id="addCheckButton" class="btn btn-outline-primary text-white" (click)="openModal('add', '')" tourAnchor="add-check-btn">
                         <i class="bi bi-plus-circle me-1"></i>{{ 'CHECKS.ADD' | translate }}
                     </button>
                 </div>
@@ -53,8 +53,23 @@
         <h3>{{ 'CHECKS.NO_SEARCH_RESULTS' | translate }}</h3>
     </div>
 
-    <!-- Checks Table -->
-    <div *ngIf="filteredChecksList.length > 0" class="table-responsive fix-table-height">
+    <!-- Sort controls for small screens -->
+    <div *ngIf="filteredChecksList.length > 0" class="d-block d-sm-none mb-2 px-2">
+        <div class="d-flex flex-column">
+            <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
+            </small>
+            <app-sort-bar
+                [sortOptions]="sortOptions"
+                [selectedColumn]="sortColumn"
+                [selectedOrder]="sortOrder"
+                (sortChange)="onSortChange($event)">
+            </app-sort-bar>
+        </div>
+    </div>
+
+    <!-- Checks Table for larger screens -->
+    <div *ngIf="filteredChecksList.length > 0" class="table-responsive fix-table-height d-none d-sm-block">
         <table class="table table-borderless text-white mb-0">
             <thead>
                 <tr>
@@ -139,6 +154,99 @@
                 </ng-container>
             </tbody>
         </table>
+    </div>
+
+    <!-- Data label for small screens -->
+    <div *ngIf="filteredChecksList.length > 0" class="d-block d-sm-none px-2">
+        <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+            <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
+        </small>
+    </div>
+
+    <!-- Accordion view for small screens -->
+    <div *ngIf="filteredChecksList.length > 0" class="accordion d-block d-sm-none px-2" id="checksAccordion">
+        <div *ngFor="let check of filteredChecksList; let i = index" class="accordion-item bg-transparent border-0">
+            <h2 class="accordion-header" [id]="'heading' + check.id">
+                <button class="accordion-button collapsed bg-transparent text-white border-bottom border-primary"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        [attr.data-bs-target]="'#accordionCollapse' + check.id"
+                        aria-expanded="false"
+                        [attr.aria-controls]="'accordionCollapse' + check.id"
+                        style="padding: 0.75rem 0.5rem;">
+                    <div class="d-flex justify-content-between align-items-center w-100 me-2">
+                        <div class="d-flex flex-column flex-grow-1">
+                            <span class="fw-bold mb-2" style="font-size: 0.8rem;">
+                                <i class="bi bi-cart me-1"></i>{{ check.location || '-' }}
+                            </span>
+                            <span class="text-white-50" style="font-size: 0.85rem;">
+                                <i class="bi bi-cash-stack me-1"></i>{{ check.totalSum | currency:'UAH':'₴' }}
+                            </span>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+            <div [id]="'accordionCollapse' + check.id"
+                 class="accordion-collapse collapse"
+                 [attr.aria-labelledby]="'heading' + check.id"
+                 data-bs-parent="#checksAccordion">
+                <div class="accordion-body bg-transparent text-white" style="padding: 0.75rem 0.5rem;">
+                    <div class="d-flex flex-column gap-2">
+                        <!-- Payer -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="font-size: 0.85rem;">
+                                <i class="bi bi-wallet2 me-1"></i>{{ 'CHECKS.PAYER' | translate }}:
+                            </span>
+                            <span class="fw-bold" style="font-size: 0.85rem;">
+                                {{ check.payer || '-' }}
+                            </span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-warning text-white flex-fill btn-action-edit"
+                                    (click)="openModal('edit', check.id)">
+                                <i class="bi bi-pencil me-1"></i>{{ 'CHECKS.EDIT' | translate }}
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger text-white flex-fill btn-action-delete"
+                                    (click)="openModal('delete', check.id)">
+                                <i class="bi bi-trash me-1"></i>{{ 'CHECKS.DELETE' | translate }}
+                            </button>
+                        </div>
+
+                        <!-- Expand/Collapse Check Items -->
+                        <div class="d-flex justify-content-center mt-2">
+                            <button class="btn btn-sm btn-outline-primary text-white w-100" type="button"
+                                    data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#collapseItems' + check.id"
+                                    [attr.aria-expanded]="isCheckExpanded(check.id)"
+                                    [attr.aria-controls]="'collapseItems' + check.id"
+                                    (click)="toggleCheckExpansion(check.id)">
+                                <i [class]="isCheckExpanded(check.id) ? 'bi bi-dash-square-fill me-1' : 'bi bi-plus-square-fill me-1'"></i>
+                                {{ isCheckExpanded(check.id) ? ('Hide Items' | translate) : ('Show Items' | translate) }}
+                            </button>
+                        </div>
+
+                        <!-- Items List -->
+                        <div class="collapse" [id]="'collapseItems' + check.id">
+                            <div class="mt-2">
+                                <app-item-list
+                                    [checkId]="check.id"
+                                    [dayExpensesId]="dayExpensesId"
+                                    [users]="participants"
+                                    [items]="getItemsForCheck(check.id)"
+                                    [isLoading]="isCheckItemsLoading(check.id)"
+                                    [highlightedItemId]="highlightedItemId"
+                                    [disableTooltipManagement]="true"
+                                    (itemsChanged)="loadItemsForCheck($event)"
+                                    (checkSumUpdated)="onCheckSumUpdated($event)">
+                                </app-item-list>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Checks count -->

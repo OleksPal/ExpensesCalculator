@@ -151,6 +151,14 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
         }, 100);
       }
     });
+
+    // Move modal to body to avoid z-index/overflow issues in accordion layouts
+    setTimeout(() => {
+      const modalElement = document.getElementById('itemsModal-' + this.checkId);
+      if (modalElement && modalElement.parentElement !== document.body) {
+        document.body.appendChild(modalElement);
+      }
+    }, 0);
   }
 
 
@@ -171,6 +179,15 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     }
     if (this.filterTextSubscription) {
       this.filterTextSubscription.unsubscribe();
+    }
+
+    // Clean up modal if it was moved to body
+    if (this.modalInstance) {
+      const modalElement = document.getElementById('itemsModal-' + this.checkId);
+      if (modalElement && modalElement.parentElement === document.body) {
+        document.body.removeChild(modalElement);
+      }
+      this.modalInstance.dispose();
     }
   }
 
@@ -428,7 +445,10 @@ export class ItemListComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     this.modalTitle = this.translate.instant(`ITEMS.MODAL.${type.toUpperCase()}_TITLE`);
 
     const modalElement = document.getElementById('itemsModal-' + this.checkId);
-    if (!modalElement) return;
+    if (!modalElement) {
+      console.error('Modal element not found!');
+      return;
+    }
 
     if (type === 'add') {
       this.clearFormData();

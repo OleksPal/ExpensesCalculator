@@ -138,3 +138,43 @@ td {
   background-color: #1f429d !important;
   color: white;
 }
+
+/* Accordion styles for small screens */
+.accordion-button {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+.accordion-button::after {
+  filter: invert(1);
+}
+
+.accordion-button:focus {
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.accordion-item {
+  border-bottom: 1px solid rgba(13, 110, 253, 0.3) !important;
+}
+
+.accordion-item:last-child {
+  border-bottom: none !important;
+}
+
+.accordion-body {
+  border-top: 1px solid rgba(13, 110, 253, 0.2);
+}
+
+/* Component-specific responsive styles */
+@media (max-width: 576px) {
+  .pagination-info {
+    font-size: 0.8rem !important;
+  }
+}

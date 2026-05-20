@@ -10,24 +10,22 @@
             </div>
 
             <!-- Add Button and Filter/Sort Controls -->
-            <div *ngIf="itemsList.length > 0" class="d-flex justify-content-between align-items-center mb-3">
-                <div class="d-flex flex-column">
-                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
-                        <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
-                    </small>
-                    <button class="btn btn-outline-primary text-white" (click)="openModal('add')"
-                        [disabled]="loading" [tourAnchor]="'add-item-btn-' + checkId">
-                        <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.ADD' | translate }}
-                    </button>
-                </div>
-                <div class="d-flex gap-0 align-items-center">
-                    <!-- Filter Group -->
-                    <div class="d-flex flex-column">
-                        <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
-                            <i class="bi bi-funnel me-1"></i>{{ 'ITEMS.FILTER.CAPTION' | translate }}
-                        </small>
-                        <div class="d-flex gap-2 align-items-center pe-3"
-                            style="border-right: 1px solid rgba(255, 255, 255, 0.15);">
+            <div *ngIf="itemsList.length > 0" class="d-flex justify-content-end pb-lg-2 px-0 px-md-2 my-2 my-md-3">
+                <div class="col-12">
+                    <div class="d-flex flex-column flex-lg-row gap-2 align-items-stretch align-items-lg-center justify-content-lg-between">
+                        <div class="d-flex flex-column ms-md-2 align-self-start align-self-lg-center">
+                            <small class="text-white-50 mb-1 d-none d-sm-block" style="font-size: 0.7rem;">
+                                <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
+                            </small>
+                            <button id="addItemButton" class="btn btn-outline-primary text-white" (click)="openModal('add')"
+                                [disabled]="loading">
+                                <i class="bi bi-plus-circle me-1"></i>{{ 'ITEMS.ADD' | translate }}
+                            </button>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                                <i class="bi bi-funnel me-1"></i>{{ 'ITEMS.FILTER.CAPTION' | translate }}
+                            </small>
                             <app-filter-bar
                                 [filterOptions]="filterOptions"
                                 [selectedCriteria]="filterCriteria"
@@ -37,18 +35,38 @@
                                 (filterTextChange)="onFilterChange($event)">
                             </app-filter-bar>
                         </div>
-                    </div>
-
-                    <!-- Sort Group -->
-                    <div class="d-flex flex-column ps-3">
-                        <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
-                            <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
-                        </small>
-                        <app-sort-bar [sortOptions]="sortOptions" [selectedColumn]="sortColumn"
-                            [selectedOrder]="sortOrder" (sortChange)="onSortChange($event)">
-                        </app-sort-bar>
+                        <div class="d-none d-lg-flex flex-column">
+                            <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                                <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
+                            </small>
+                            <app-sort-bar [sortOptions]="sortOptions" [selectedColumn]="sortColumn"
+                                [selectedOrder]="sortOrder" (sortChange)="onSortChange($event)">
+                            </app-sort-bar>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Sort controls for small screens -->
+            <div *ngIf="itemsList.length > 0" class="d-block d-lg-none mb-2 px-0">
+                <div class="d-flex flex-column">
+                    <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                        <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
+                    </small>
+                    <app-sort-bar
+                        [sortOptions]="sortOptions"
+                        [selectedColumn]="sortColumn"
+                        [selectedOrder]="sortOrder"
+                        (sortChange)="onSortChange($event)">
+                    </app-sort-bar>
+                </div>
+            </div>
+
+            <!-- Data label for small screens -->
+            <div *ngIf="itemsList.length > 0" class="d-block d-sm-none mb-1">
+                <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
+                    <i class="bi bi-table me-1"></i>{{ 'ITEMS.DATA' | translate }}
+                </small>
             </div>
 
             <!-- No Items Message -->
