@@ -7,6 +7,7 @@ import { TooltipService } from '../../services/tooltip.service';
 import { FormValidationService } from '../../services/form-validation.service';
 import { ModalWindowComponent } from "../../shared/modal-window/modal-window.component";
 import { FilterBarComponent, FilterOption } from '../../shared/filter-bar/filter-bar.component';
+import { SortBarComponent, SortOption } from '../../shared/sort-bar/sort-bar.component';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterLink } from "@angular/router";
@@ -22,7 +23,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-day-expenses-list',
   standalone: true,
-  imports: [RouterLink, FormsModule, CommonModule, ModalWindowComponent, FilterBarComponent, TranslatePipe, TourAnchorNgBootstrapDirective, TourStepTemplateComponent],
+  imports: [RouterLink, FormsModule, CommonModule, ModalWindowComponent, FilterBarComponent, SortBarComponent, TranslatePipe, TourAnchorNgBootstrapDirective, TourStepTemplateComponent],
   providers: [DatePipe],
   templateUrl: './day-expenses-list.component.html',
   styleUrl: './day-expenses-list.component.css'
@@ -184,6 +185,12 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
   // Sorting
   sortColumn: 'date' | 'location' | 'participants' | 'totalSum' = 'date';
   sortOrder: 'asc' | 'desc' = 'desc';
+  sortOptions: SortOption[] = [
+    { value: 'date', labelKey: 'EXPENSES.DATE' },
+    { value: 'location', labelKey: 'EXPENSES.LOCATION' },
+    { value: 'participants', labelKey: 'EXPENSES.PARTICIPANTS' },
+    { value: 'totalSum', labelKey: 'EXPENSES.TOTAL_SUM' }
+  ];
 
   constructor(
     private expensesService: ExpensesService,
@@ -385,6 +392,13 @@ export class DayExpensesListComponent implements OnInit, AfterViewInit, OnDestro
 
     this.currentPage = 1;
 
+    this.loadExpenses();
+  }
+
+  onSortChange(event: { column: string; order: 'asc' | 'desc' }): void {
+    this.sortColumn = event.column as 'date' | 'location' | 'participants' | 'totalSum';
+    this.sortOrder = event.order;
+    this.currentPage = 1;
     this.loadExpenses();
   }
 

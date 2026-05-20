@@ -178,24 +178,12 @@
             <small class="text-white-50 mb-1" style="font-size: 0.7rem;">
                 <i class="bi bi-sort-down me-1"></i>{{ 'ITEMS.SORT.CAPTION' | translate }}
             </small>
-            <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('date')">
-                    <i class="bi bi-calendar-event me-1"></i>{{ 'EXPENSES.DATE' | translate }}
-                    <i [ngClass]="getIconOrderClass('date')"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('location')">
-                    <i class="bi bi-geo-alt-fill me-1"></i>{{ 'EXPENSES.LOCATION' | translate }}
-                    <i [ngClass]="getIconOrderClass('location')"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('participants')">
-                    <i class="bi bi-people-fill me-1"></i>{{ 'EXPENSES.PARTICIPANTS' | translate }}
-                    <i [ngClass]="getIconOrderClass('participants')"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-primary text-white flex-fill" (click)="sortExpenses('totalSum')">
-                    <i class="bi bi-cash-stack me-1"></i>{{ 'EXPENSES.TOTAL_SUM' | translate }}
-                    <i [ngClass]="getIconOrderClass('totalSum')"></i>
-                </button>
-            </div>
+            <app-sort-bar
+                [sortOptions]="sortOptions"
+                [selectedColumn]="sortColumn"
+                [selectedOrder]="sortOrder"
+                (sortChange)="onSortChange($event)">
+            </app-sort-bar>
         </div>
     </div>
 
